@@ -3,7 +3,8 @@ package ca.ubc.cs304.controller;
 import ca.ubc.cs304.database.DatabaseConnectionHandler;
 import ca.ubc.cs304.delegates.LoginWindowDelegate;
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
-import ca.ubc.cs304.model.BranchModel;
+import ca.ubc.cs304.model.Branch;
+import ca.ubc.cs304.model.CustomerModel;
 import ca.ubc.cs304.ui.LoginWindow;
 import ca.ubc.cs304.ui.TerminalTransactions;
 
@@ -53,7 +54,7 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
 	 * 
 	 * Insert a branch with the given info
 	 */
-    public void insertBranch(BranchModel model) {
+    public void insertBranch(Branch model) {
     	dbHandler.insertBranch(model);
     }
 
@@ -62,19 +63,10 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
 	 * 
 	 * Delete branch with given branch ID.
 	 */ 
-    public void deleteBranch(BranchModel branchModel) {
+    public void deleteBranch(Branch branchModel) {
     	dbHandler.deleteBranch(branchModel);
     }
-    
-    /**
-	 * TermainalTransactionsDelegate Implementation
-	 * 
-	 * Update the branch name for a specific ID
-	 */
 
-    public void updateBranch(String branch_location, String branch_city) {
-    	dbHandler.updateBranch(branch_location, branch_city);
-    }
 
     /**
 	 * TermainalTransactionsDelegate Implementation
@@ -82,10 +74,10 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
 	 * Displays information about varies bank branches.
 	 */
     public void showBranch() {
-    	BranchModel[] models = dbHandler.getBranchInfo();
+    	Branch[] models = dbHandler.getBranchInfo();
     	
     	for (int i = 0; i < models.length; i++) {
-    		BranchModel model = models[i];
+    		Branch model = models[i];
     		
     		// simplified output formatting; truncation may occur
 			System.out.printf("%-15.15s", model.getLocation());
@@ -93,6 +85,10 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
     		
     		System.out.println();
     	}
+    }
+
+    public void addCustomerDetails(CustomerModel customerModel) {
+        dbHandler.addCustomerDetails(customerModel);
     }
 	
     /**

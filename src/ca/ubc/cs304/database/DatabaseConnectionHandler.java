@@ -1,6 +1,7 @@
 package ca.ubc.cs304.database;
 
-import ca.ubc.cs304.model.BranchModel;
+import ca.ubc.cs304.model.Branch;
+import ca.ubc.cs304.model.CustomerModel;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ public class DatabaseConnectionHandler {
 		}
 	}
 
-	public void deleteBranch(BranchModel branchModel) {
+	public void deleteBranch(Branch branchModel) {
 		try {
 			PreparedStatement ps = connection.prepareStatement("DELETE FROM branch WHERE location = ? AND city = ?");
 			ps.setString(1, branchModel.getLocation());
@@ -56,7 +57,7 @@ public class DatabaseConnectionHandler {
 		}
 	}
 	
-	public void insertBranch(BranchModel model) {
+	public void insertBranch(Branch model) {
 		try {
 			PreparedStatement ps = connection.prepareStatement("INSERT INTO branch VALUES (?,?)");
 			ps.setString(1, model.getLocation());
@@ -72,8 +73,8 @@ public class DatabaseConnectionHandler {
 		}
 	}
 	
-	public BranchModel[] getBranchInfo() {
-		ArrayList<BranchModel> result = new ArrayList<BranchModel>();
+	public Branch[] getBranchInfo() {
+		ArrayList<Branch> result = new ArrayList<Branch>();
 		
 		try {
 			Statement stmt = connection.createStatement();
@@ -91,7 +92,7 @@ public class DatabaseConnectionHandler {
 //    		}
 			
 			while(rs.next()) {
-				BranchModel model = new BranchModel(rs.getString("location"),
+				Branch model = new Branch(rs.getString("location"),
 													rs.getString("city"));
 				result.add(model);
 			}
@@ -102,28 +103,82 @@ public class DatabaseConnectionHandler {
 			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
 		}	
 		
-		return result.toArray(new BranchModel[result.size()]);
+		return result.toArray(new Branch[result.size()]);
 	}
+
+
+    //View the number of available vehicles for a specific car type, location, and time interval.
+//	public ArrayList<VehicleModel> getAvailableVehicle(String type, String location) {
+//	    ArrayList<VehicleModel> vehicleModels = new ArrayList<>();
+//	    try {
+//	       // PreparedStatement ps = connection.prepareStatement("SELECT count(*) FROM Vehicle v)
+//            // TODO: figure out what does "time interval" refer to, also not sure what details to show when # of available cars are clicked
+//        }
+//	    catch (SQLException e) {
+//            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+//            rollbackConnection();
+//        }
+//	    return vehicleModels;
+//    }
+
+    public void addCustomerDetails(CustomerModel customerModel) {
+        try {
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO Customer VALUES (?,?,?,?)");
+            ps.setString(1, Integer.toString(customerModel.getDlicense()));
+            ps.setString(2, customerModel.getName());
+            ps.setString(3, customerModel.getPhoneNum());
+            ps.setString(4, customerModel.getAddress());
+
+            ps.executeUpdate();
+            connection.commit();
+
+            ps.close();
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+            rollbackConnection();
+        }
+    }
+
+    public CustomerModel[] getCustomerDetails() {
+	    ArrayList<CustomerModel> customerDetails = new ArrayList();
+	    try {
+	        Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM Customer");
+
+            while(rs.next()) {
+                CustomerModel customerModel = new CustomerModel(rs.getInt("dlicense"), rs.getString("name"), rs.getString("phoneNumber"),
+                        rs.getString("address"));
+                        customerDetails.add(customerModel);
+                    }
+
+                    rs.close();
+                    stmt.close();
+                } catch (SQLException e) {
+                    System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+                }
+            return customerDetails.toArray(new CustomerModel[customerDetails.size()]);
+        }
+
 	
-	public void updateBranch(String branch_location, String branch_city) {
-		try {
-		  PreparedStatement ps = connection.prepareStatement("UPDATE branch SET location = ? WHERE city = ?");
-		  ps.setString(1, branch_location);
-		  ps.setString(2, branch_city);
-		
-		  int rowCount = ps.executeUpdate();
-		  if (rowCount == 0) {
-		      System.out.println(WARNING_TAG + " Branch " + branch_location + " does not exist!");
-		  }
-	
-		  connection.commit();
-		  
-		  ps.close();
-		} catch (SQLException e) {
-			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
-			rollbackConnection();
-		}	
-	}
+//	public void updateBranch(String branch_location, String branch_city) {
+//		try {
+//		  PreparedStatement ps = connection.prepareStatement("UPDATE branch SET location = ? WHERE city = ?");
+//		  ps.setString(1, branch_location);
+//		  ps.setString(2, branch_city);
+//
+//		  int rowCount = ps.executeUpdate();
+//		  if (rowCount == 0) {
+//		      System.out.println(WARNING_TAG + " Branch " + branch_location + " does not exist!");
+//		  }
+//
+//		  connection.commit();
+//
+//		  ps.close();
+//		} catch (SQLException e) {
+//			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+//			rollbackConnection();
+//		}
+//	}
 	
 	public boolean login(String username, String password) {
 		try {

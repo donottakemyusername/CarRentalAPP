@@ -1,7 +1,7 @@
 package ca.ubc.cs304.ui;
 
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
-import ca.ubc.cs304.model.BranchModel;
+import ca.ubc.cs304.model.Branch;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -52,9 +52,9 @@ public class TerminalTransactions {
 				case 2:  
 					handleDeleteOption(); 
 					break;
-				case 3: 
-					handleUpdateOption();
-					break;
+//				case 3:
+//					handleUpdateOption();
+//					break;
 				case 4:  
 					delegate.showBranch(); 
 					break;
@@ -83,7 +83,7 @@ public class TerminalTransactions {
 		}
 
 		if (location != null && city != null) {
-			delegate.deleteBranch(new BranchModel(location,city));
+			delegate.deleteBranch(new Branch(location,city));
 		}
 	}
 	
@@ -103,7 +103,7 @@ public class TerminalTransactions {
 			city = readLine().trim();
 		}
 		
-		BranchModel model = new BranchModel(location,
+		Branch model = new Branch(location,
 											city);
 		delegate.insertBranch(model);
 	}
@@ -122,21 +122,21 @@ public class TerminalTransactions {
 		delegate.terminalTransactionsFinished();
 	}
 	
-	private void handleUpdateOption() {
-		String location = null;
-		while (location == null) {
-			System.out.print("Please enter the branch location you wish to update: ");
-			location = readLine().trim();
-		}
-
-		String city = null;
-		while (city == null) {
-			System.out.print("Please enter the branch city you wish to update: ");
-			city = readLine().trim();
-		}
-
-		delegate.updateBranch(location, city);
-	}
+//	private void handleUpdateOption() {
+//		String location = null;
+//		while (location == null) {
+//			System.out.print("Please enter the branch location you wish to update: ");
+//			location = readLine().trim();
+//		}
+//
+//		String city = null;
+//		while (city == null) {
+//			System.out.print("Please enter the branch city you wish to update: ");
+//			city = readLine().trim();
+//		}
+//
+//		delegate.updateBranch(location, city);
+//	}
 	
 	private int readInteger(boolean allowEmpty) {
 		String line = null;
