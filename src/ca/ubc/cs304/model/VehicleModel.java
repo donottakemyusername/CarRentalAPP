@@ -1,6 +1,13 @@
 package ca.ubc.cs304.model;
 
 public class VehicleModel {
+
+    enum Status {
+        RENTED,
+        MAINTENANCE,
+        AVAILABLE
+    }
+
     //private final int vid; // TODO: double check what the type of vid is
     private final String vlicense;
     private final String make;
@@ -8,13 +15,13 @@ public class VehicleModel {
     private final int year;
     private final String color;
     private final String odometer;
-    private final Boolean status; // true for available; false or not available
+    private final Status status;
     private final String vtname; // TODO: figure out if I should exchange for VehicleTypeObject instead
     private final String location; // TODO: figure out if for location and city should be Branch object but keep simple for now
     private final String city;
 
     public VehicleModel(String vlicense, String make, String model, int year, String color, String odometer,
-                        Boolean status, String vtname, String location, String city) {
+                        Status status, String vtname, String location, String city) {
         //this.vid = vid;
         this.vlicense = vlicense;
         this.make = make;
@@ -52,7 +59,7 @@ public class VehicleModel {
         return color;
     }
 
-    public Boolean getStatus() {
+    public Status getStatus() {
         return status;
     }
 
@@ -71,4 +78,6 @@ public class VehicleModel {
     public String getVtname() {
         return vtname;
     }
+
+
 }

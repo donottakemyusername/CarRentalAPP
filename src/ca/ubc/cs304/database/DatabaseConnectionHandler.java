@@ -1,14 +1,9 @@
 package ca.ubc.cs304.database;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-
 import ca.ubc.cs304.model.BranchModel;
+
+import java.sql.*;
+import java.util.ArrayList;
 
 /**
  * This class handles all database related transactions
@@ -41,15 +36,15 @@ public class DatabaseConnectionHandler {
 		}
 	}
 
-	public void deleteBranch(String branch_location, String branch_city) {
+	public void deleteBranch(BranchModel branchModel) {
 		try {
 			PreparedStatement ps = connection.prepareStatement("DELETE FROM branch WHERE location = ? AND city = ?");
-			ps.setString(1, branch_location);
-			ps.setString(2, branch_city);
+			ps.setString(1, branchModel.getLocation());
+			ps.setString(2, branchModel.getCity());
 			
 			int rowCount = ps.executeUpdate();
 			if (rowCount == 0) {
-				System.out.println(WARNING_TAG + " Branch " + branch_location + " in " + branch_city + " does not exist!");
+				System.out.println(WARNING_TAG + " Branch " + branchModel.getLocation() + " in " + branchModel.getCity() + " does not exist!");
 			}
 			
 			connection.commit();

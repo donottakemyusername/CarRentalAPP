@@ -62,8 +62,8 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
 	 * 
 	 * Delete branch with given branch ID.
 	 */ 
-    public void deleteBranch(String branch_location, String branch_city) {
-    	dbHandler.deleteBranch(branch_location, branch_city);
+    public void deleteBranch(BranchModel branchModel) {
+    	dbHandler.deleteBranch(branchModel);
     }
     
     /**

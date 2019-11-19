@@ -1,11 +1,11 @@
 package ca.ubc.cs304.ui;
 
+import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
+import ca.ubc.cs304.model.BranchModel;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
-import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
-import ca.ubc.cs304.model.BranchModel;
 
 /**
  * The class is only responsible for handling terminal text inputs. 
@@ -83,7 +83,7 @@ public class TerminalTransactions {
 		}
 
 		if (location != null && city != null) {
-			delegate.deleteBranch(location, city);
+			delegate.deleteBranch(new BranchModel(location,city));
 		}
 	}
 	
