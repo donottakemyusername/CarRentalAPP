@@ -1,7 +1,7 @@
 package ca.ubc.cs304.database;
 
-import ca.ubc.cs304.model.Branch;
-import ca.ubc.cs304.model.CustomerModel;
+import ca.ubc.cs304.model.BranchModel;
+import ca.ubc.cs304.model.UserModel;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ public class DatabaseConnectionHandler {
 		}
 	}
 
-	public void deleteBranch(Branch branchModel) {
+	public void deleteBranch(BranchModel branchModel) {
 		try {
 			PreparedStatement ps = connection.prepareStatement("DELETE FROM branch WHERE location = ? AND city = ?");
 			ps.setString(1, branchModel.getLocation());
@@ -57,7 +57,7 @@ public class DatabaseConnectionHandler {
 		}
 	}
 	
-	public void insertBranch(Branch model) {
+	public void insertBranch(BranchModel model) {
 		try {
 			PreparedStatement ps = connection.prepareStatement("INSERT INTO branch VALUES (?,?)");
 			ps.setString(1, model.getLocation());
@@ -73,8 +73,8 @@ public class DatabaseConnectionHandler {
 		}
 	}
 	
-	public Branch[] getBranchInfo() {
-		ArrayList<Branch> result = new ArrayList<Branch>();
+	public BranchModel[] getBranchInfo() {
+		ArrayList<BranchModel> result = new ArrayList<BranchModel>();
 		
 		try {
 			Statement stmt = connection.createStatement();
@@ -92,7 +92,7 @@ public class DatabaseConnectionHandler {
 //    		}
 			
 			while(rs.next()) {
-				Branch model = new Branch(rs.getString("location"),
+				BranchModel model = new BranchModel(rs.getString("location"),
 													rs.getString("city"));
 				result.add(model);
 			}
@@ -103,7 +103,7 @@ public class DatabaseConnectionHandler {
 			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
 		}	
 		
-		return result.toArray(new Branch[result.size()]);
+		return result.toArray(new BranchModel[result.size()]);
 	}
 
 
@@ -121,13 +121,13 @@ public class DatabaseConnectionHandler {
 //	    return vehicleModels;
 //    }
 
-    public void addCustomerDetails(CustomerModel customerModel) {
+    public void addCustomerDetails(UserModel userModel) {
         try {
             PreparedStatement ps = connection.prepareStatement("INSERT INTO Customer VALUES (?,?,?,?)");
-            ps.setString(1, Integer.toString(customerModel.getDlicense()));
-            ps.setString(2, customerModel.getName());
-            ps.setString(3, customerModel.getPhoneNum());
-            ps.setString(4, customerModel.getAddress());
+            ps.setString(1, Integer.toString(userModel.getDlicense()));
+            ps.setString(2, userModel.getName());
+            ps.setString(3, userModel.getPhoneNum());
+            ps.setString(4, userModel.getAddress());
 
             ps.executeUpdate();
             connection.commit();
@@ -139,16 +139,16 @@ public class DatabaseConnectionHandler {
         }
     }
 
-    public CustomerModel[] getCustomerDetails() {
-	    ArrayList<CustomerModel> customerDetails = new ArrayList();
+    public UserModel[] getCustomerDetails() {
+	    ArrayList<UserModel> customerDetails = new ArrayList();
 	    try {
 	        Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM Customer");
 
             while(rs.next()) {
-                CustomerModel customerModel = new CustomerModel(rs.getInt("dlicense"), rs.getString("name"), rs.getString("phoneNumber"),
+                UserModel userModel = new UserModel(rs.getInt("dlicense"), rs.getString("name"), rs.getString("phoneNumber"),
                         rs.getString("address"));
-                        customerDetails.add(customerModel);
+                        customerDetails.add(userModel);
                     }
 
                     rs.close();
@@ -156,7 +156,7 @@ public class DatabaseConnectionHandler {
                 } catch (SQLException e) {
                     System.out.println(EXCEPTION_TAG + " " + e.getMessage());
                 }
-            return customerDetails.toArray(new CustomerModel[customerDetails.size()]);
+            return customerDetails.toArray(new UserModel[customerDetails.size()]);
         }
 
 	

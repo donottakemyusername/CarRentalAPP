@@ -5,11 +5,11 @@ import java.util.Objects;
 /**
  * The intent for this class is to update/store information about a single branch
  */
-public class Branch {
+public class BranchModel {
 	private final String location;
 	private final String city;
 
-	public Branch(String location, String city) {
+	public BranchModel(String location, String city) {
 		this.location = location;
 		this.city = city;
 	}
@@ -26,7 +26,7 @@ public class Branch {
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
-		Branch that = (Branch) o;
+		BranchModel that = (BranchModel) o;
 		return location.equals(that.location) &&
 				city.equals(that.city);
 	}

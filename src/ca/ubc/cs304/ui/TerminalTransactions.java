@@ -1,7 +1,7 @@
 package ca.ubc.cs304.ui;
 
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
-import ca.ubc.cs304.model.Branch;
+import ca.ubc.cs304.model.BranchModel;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -83,7 +83,7 @@ public class TerminalTransactions {
 		}
 
 		if (location != null && city != null) {
-			delegate.deleteBranch(new Branch(location,city));
+			delegate.deleteBranch(new BranchModel(location,city));
 		}
 	}
 	
@@ -103,7 +103,7 @@ public class TerminalTransactions {
 			city = readLine().trim();
 		}
 		
-		Branch model = new Branch(location,
+		BranchModel model = new BranchModel(location,
 											city);
 		delegate.insertBranch(model);
 	}

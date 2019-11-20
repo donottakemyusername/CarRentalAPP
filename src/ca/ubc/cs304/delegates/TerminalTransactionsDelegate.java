@@ -1,7 +1,6 @@
 package ca.ubc.cs304.delegates;
 
-import ca.ubc.cs304.model.Branch;
-import ca.ubc.cs304.model.CustomerModel;
+import ca.ubc.cs304.model.*;
 
 /**
  * This interface uses the delegation design pattern where instead of having
@@ -13,11 +12,34 @@ import ca.ubc.cs304.model.CustomerModel;
  * Bank is the actual class that will implement the methods.
  */
 public interface TerminalTransactionsDelegate {
-	public void deleteBranch(Branch model);
-	public void insertBranch(Branch model);
+	public void deleteBranch(BranchModel b);
+	public void deleteVehicle(VehicleModel v);
+	public void deleteVehicleType(VehicleTypeModel vt);
+	public void deleteUser(UserModel u);
+	public void deleteReservation(ReservationModel r);
+	public void deleteReturn(Return r);
+	public void deleteRental(RentalModel r);
+	public void deleteTimePeriod(TimePeriodModel t);
+	public void insertBranch(BranchModel model);
+	public void insertVehicle(VehicleModel v);
+	public void insertVehicleType(VehicleTypeModel vt);
+	public void insertUser(UserModel u);
+	public void insertReservation(ReservationModel r);
+	public void insertReturn(Return r);
+	public void insertRental(RentalModel r);
+	public void insertTimePeriod(TimePeriodModel t);
 	public void showBranch();
+	public void showVehicle(VehicleModel v);
+	public void showVehicleType(VehicleTypeModel vt);
+	public void showUser(UserModel u);
+	public void showReservation(ReservationModel r);
+	public void showReturn(Return r);
+	public void showRental(RentalModel r);
+	public void showTimePeriod(TimePeriodModel t);
+	// TODO: implement the Customer query transactions
+
 	
 	public void terminalTransactionsFinished();
 
-	public void addCustomerDetails(CustomerModel customerModel);
+	public void addCustomerDetails(UserModel userModel);
 }

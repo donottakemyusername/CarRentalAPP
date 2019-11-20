@@ -1,12 +1,12 @@
 package ca.ubc.cs304.model;
 
-public class CustomerModel {
+public class UserModel {
     private final int dlicense;
     private final String name;
     private final String phoneNum;
     private final String address;
 
-    public CustomerModel(int dlicense, String name, String phoneNum, String address){
+    public UserModel(int dlicense, String name, String phoneNum, String address){
         this.dlicense = dlicense;
         this.name = name;
         this.phoneNum = phoneNum;
