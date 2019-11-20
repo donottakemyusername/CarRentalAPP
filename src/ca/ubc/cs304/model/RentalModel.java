@@ -7,7 +7,7 @@ public class RentalModel {
 
     private final int rid;
     private final String vlicense;
-    private final int dlicense;
+    private final String dlicense;
     private final Date fromDate;
     private final Time fromTime;
     private final Date toDate;
@@ -18,7 +18,7 @@ public class RentalModel {
     private final Date expDate;
     private final int confNo;
 
-    public RentalModel(int rid, String vlicense, int dlicense, Date fromDate, Time fromTime, Date toDate, Time toTime, int odometer, String cardName, String cardNo, Date expDate, int confNo) {
+    public RentalModel(int rid, String vlicense, String dlicense, Date fromDate, Time fromTime, Date toDate, Time toTime, int odometer, String cardName, String cardNo, Date expDate, int confNo) {
         this.rid = rid;
         this.vlicense = vlicense;
         this.dlicense = dlicense;
@@ -37,7 +37,7 @@ public class RentalModel {
 
     public String getVlicense() {return vlicense;}
 
-    public int getDlicense() {return dlicense;}
+    public String getDlicense() {return dlicense;}
 
     public Date getFromDate() {return fromDate;}
 

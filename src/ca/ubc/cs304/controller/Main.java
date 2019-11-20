@@ -3,8 +3,7 @@ package ca.ubc.cs304.controller;
 import ca.ubc.cs304.database.DatabaseConnectionHandler;
 import ca.ubc.cs304.delegates.LoginWindowDelegate;
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
-import ca.ubc.cs304.model.BranchModel;
-import ca.ubc.cs304.model.UserModel;
+import ca.ubc.cs304.model.*;
 import ca.ubc.cs304.ui.LoginWindow;
 import ca.ubc.cs304.ui.TerminalTransactions;
 
@@ -54,9 +53,38 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
 	 * 
 	 * Insert a branch with the given info
 	 */
-    public void insertBranch(BranchModel model) {
-    	dbHandler.insertBranch(model);
+    public void insertBranch(BranchModel b) {
+    	dbHandler.insertBranch(b);
     }
+
+    public void insertVehicle(VehicleModel v) {
+    	dbHandler.insertVehicle(v);
+	}
+
+	public void insertVehicleType(VehicleTypeModel vt) {
+    	dbHandler.insertVehicleType(vt);
+	}
+
+	public void insertRental(RentalModel r) {
+    	dbHandler.insertRental(r);
+	}
+
+	public void insertReservation(ReservationModel r) {
+    	dbHandler.insertReservation(r);
+	}
+
+	public void insertReturn(ReturnModel r) {
+    	dbHandler.insertReturn(r);
+	}
+
+	public void insertTimePeriod(TimePeriodModel t) {
+    	dbHandler.insertTimePeriod(t);
+	}
+
+	// TODO: implement once we figure out what to name our table for User
+	public void insertUser(UserModel u) {
+    	//dbHandler.insertUser(u);
+	}
 
     /**
 	 * TermainalTransactionsDelegate Implementation
@@ -67,6 +95,34 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
     	dbHandler.deleteBranch(branchModel);
     }
 
+	public void deleteVehicle(VehicleModel v) {
+    	dbHandler.deleteVehicle(v);
+	}
+
+	public void deleteVehicleType(VehicleTypeModel vt) {
+    	dbHandler.deleteVehicleType(vt);
+	}
+
+	// TODO: implement once we figure out our table for user
+	public void deleteUser(UserModel u) {
+    	//dbHandler.deleteUser(u);
+	}
+
+	public void deleteReservation(ReservationModel r) {
+    	dbHandler.deleteReservation(r);
+	}
+
+	public void deleteReturn(ReturnModel r) {
+    	dbHandler.deleteReturn(r);
+	}
+
+	public void deleteRental(RentalModel r) {
+    	dbHandler.deleteRental(r);
+	}
+
+	public void deleteTimePeriod(TimePeriodModel t) {
+    	dbHandler.deleteTimePeriod(t);
+	}
 
     /**
 	 * TermainalTransactionsDelegate Implementation
@@ -87,7 +143,44 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
     	}
     }
 
-    public void addCustomerDetails(UserModel userModel) {
+    // TODO: implement all show methods
+
+	@Override
+	public void showVehicle(VehicleModel v) {
+
+	}
+
+	@Override
+	public void showVehicleType(VehicleTypeModel vt) {
+
+	}
+
+	@Override
+	public void showUser(UserModel u) {
+
+	}
+
+	@Override
+	public void showReservation(ReservationModel r) {
+
+	}
+
+	@Override
+	public void showReturn(ReturnModel r) {
+
+	}
+
+	@Override
+	public void showRental(RentalModel r) {
+
+	}
+
+	@Override
+	public void showTimePeriod(TimePeriodModel t) {
+
+	}
+
+	public void addCustomerDetails(UserModel userModel) {
         dbHandler.addCustomerDetails(userModel);
     }
 	

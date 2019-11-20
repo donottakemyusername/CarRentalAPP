@@ -1,7 +1,6 @@
 package ca.ubc.cs304.database;
 
-import ca.ubc.cs304.model.BranchModel;
-import ca.ubc.cs304.model.UserModel;
+import ca.ubc.cs304.model.*;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -56,7 +55,129 @@ public class DatabaseConnectionHandler {
 			rollbackConnection();
 		}
 	}
-	
+
+	public void deleteVehicle(VehicleModel vehicleModel) {
+		try {
+			PreparedStatement ps = connection.prepareStatement("DELETE FROM Vehicle WHERE vlicense = ?");
+			ps.setString(1, vehicleModel.getVlicense());
+
+			int rowCount = ps.executeUpdate();
+			if (rowCount == 0) {
+				System.out.println(WARNING_TAG + " Vehicle " + vehicleModel.getVlicense() + " does not exist!");
+			}
+
+			connection.commit();
+
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+	}
+
+	public void deleteVehicleType(VehicleTypeModel vehicleTypeModel) {
+		try {
+			PreparedStatement ps = connection.prepareStatement("DELETE FROM VehicleType WHERE vtname = ?");
+			ps.setString(1, vehicleTypeModel.getVtname());
+
+			int rowCount = ps.executeUpdate();
+			if (rowCount == 0) {
+				System.out.println(WARNING_TAG + " VehicleType " + vehicleTypeModel.getVtname() + " does not exist!");
+			}
+
+			connection.commit();
+
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+	}
+
+	public void deleteRental(RentalModel rentalModel) {
+		try {
+			PreparedStatement ps = connection.prepareStatement("DELETE FROM Rental WHERE rid = ?");
+			ps.setInt(1, rentalModel.getRid());
+
+			int rowCount = ps.executeUpdate();
+			if (rowCount == 0) {
+				System.out.println(WARNING_TAG + " RentType " + rentalModel.getRid() + " does not exist!");
+			}
+
+			connection.commit();
+
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+	}
+
+	public void deleteReservation(ReservationModel reservationModel) {
+		try {
+			PreparedStatement ps = connection.prepareStatement("DELETE FROM Reservation WHERE confNo = ?");
+			ps.setInt(1, reservationModel.getConfNum());
+
+			int rowCount = ps.executeUpdate();
+			if (rowCount == 0) {
+				System.out.println(WARNING_TAG + " Reservation " + reservationModel.getConfNum() + " does not exist!");
+			}
+
+			connection.commit();
+
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+	}
+
+	public void deleteReturn(ReturnModel returnModel) {
+		try {
+			PreparedStatement ps = connection.prepareStatement("DELETE FROM Return WHERE rid = ?");
+			ps.setInt(1, returnModel.getRid());
+
+			int rowCount = ps.executeUpdate();
+			if (rowCount == 0) {
+				System.out.println(WARNING_TAG + " Return " + returnModel.getRid() + " does not exist!");
+			}
+
+			connection.commit();
+
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+	}
+
+	public void deleteTimePeriod(TimePeriodModel timePeriodModel) {
+		try {
+			PreparedStatement ps = connection.prepareStatement("DELETE FROM TimePeriod WHERE fromDate = ? AND fromTime = ? AND toDate = ? AND toTime = ?");
+			ps.setDate(1, timePeriodModel.getFromDate());
+			ps.setTime(2, timePeriodModel.getFromTime());
+			ps.setDate(3, timePeriodModel.getToDate());
+			ps.setTime(4, timePeriodModel.getToTime());
+
+
+			int rowCount = ps.executeUpdate();
+			if (rowCount == 0) {
+				System.out.println(WARNING_TAG + " Time Period from:  " + timePeriodModel.getFromDate()
+						+ " " + timePeriodModel.getFromTime() + " to: " + timePeriodModel.getToDate()
+						+ " " + timePeriodModel.getToTime() + " does not exist!");
+			}
+
+			connection.commit();
+
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+	}
+
+	// TODO: UserModel (decide on table name), currently table name is Customer but should represent both customer or clerk
+
 	public void insertBranch(BranchModel model) {
 		try {
 			PreparedStatement ps = connection.prepareStatement("INSERT INTO branch VALUES (?,?)");
@@ -72,6 +193,148 @@ public class DatabaseConnectionHandler {
 			rollbackConnection();
 		}
 	}
+
+	public void insertVehicle(VehicleModel model) {
+		try {
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO Vehicle VALUES (?,?,?,?,?,?,?,?,?,?)");
+			ps.setString(1, model.getVlicense());
+			ps.setString(2, model.getMake());
+			ps.setString(3, model.getModel());
+			ps.setInt(4, model.getYear());
+			ps.setString(5, model.getColor());
+			ps.setFloat(6, model.getOdometer());
+			if (model.getStatus() == VehicleModel.Status.RENTED) {
+				ps.setString(7, "Rented");
+			} else if (model.getStatus() == VehicleModel.Status.MAINTENANCE) {
+				ps.setString(7, "Maintenance");
+			} else {
+				ps.setString(7, "Available");
+			}
+			ps.setString(8, model.getVtname());
+			ps.setString(9, model.getLocation());
+			ps.setString(10, model.getCity()); //TODO: fix type for city in sql
+
+
+			ps.executeUpdate();
+			connection.commit();
+
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+	}
+
+	public void insertVehicleType(VehicleTypeModel model) {
+		try {
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO VehicleType VALUES (?,?,?,?,?,?,?,?,?)");
+			ps.setString(1, model.getVtname());
+			ps.setString(2, model.getFeatures());
+			ps.setFloat(3, model.getWrate());
+			ps.setFloat(4, model.getDrate());
+			ps.setFloat(5, model.getHrate());
+			ps.setFloat(6, model.getWirate()); // TODO: check that Wirate and dirate are added to sql script
+			ps.setFloat(7, model.getDirate());
+			ps.setFloat(8, model.getHirate());
+			ps.setFloat(9, model.getKrate());
+
+			ps.executeUpdate();
+			connection.commit();
+
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+	}
+
+	public void insertRental(RentalModel model) {
+		try {
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO Rental VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
+			ps.setInt(1, model.getRid());
+			ps.setString(2, model.getVlicense());
+			ps.setString(3, model.getDlicense()); //TODO: driver license in sql should be a string
+			ps.setDate(4, model.getFromDate());
+			ps.setTime(5, model.getFromTime());
+			ps.setDate(6, model.getToDate());
+			ps.setTime(7, model.getToTime());
+			ps.setInt(8, model.getOdometer());
+			ps.setString(9, model.getCardName());
+			ps.setString(10, model.getCardNo());
+			ps.setDate(11, model.getExpDate());
+			ps.setInt(12, model.getConfNo());
+
+
+			ps.executeUpdate();
+			connection.commit();
+
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+	}
+
+	public void insertReservation(ReservationModel model) {
+		try {
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO Reservation VALUES (?,?,?,?,?,?,?)");
+			ps.setInt(1, model.getConfNum());
+			ps.setString(2, model.getVtname());
+			ps.setString(3, model.getDlicense()); // TODO: sql dlicense should be a string not an int
+			ps.setDate(4, model.getFromDate());
+			ps.setTime(5, model.getFromTime());
+			ps.setDate(6, model.getToDate());
+			ps.setTime(7, model.getToTime());
+
+			ps.executeUpdate();
+			connection.commit();
+
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+	}
+
+	public void insertReturn(ReturnModel model) {
+		try {
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO Return VALUES (?,?,?,?,?,?)");
+			ps.setInt(1, model.getRid());
+			ps.setDate(2, model.getrDate());
+			ps.setTime(3, model.getTime());
+			ps.setInt(4, model.getOdometer());
+			ps.setBoolean(5, model.getFullTank()); // TODO: make sql a boolean
+			ps.setFloat(6, model.getValue());
+
+			ps.executeUpdate();
+			connection.commit();
+
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+	}
+
+	public void insertTimePeriod(TimePeriodModel model) {
+		try {
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO TimePeriod VALUES (?,?,?,?)");
+			ps.setDate(1, model.getFromDate());
+			ps.setTime(2, model.getFromTime());
+			ps.setDate(3, model.getToDate());
+			ps.setTime(4, model.getToTime());
+
+			ps.executeUpdate();
+			connection.commit();
+
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+	}
+
+	// TODO: write insert for the user model once we figure out waht to name it.
 	
 	public BranchModel[] getBranchInfo() {
 		ArrayList<BranchModel> result = new ArrayList<BranchModel>();
@@ -124,7 +387,7 @@ public class DatabaseConnectionHandler {
     public void addCustomerDetails(UserModel userModel) {
         try {
             PreparedStatement ps = connection.prepareStatement("INSERT INTO Customer VALUES (?,?,?,?)");
-            ps.setString(1, Integer.toString(userModel.getDlicense()));
+            ps.setString(1, userModel.getDlicense());
             ps.setString(2, userModel.getName());
             ps.setString(3, userModel.getPhoneNum());
             ps.setString(4, userModel.getAddress());
@@ -146,7 +409,7 @@ public class DatabaseConnectionHandler {
             ResultSet rs = stmt.executeQuery("SELECT * FROM Customer");
 
             while(rs.next()) {
-                UserModel userModel = new UserModel(rs.getInt("dlicense"), rs.getString("name"), rs.getString("phoneNumber"),
+                UserModel userModel = new UserModel(rs.getString("dlicense"), rs.getString("name"), rs.getString("phoneNumber"),
                         rs.getString("address"));
                         customerDetails.add(userModel);
                     }

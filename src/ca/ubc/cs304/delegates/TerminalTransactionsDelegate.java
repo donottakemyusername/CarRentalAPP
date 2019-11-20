@@ -17,15 +17,15 @@ public interface TerminalTransactionsDelegate {
 	public void deleteVehicleType(VehicleTypeModel vt);
 	public void deleteUser(UserModel u);
 	public void deleteReservation(ReservationModel r);
-	public void deleteReturn(Return r);
+	public void deleteReturn(ReturnModel r);
 	public void deleteRental(RentalModel r);
 	public void deleteTimePeriod(TimePeriodModel t);
-	public void insertBranch(BranchModel model);
+	public void insertBranch(BranchModel b);
 	public void insertVehicle(VehicleModel v);
 	public void insertVehicleType(VehicleTypeModel vt);
 	public void insertUser(UserModel u);
 	public void insertReservation(ReservationModel r);
-	public void insertReturn(Return r);
+	public void insertReturn(ReturnModel r);
 	public void insertRental(RentalModel r);
 	public void insertTimePeriod(TimePeriodModel t);
 	public void showBranch();
@@ -33,7 +33,7 @@ public interface TerminalTransactionsDelegate {
 	public void showVehicleType(VehicleTypeModel vt);
 	public void showUser(UserModel u);
 	public void showReservation(ReservationModel r);
-	public void showReturn(Return r);
+	public void showReturn(ReturnModel r);
 	public void showRental(RentalModel r);
 	public void showTimePeriod(TimePeriodModel t);
 	// TODO: implement the Customer query transactions

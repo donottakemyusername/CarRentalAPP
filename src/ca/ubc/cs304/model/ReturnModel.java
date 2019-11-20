@@ -3,21 +3,16 @@ package ca.ubc.cs304.model;
 import java.sql.Date;
 import java.sql.Time;
 
-public class Return {
-
-    enum Full{
-        Y,
-        N
-    }
+public class ReturnModel {
 
     private final int rid;
     private final Date rDate;
     private final Time time;
     private final int odometer;
-    private final Full fullTank;
+    private final boolean fullTank;
     private final int value;
 
-    public Return(int rid, Date rDate, Time time, int odometer, Full fullTank, int value) {
+    public ReturnModel(int rid, Date rDate, Time time, int odometer, Boolean fullTank, int value) {
         this.rid = rid;
         this.rDate = rDate;
         this.time = time;
@@ -34,7 +29,7 @@ public class Return {
 
     public int getOdometer() {return odometer;}
 
-    public Full getFullTank() {return fullTank;}
+    public Boolean getFullTank() {return fullTank;}
 
     public int getValue() {return value;}
 }
