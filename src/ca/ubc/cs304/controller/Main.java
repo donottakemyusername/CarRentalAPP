@@ -7,6 +7,9 @@ import ca.ubc.cs304.model.*;
 import ca.ubc.cs304.ui.LoginWindow;
 import ca.ubc.cs304.ui.TerminalTransactions;
 
+import java.sql.Date;
+import java.sql.Time;
+
 /**
  * This is the main controller class that will orchestrate everything.
  */
@@ -124,12 +127,17 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
     	dbHandler.deleteTimePeriod(t);
 	}
 
-    /**
+	public void customerSearchVehicle(Boolean hasCarType, Boolean hasLocation, Boolean hasTimePeriod,
+									  String carType, String location, Date fromDate, Time fromTime, Date toDate, Time toTime) {
+    	//TODO: implement this
+	}
+
+	/**
 	 * TermainalTransactionsDelegate Implementation
 	 * 
 	 * Displays information about varies bank branches.
 	 */
-    public void showBranch() {
+									  public void showBranch() {
     	BranchModel[] models = dbHandler.getBranchInfo();
     	
     	for (int i = 0; i < models.length; i++) {
@@ -143,42 +151,7 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
     	}
     }
 
-    // TODO: implement all show methods
 
-	@Override
-	public void showVehicle(VehicleModel v) {
-
-	}
-
-	@Override
-	public void showVehicleType(VehicleTypeModel vt) {
-
-	}
-
-	@Override
-	public void showUser(UserModel u) {
-
-	}
-
-	@Override
-	public void showReservation(ReservationModel r) {
-
-	}
-
-	@Override
-	public void showReturn(ReturnModel r) {
-
-	}
-
-	@Override
-	public void showRental(RentalModel r) {
-
-	}
-
-	@Override
-	public void showTimePeriod(TimePeriodModel t) {
-
-	}
 
 	public void addCustomerDetails(UserModel userModel) {
         dbHandler.addCustomerDetails(userModel);

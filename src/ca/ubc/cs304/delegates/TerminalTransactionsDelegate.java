@@ -29,13 +29,6 @@ public interface TerminalTransactionsDelegate {
 	public void insertRental(RentalModel r);
 	public void insertTimePeriod(TimePeriodModel t);
 	public void showBranch();
-	public void showVehicle(VehicleModel v);
-	public void showVehicleType(VehicleTypeModel vt);
-	public void showUser(UserModel u);
-	public void showReservation(ReservationModel r);
-	public void showReturn(ReturnModel r);
-	public void showRental(RentalModel r);
-	public void showTimePeriod(TimePeriodModel t);
 	// TODO: implement the Customer query transactions
 
 	

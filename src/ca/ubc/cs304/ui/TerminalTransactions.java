@@ -2,10 +2,15 @@ package ca.ubc.cs304.ui;
 
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
 import ca.ubc.cs304.model.BranchModel;
+import ca.ubc.cs304.model.TimePeriodModel;
+import ca.ubc.cs304.model.VehicleModel;
+import ca.ubc.cs304.model.VehicleTypeModel;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.Date;
+import java.sql.Time;
 
 /**
  * The class is only responsible for handling terminal text inputs. 
@@ -27,15 +32,41 @@ public class TerminalTransactions {
 	 */ 
 	public void showMainMenu(TerminalTransactionsDelegate delegate) {
 		this.delegate = delegate;
+
+		// SET UP SOME EXAMPLES FOR TESTING
+
+		// examples for Time Period
+		Date fromDate1 = new Date(2019+1900, 10, 21); // 11/21/2019
+		Time fromTime1 = new Time(9,0,0); // 9:00:00 AM
+		Date toDate1 = new Date(2019+1900, 10, 28); // 11/28/2019
+		Time toTime1 = new Time(21, 0, 0); // 9:00:00 PM
+		TimePeriodModel tp1 = new TimePeriodModel(fromDate1, fromTime1, toDate1, toTime1);
+
+		this.delegate.insertTimePeriod(tp1);
+		//this.delegate.deleteTimePeriod(tp1);
+
+		// example for Branch
+		BranchModel b1 = new BranchModel("Downtown", "Vancouver");
+		this.delegate.insertBranch(b1);
+
+		// example for VehicleType
+		VehicleTypeModel vt1 = new VehicleTypeModel("Economy", "", 500.00, 70.00, 15.00, 100.00, 20.00, 5.50, 0.50);
+		this.delegate.insertVehicleType(vt1);
+
+		// example for Vehicle
+		VehicleModel v1 = new VehicleModel("ABC1234", "Toyota", "Corolla", 2014,
+				"green", 10000., VehicleModel.Status.AVAILABLE, "Economy","Downtown","Vancouver");
+		this.delegate.insertVehicle(v1);
+
+
 		
 	    bufferedReader = new BufferedReader(new InputStreamReader(System.in));
 		int choice = INVALID_INPUT;
 		
 		while (choice != 5) {
 			System.out.println();
-			System.out.println("1. Insert branch");
-			System.out.println("2. Delete branch");
-			System.out.println("3. Update branch name");
+			System.out.println("1. Insert");
+			System.out.println("2. Delete");
 			System.out.println("4. Show branch");
 			System.out.println("5. Quit");
 			System.out.print("Please choose one of the above 5 options: ");

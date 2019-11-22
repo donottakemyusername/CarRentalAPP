@@ -202,13 +202,13 @@ public class DatabaseConnectionHandler {
 			ps.setString(3, model.getModel());
 			ps.setInt(4, model.getYear());
 			ps.setString(5, model.getColor());
-			ps.setFloat(6, model.getOdometer());
+			ps.setDouble(6, model.getOdometer());
 			if (model.getStatus() == VehicleModel.Status.RENTED) {
-				ps.setString(7, "Rented");
+				ps.setString(7, "rented");
 			} else if (model.getStatus() == VehicleModel.Status.MAINTENANCE) {
-				ps.setString(7, "Maintenance");
+				ps.setString(7, "maintenance");
 			} else {
-				ps.setString(7, "Available");
+				ps.setString(7, "available");
 			}
 			ps.setString(8, model.getVtname());
 			ps.setString(9, model.getLocation());
@@ -230,13 +230,13 @@ public class DatabaseConnectionHandler {
 			PreparedStatement ps = connection.prepareStatement("INSERT INTO VehicleType VALUES (?,?,?,?,?,?,?,?,?)");
 			ps.setString(1, model.getVtname());
 			ps.setString(2, model.getFeatures());
-			ps.setFloat(3, model.getWrate());
-			ps.setFloat(4, model.getDrate());
-			ps.setFloat(5, model.getHrate());
-			ps.setFloat(6, model.getWirate()); // TODO: check that Wirate and dirate are added to sql script
-			ps.setFloat(7, model.getDirate());
-			ps.setFloat(8, model.getHirate());
-			ps.setFloat(9, model.getKrate());
+			ps.setDouble(3, model.getWrate());
+			ps.setDouble(4, model.getDrate());
+			ps.setDouble(5, model.getHrate());
+			ps.setDouble(6, model.getWirate()); // TODO: check that Wirate and dirate are added to sql script
+			ps.setDouble(7, model.getDirate());
+			ps.setDouble(8, model.getHirate());
+			ps.setDouble(9, model.getKrate());
 
 			ps.executeUpdate();
 			connection.commit();
@@ -334,6 +334,96 @@ public class DatabaseConnectionHandler {
 		}
 	}
 
+	// Query if we have inputted all three
+	public VehicleSearchResults[] customerSearchVehicle(String carType, String location, TimePeriodModel timePeriod) {
+		ArrayList<VehicleSearchResults> searchResults = new ArrayList<>();
+		Boolean hasCarType = false;
+		Boolean hasLocation = false;
+
+		if (carType != "") hasCarType = true;
+		if (location != "") hasLocation = true;
+
+		try {
+			String caseEndWithinTP = "((SELECT R.vlicense FROM Reservation R WHERE R.toDate > ?) UNION (SELECT R.vlicense FROM Reservation R WHERE R.toDate = ? AND R.toTime >= ?)) INTERSECT ((SELECT R.vlicense FROM Reservation R WHERE R.toDate < ?) UNION (SELECT R.vlicense FROM Reservation R WHERE R.toDate = ? AND R.toTime = ?))";
+			// fromDate, fromDate fromTime, toDate, toDate, toTime
+			String caseStartWithinTP = "((SELECT R.vlicense FROM Reservation R WHERE R.fromDate > ?) UNION (SELECT R.vlicense FROM Reservation R WHERE R.fromDate = ? AND R.fromTime >= ?)) INTERSECT ((SELECT R.vlicense FROM Reservation R WHERE R.fromDate < ?) UNION (SELECT R.vlicense FROM Reservation R WHERE R.fromDate = ? AND R.fromTime = ?))";
+			// fromDate, fromDate, fromTime, toDate, toDate, toTime
+			String caseEncompassTP = "((SELECT R.vlicense FROM Reservation R WHERE R.fromDate < ?) UNION (SELECT R.vlicense FROM Reservation R WHERE R.fromDate = ? AND R.fromTime <= ?)) INTERSECT ((SELECT R.vlicense FROM Reservation R WHERE R.toDate > ?) UNION (SELECT R.vlicense FROM Reservation R WHERE R.toDate = ? AND R.toTime >= ?))";
+			// fromDate, fromDate, fromTime, toDate, toDate, toTime
+
+			String queryStringVehicle = "SELECT COUNT(*) FROM Vehicle V WHERE";
+			if (hasCarType) queryStringVehicle += " V.vtname = ?";
+			if (hasLocation) queryStringVehicle += " V.location = ?";
+
+			PreparedStatement ps = connection.prepareStatement(queryStringVehicle+ " V.vlicense NOT IN ( " +
+					caseEndWithinTP + " UNION " + caseStartWithinTP + " UNION " + caseEncompassTP + ")");
+			int i=1;
+			if (hasCarType) ps.setString(i++, carType);
+			if (hasLocation) ps.setString(i++, location);
+			for (int j=0; j<2; j++) {
+				ps.setDate(i++, timePeriod.getFromDate());
+				ps.setDate(i++, timePeriod.getFromDate());
+				ps.setTime(i++, timePeriod.getFromTime());
+				ps.setDate(i++, timePeriod.getToDate());
+				ps.setDate(i++, timePeriod.getToDate());
+				ps.setTime(i++, timePeriod.getToTime());
+			}
+
+			ResultSet rs = ps.executeQuery();
+			//connection.commit();
+
+			while (rs.next()) {
+				VehicleSearchResults result = new VehicleSearchResults(hasCarType, hasLocation, true);
+				result.setVehicleType(carType);
+				result.setLocation(location);
+				result.setTimePeriod(timePeriod);
+				result.setNumAvailable(rs.getInt(1)); // double check the type
+				searchResults.add(result);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return searchResults.toArray(new VehicleSearchResults[searchResults.size()]);
+	}
+
+	public VehicleSearchResults[] customerSearchVehicle(String carType, String location) {
+		ArrayList<VehicleSearchResults> searchResults = new ArrayList<>();
+
+		Boolean hasCarType = false;
+		Boolean hasLocation = false;
+
+		if (carType != "") hasCarType = true;
+		if (location != "") hasLocation = true;
+
+		try {
+			String queryStringVehicle = "SELECT V.vtname COUNT(*) FROM Vehicle V";
+			if (hasCarType || hasLocation) queryStringVehicle += " WHERE";
+			if (hasCarType) queryStringVehicle += " V.vtname = ?";
+			if (hasLocation) queryStringVehicle += " V.location = ?";
+			queryStringVehicle += " GROUP BY V.vtname";
+
+			PreparedStatement ps = connection.prepareStatement(queryStringVehicle);
+			int i=1;
+			if (hasCarType) ps.setString(i++, carType);
+			if (hasLocation) ps.setString(i++, location);
+
+			ResultSet rs = ps.executeQuery();
+			//connection.commit();
+
+			while (rs.next()) {
+				VehicleSearchResults result = new VehicleSearchResults(hasCarType, hasLocation, false);
+				result.setVehicleType(carType);
+				result.setNumAvailable(rs.getInt(2)); // double check the type
+				searchResults.add(result);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return searchResults.toArray(new VehicleSearchResults[searchResults.size()]);
+	}
+
 	// TODO: write insert for the user model once we figure out waht to name it.
 	
 	public BranchModel[] getBranchInfo() {
@@ -341,7 +431,7 @@ public class DatabaseConnectionHandler {
 		
 		try {
 			Statement stmt = connection.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM branch");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM branch WHERE location = ?");
 		
 //    		// get info on ResultSet
 //    		ResultSetMetaData rsmd = rs.getMetaData();
@@ -421,7 +511,6 @@ public class DatabaseConnectionHandler {
                 }
             return customerDetails.toArray(new UserModel[customerDetails.size()]);
         }
-
 	
 //	public void updateBranch(String branch_location, String branch_city) {
 //		try {
