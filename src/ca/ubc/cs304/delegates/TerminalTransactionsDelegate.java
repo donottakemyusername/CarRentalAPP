@@ -15,7 +15,7 @@ public interface TerminalTransactionsDelegate {
 	public void deleteBranch(BranchModel b);
 	public void deleteVehicle(VehicleModel v);
 	public void deleteVehicleType(VehicleTypeModel vt);
-	public void deleteUser(UserModel u);
+	public void deleteCustomer(CustomerModel u);
 	public void deleteReservation(ReservationModel r);
 	public void deleteReturn(ReturnModel r);
 	public void deleteRental(RentalModel r);
@@ -23,7 +23,7 @@ public interface TerminalTransactionsDelegate {
 	public void insertBranch(BranchModel b);
 	public void insertVehicle(VehicleModel v);
 	public void insertVehicleType(VehicleTypeModel vt);
-	public void insertUser(UserModel u);
+	public void insertCustomer(CustomerModel u);
 	public void insertReservation(ReservationModel r);
 	public void insertReturn(ReturnModel r);
 	public void insertRental(RentalModel r);
@@ -33,6 +33,4 @@ public interface TerminalTransactionsDelegate {
 
 	
 	public void terminalTransactionsFinished();
-
-	public void addCustomerDetails(UserModel userModel);
 }

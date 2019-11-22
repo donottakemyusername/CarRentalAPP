@@ -151,6 +151,25 @@ public class DatabaseConnectionHandler {
 		}
 	}
 
+	public void deleteCustomer(CustomerModel customerModel) {
+		try {
+			PreparedStatement ps = connection.prepareStatement("DELETE FROM Customer WHERE dlicense = ?");
+			ps.setString(1, customerModel.getDlicense());
+
+			int rowCount = ps.executeUpdate();
+			if (rowCount == 0) {
+				System.out.println(WARNING_TAG + " Customer " + customerModel.getDlicense() + " does not exist!");
+			}
+
+			connection.commit();
+
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+	}
+
 	public void deleteTimePeriod(TimePeriodModel timePeriodModel) {
 		try {
 			PreparedStatement ps = connection.prepareStatement("DELETE FROM TimePeriod WHERE fromDate = ? AND fromTime = ? AND toDate = ? AND toTime = ?");
@@ -258,7 +277,7 @@ public class DatabaseConnectionHandler {
 			ps.setTime(5, model.getFromTime());
 			ps.setDate(6, model.getToDate());
 			ps.setTime(7, model.getToTime());
-			ps.setInt(8, model.getOdometer());
+			ps.setDouble(8, model.getOdometer());
 			ps.setString(9, model.getCardName());
 			ps.setString(10, model.getCardNo());
 			ps.setDate(11, model.getExpDate());
@@ -300,11 +319,12 @@ public class DatabaseConnectionHandler {
 		try {
 			PreparedStatement ps = connection.prepareStatement("INSERT INTO Return VALUES (?,?,?,?,?,?)");
 			ps.setInt(1, model.getRid());
-			ps.setDate(2, model.getrDate());
+			ps.setDate(2, model.getRDate());
 			ps.setTime(3, model.getTime());
-			ps.setInt(4, model.getOdometer());
-			ps.setBoolean(5, model.getFullTank()); // TODO: make sql a boolean
-			ps.setFloat(6, model.getValue());
+			ps.setDouble(4, model.getOdometer());
+			if (model.getFullTank()) ps.setString(5, "Y");
+			else ps.setString(5, "N");
+			ps.setDouble(6, model.getValue());
 
 			ps.executeUpdate();
 			connection.commit();
@@ -323,6 +343,24 @@ public class DatabaseConnectionHandler {
 			ps.setTime(2, model.getFromTime());
 			ps.setDate(3, model.getToDate());
 			ps.setTime(4, model.getToTime());
+
+			ps.executeUpdate();
+			connection.commit();
+
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+	}
+
+	public void insertCustomer(CustomerModel model) {
+		try {
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO Customer VALUES (?,?,?,?)");
+			ps.setString(1, model.getDlicense());
+			ps.setString(2, model.getName());
+			ps.setString(3, model.getPhoneNum());
+			ps.setString(4, model.getAddress());
 
 			ps.executeUpdate();
 			connection.commit();
@@ -474,32 +512,15 @@ public class DatabaseConnectionHandler {
 //	    return vehicleModels;
 //    }
 
-    public void addCustomerDetails(UserModel userModel) {
-        try {
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO Customer VALUES (?,?,?,?)");
-            ps.setString(1, userModel.getDlicense());
-            ps.setString(2, userModel.getName());
-            ps.setString(3, userModel.getPhoneNum());
-            ps.setString(4, userModel.getAddress());
 
-            ps.executeUpdate();
-            connection.commit();
-
-            ps.close();
-        } catch (SQLException e) {
-            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
-            rollbackConnection();
-        }
-    }
-
-    public UserModel[] getCustomerDetails() {
-	    ArrayList<UserModel> customerDetails = new ArrayList();
+    public CustomerModel[] getCustomerDetails() {
+	    ArrayList<CustomerModel> customerDetails = new ArrayList();
 	    try {
 	        Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM Customer");
 
             while(rs.next()) {
-                UserModel userModel = new UserModel(rs.getString("dlicense"), rs.getString("name"), rs.getString("phoneNumber"),
+                CustomerModel userModel = new CustomerModel(rs.getString("dlicense"), rs.getString("name"), rs.getString("phoneNumber"),
                         rs.getString("address"));
                         customerDetails.add(userModel);
                     }
@@ -509,7 +530,7 @@ public class DatabaseConnectionHandler {
                 } catch (SQLException e) {
                     System.out.println(EXCEPTION_TAG + " " + e.getMessage());
                 }
-            return customerDetails.toArray(new UserModel[customerDetails.size()]);
+            return customerDetails.toArray(new CustomerModel[customerDetails.size()]);
         }
 	
 //	public void updateBranch(String branch_location, String branch_city) {

@@ -85,8 +85,8 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
 	}
 
 	// TODO: implement once we figure out what to name our table for User
-	public void insertUser(UserModel u) {
-    	//dbHandler.insertUser(u);
+	public void insertCustomer(CustomerModel u) {
+    	dbHandler.insertCustomer(u);
 	}
 
     /**
@@ -107,8 +107,8 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
 	}
 
 	// TODO: implement once we figure out our table for user
-	public void deleteUser(UserModel u) {
-    	//dbHandler.deleteUser(u);
+	public void deleteCustomer(CustomerModel u) {
+    	dbHandler.deleteCustomer(u);
 	}
 
 	public void deleteReservation(ReservationModel r) {
@@ -151,11 +151,6 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
     	}
     }
 
-
-
-	public void addCustomerDetails(UserModel userModel) {
-        dbHandler.addCustomerDetails(userModel);
-    }
 	
     /**
 	 * TerminalTransactionsDelegate Implementation

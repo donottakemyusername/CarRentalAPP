@@ -1,10 +1,7 @@
 package ca.ubc.cs304.ui;
 
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
-import ca.ubc.cs304.model.BranchModel;
-import ca.ubc.cs304.model.TimePeriodModel;
-import ca.ubc.cs304.model.VehicleModel;
-import ca.ubc.cs304.model.VehicleTypeModel;
+import ca.ubc.cs304.model.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -46,18 +43,62 @@ public class TerminalTransactions {
 		//this.delegate.deleteTimePeriod(tp1);
 
 		// example for Branch
-		BranchModel b1 = new BranchModel("Downtown", "Vancouver");
+		String location1 = "344 Hornby St.";
+		String city1 = "Vancouver";
+		BranchModel b1 = new BranchModel(location1, city1);
 		this.delegate.insertBranch(b1);
 
 		// example for VehicleType
-		VehicleTypeModel vt1 = new VehicleTypeModel("Economy", "", 500.00, 70.00, 15.00, 100.00, 20.00, 5.50, 0.50);
+		String vtname1 = "Economy";
+		String features1 = "basic";
+		Double wrate1 = 500.00, drate1 = 70.00, hrate1 = 15.00;
+		Double wirate1 = 100.00, dirate1 = 20.00, hirate1 = 5.50, krate1 = 0.50;
+		VehicleTypeModel vt1 = new VehicleTypeModel(vtname1, features1, wrate1, drate1, hrate1, wirate1, dirate1, hirate1, krate1);
 		this.delegate.insertVehicleType(vt1);
 
 		// example for Vehicle
-		VehicleModel v1 = new VehicleModel("ABC1234", "Toyota", "Corolla", 2014,
-				"green", 10000., VehicleModel.Status.AVAILABLE, "Economy","Downtown","Vancouver");
+		String vlicense1 = "ABC1234", make1 = "Toyota", model1 = "Corolla", color1 = "green";
+		int year1 = 2014;
+		Double odometer1 = 10000.00;
+		VehicleModel v1 = new VehicleModel(vlicense1, make1, model1, year1, color1, odometer1, VehicleModel.Status.AVAILABLE, vtname1, location1, city1);
 		this.delegate.insertVehicle(v1);
 
+		// example for Customer
+		String dlicense1 = "BC_ZHANG_231", name1 = "Hong Yang", phoneNum1 = "1234567890", address1 = "1234 Lower Mall";
+		CustomerModel c1 = new CustomerModel(dlicense1, name1, phoneNum1, address1);
+		this.delegate.insertCustomer(c1);
+
+		// example for Reservation
+		int confNum1 = 1;
+		ReservationModel r1 = new ReservationModel(confNum1, vtname1, dlicense1, fromDate1, fromTime1, toDate1, toTime1);
+		this.delegate.insertReservation(r1);
+
+		// example for Rental
+		int rid1 = 1;
+		String cardName1 = "Visa";
+		String cardNo1 = "1234567891234567";
+		Date expDate1 = new Date(2020+19, 5, 1); // 2020/4/1
+		RentalModel rent1 = new RentalModel(rid1, vlicense1, dlicense1, fromDate1, fromTime1, toDate1, toTime1, odometer1, cardName1, cardNo1, expDate1, confNum1);
+		this.delegate.insertRental(rent1);
+
+		// example for Return
+		Date returnDate1 = new Date(2019+1900, 11, 28); // 11/28/2019
+		Time returnTime1 = new Time(21, 0, 0); // 9:00:00PM
+		Double returnOdometer1 = odometer1+550.12;
+		Boolean fullTank1 = true;
+		Double value1 = wrate1 + wirate1 + (550.12*krate1);
+		ReturnModel return1 = new ReturnModel(rid1, returnDate1, returnTime1, returnOdometer1, fullTank1, value1);
+		this.delegate.insertReturn(return1);
+
+		// check deleting works
+		this.delegate.deleteReturn(return1);
+		this.delegate.deleteRental(rent1);
+		this.delegate.deleteReservation(r1);
+		this.delegate.deleteVehicle(v1);
+		this.delegate.deleteVehicleType(vt1);
+		this.delegate.deleteTimePeriod(tp1);
+		this.delegate.deleteBranch(b1);
+		this.delegate.deleteCustomer(c1);
 
 		
 	    bufferedReader = new BufferedReader(new InputStreamReader(System.in));

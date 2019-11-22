@@ -12,13 +12,13 @@ public class RentalModel {
     private final Time fromTime;
     private final Date toDate;
     private final Time toTime;
-    private final int odometer;
+    private final Double odometer;
     private final String cardName;
     private final String cardNo;
     private final Date expDate;
     private final int confNo;
 
-    public RentalModel(int rid, String vlicense, String dlicense, Date fromDate, Time fromTime, Date toDate, Time toTime, int odometer, String cardName, String cardNo, Date expDate, int confNo) {
+    public RentalModel(int rid, String vlicense, String dlicense, Date fromDate, Time fromTime, Date toDate, Time toTime, Double odometer, String cardName, String cardNo, Date expDate, int confNo) {
         this.rid = rid;
         this.vlicense = vlicense;
         this.dlicense = dlicense;
@@ -47,7 +47,7 @@ public class RentalModel {
 
     public Time getToTime() {return toTime;}
 
-    public int getOdometer() {return odometer;}
+    public Double getOdometer() {return odometer;}
 
     public String getCardName() {return cardName;}
 
