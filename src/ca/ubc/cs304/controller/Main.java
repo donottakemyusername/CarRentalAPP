@@ -137,12 +137,33 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
 		}
 	}
 
+	// return -1 if the reservation can't be made
+	@Override
+	public int makeReservation(String dlicense, String cname, String phoneNum, String address, String location, String vtname, Date fromDate, Time fromTime, Date toDate, Time toTime) {
+		// check if the customer exists in the database, if not add them
+    	dbHandler.findOrAddCustomer(dlicense, cname, phoneNum, address);
+
+    	// check if our desired reservation can be made
+		VehicleSearchResults[] result = customerSearchVehicle(true, true, true, vtname, location, fromDate, fromTime, toDate, toTime);
+		// if it is now gone, then send a sorry message
+		if (result.length == 0) {
+			System.out.println("Sorry, the vehicle type you wish to reserve is now gone.");
+			return -1;
+		}
+		// otherwise, make our desired reservation, first by getting the last confirmation number and incrementting (reservation confNo are in numerical order)
+		int nextConfNum = dbHandler.getNextConfNum();
+		ReservationModel rs = new ReservationModel(nextConfNum, vtname, dlicense, fromDate, fromTime, toDate, toTime);
+		insertReservation(rs);
+
+    	return nextConfNum;
+	}
+
 	/**
 	 * TermainalTransactionsDelegate Implementation
 	 * 
 	 * Displays information about varies bank branches.
 	 */
-									  public void showBranch() {
+	public void showBranch() {
     	BranchModel[] models = dbHandler.getBranchInfo();
     	
     	for (int i = 0; i < models.length; i++) {

@@ -14,9 +14,9 @@ public class DatabaseConnectionHandler {
 	private static final String ORACLE_URL = "jdbc:oracle:thin:@localhost:1522:stu";
 	private static final String EXCEPTION_TAG = "[EXCEPTION]";
 	private static final String WARNING_TAG = "[WARNING]";
-	
+
 	private Connection connection = null;
-	
+
 	public DatabaseConnectionHandler() {
 		try {
 			// Load the Oracle JDBC driver
@@ -26,7 +26,7 @@ public class DatabaseConnectionHandler {
 			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
 		}
 	}
-	
+
 	public void close() {
 		try {
 			if (connection != null) {
@@ -42,14 +42,14 @@ public class DatabaseConnectionHandler {
 			PreparedStatement ps = connection.prepareStatement("DELETE FROM branch WHERE location = ? AND city = ?");
 			ps.setString(1, branchModel.getLocation());
 			ps.setString(2, branchModel.getCity());
-			
+
 			int rowCount = ps.executeUpdate();
 			if (rowCount == 0) {
 				System.out.println(WARNING_TAG + " Branch " + branchModel.getLocation() + " in " + branchModel.getCity() + " does not exist!");
 			}
-			
+
 			connection.commit();
-	
+
 			ps.close();
 		} catch (SQLException e) {
 			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
@@ -394,7 +394,7 @@ public class DatabaseConnectionHandler {
 			System.out.println(queryStringVehicle);
 
 			PreparedStatement ps = connection.prepareStatement(queryStringVehicle);
-			int i=1;
+			int i = 1;
 			if (hasCarType) {
 				ps.setString(i++, carType);
 			}
@@ -470,15 +470,13 @@ public class DatabaseConnectionHandler {
 		return searchResults.toArray(new VehicleSearchResults[searchResults.size()]);
 	}
 
-	// TODO: write insert for the user model once we figure out waht to name it.
-	
 	public BranchModel[] getBranchInfo() {
 		ArrayList<BranchModel> result = new ArrayList<BranchModel>();
-		
+
 		try {
 			Statement stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM branch WHERE location = ?");
-		
+
 //    		// get info on ResultSet
 //    		ResultSetMetaData rsmd = rs.getMetaData();
 //
@@ -489,10 +487,10 @@ public class DatabaseConnectionHandler {
 //    			// get column name and print it
 //    			System.out.printf("%-15s", rsmd.getColumnName(i + 1));
 //    		}
-			
-			while(rs.next()) {
+
+			while (rs.next()) {
 				BranchModel model = new BranchModel(rs.getString("location"),
-													rs.getString("city"));
+						rs.getString("city"));
 				result.add(model);
 			}
 
@@ -500,66 +498,89 @@ public class DatabaseConnectionHandler {
 			stmt.close();
 		} catch (SQLException e) {
 			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
-		}	
-		
+		}
+
 		return result.toArray(new BranchModel[result.size()]);
 	}
 
+	public int getNextConfNum() {
+		int nextConfNum = 1;
+		try {
+			PreparedStatement ps = connection.prepareStatement("SELECT MAX(confNo) FROM Reservation");
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				nextConfNum = rs.getInt(1)+1;
+			}
 
-    //View the number of available vehicles for a specific car type, location, and time interval.
-//	public ArrayList<VehicleModel> getAvailableVehicle(String type, String location) {
-//	    ArrayList<VehicleModel> vehicleModels = new ArrayList<>();
-//	    try {
-//	       // PreparedStatement ps = connection.prepareStatement("SELECT count(*) FROM Vehicle v)
-//            // TODO: figure out what does "time interval" refer to, also not sure what details to show when # of available cars are clicked
-//        }
-//	    catch (SQLException e) {
-//            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
-//            rollbackConnection();
-//        }
-//	    return vehicleModels;
-//    }
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+		}
+		return nextConfNum;
+	}
 
+	public CustomerModel[] getCustomerDetails() {
+		ArrayList<CustomerModel> customerDetails = new ArrayList();
+		try {
+			Statement stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Customer");
 
-    public CustomerModel[] getCustomerDetails() {
-	    ArrayList<CustomerModel> customerDetails = new ArrayList();
-	    try {
-	        Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM Customer");
+			while (rs.next()) {
+				CustomerModel userModel = new CustomerModel(rs.getString("dlicense"), rs.getString("name"), rs.getString("phoneNumber"),
+						rs.getString("address"));
+				customerDetails.add(userModel);
+			}
 
-            while(rs.next()) {
-                CustomerModel userModel = new CustomerModel(rs.getString("dlicense"), rs.getString("name"), rs.getString("phoneNumber"),
-                        rs.getString("address"));
-                        customerDetails.add(userModel);
-                    }
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+		}
+		return customerDetails.toArray(new CustomerModel[customerDetails.size()]);
+	}
 
-                    rs.close();
-                    stmt.close();
-                } catch (SQLException e) {
-                    System.out.println(EXCEPTION_TAG + " " + e.getMessage());
-                }
-            return customerDetails.toArray(new CustomerModel[customerDetails.size()]);
-        }
-	
-//	public void updateBranch(String branch_location, String branch_city) {
-//		try {
-//		  PreparedStatement ps = connection.prepareStatement("UPDATE branch SET location = ? WHERE city = ?");
-//		  ps.setString(1, branch_location);
-//		  ps.setString(2, branch_city);
-//
-//		  int rowCount = ps.executeUpdate();
-//		  if (rowCount == 0) {
-//		      System.out.println(WARNING_TAG + " Branch " + branch_location + " does not exist!");
-//		  }
-//
-//		  connection.commit();
-//
-//		  ps.close();
-//		} catch (SQLException e) {
-//			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
-//			rollbackConnection();
-//		}
-//	}
+	public void findOrAddCustomer(String dlicense, String cname, String phoneNum, String address) {
+		try {
+			ArrayList<CustomerModel> customers = new ArrayList<CustomerModel>();
+
+			PreparedStatement ps = connection.prepareStatement("SELECT dlicense, name, phoneNumber, address FROM Customer WHERE dlicense = ?");
+			ps.setString(1, dlicense);
+
+			ResultSet rs = ps.executeQuery();
+			Boolean found = false;
+			while (rs.next()) {
+				found = true;
+				CustomerModel cs = new CustomerModel(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4));
+				// check any inconsistencies with our customer info and update it
+				String setClause = "";
+				if (!cs.getName().equals(cname)) setClause += " name = ?,";
+				if (!cs.getPhoneNum().equals(phoneNum)) setClause += " phoneNumber = ?,";
+				if (!cs.getAddress().equals(address)) setClause += " address = ?,";
+				if (!setClause.isEmpty()) {
+					setClause = setClause.substring(0, setClause.length()-1);
+					ps = connection.prepareStatement("UPDATE customer SET " + setClause + " WHERE dlicense = ?");
+					ps.setString(1, cname);
+					ps.setString(2, phoneNum);
+					ps.setString(3, address);
+					ps.setString(4, dlicense);
+					int rowCount = ps.executeUpdate();
+					if (rowCount == 0) {
+						System.out.println(WARNING_TAG + " Customer update failed.");
+					}
+					connection.commit();
+				}
+			}
+
+			// if there was no customer, then lets insert it
+			if (!found) {
+				CustomerModel cs = new CustomerModel(dlicense, cname, phoneNum, address);
+				insertCustomer(cs);
+			}
+
+			ps.close();
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+		}
+	}
 	
 	public boolean login(String username, String password) {
 		try {
@@ -585,4 +606,6 @@ public class DatabaseConnectionHandler {
 			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
 		}
 	}
+
+
 }
