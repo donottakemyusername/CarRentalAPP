@@ -558,10 +558,11 @@ public class DatabaseConnectionHandler {
 				if (!setClause.isEmpty()) {
 					setClause = setClause.substring(0, setClause.length()-1);
 					ps = connection.prepareStatement("UPDATE customer SET " + setClause + " WHERE dlicense = ?");
-					ps.setString(1, cname);
-					ps.setString(2, phoneNum);
-					ps.setString(3, address);
-					ps.setString(4, dlicense);
+					int i=1;
+					if (!cs.getName().equals(cname)) ps.setString(i++, cname);
+					if (!cs.getPhoneNum().equals(phoneNum)) ps.setString(i++, phoneNum);
+					if (!cs.getAddress().equals(address)) ps.setString(i++, address);
+					ps.setString(i, dlicense);
 					int rowCount = ps.executeUpdate();
 					if (rowCount == 0) {
 						System.out.println(WARNING_TAG + " Customer update failed.");

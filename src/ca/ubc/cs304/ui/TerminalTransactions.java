@@ -40,14 +40,14 @@ public class TerminalTransactions {
 		Time toTime1 = new Time(21, 0, 0); // 9:00:00 PM
 		TimePeriodModel tp1 = new TimePeriodModel(fromDate1, fromTime1, toDate1, toTime1);
 
-		this.delegate.insertTimePeriod(tp1);
+		//this.delegate.insertTimePeriod(tp1);
 		//this.delegate.deleteTimePeriod(tp1);
 
 		// example for Branch
 		String location1 = "344 Hornby St.";
 		String city1 = "Vancouver";
 		BranchModel b1 = new BranchModel(location1, city1);
-		this.delegate.insertBranch(b1);
+		//this.delegate.insertBranch(b1);
 
 		// example for VehicleType
 		String vtname1 = "Economy";
@@ -209,6 +209,14 @@ public class TerminalTransactions {
 		toDate2 = new Date(2019+1900, 10, 26); // 11/26/2019
 		vr = this.delegate.customerSearchVehicle(true, true, true, vtname2, location1, fromDate2, fromTime2, toDate2, toTime2);
 		printSearchResults(vr);
+
+		// make a reservation
+		System.out.println("\nMake a reservation that works");
+		fromDate2 = new Date(2018+1900, 10, 21); // 11/21/2018
+		fromTime2 = new Time(9, 0, 0);
+		toDate2 = new Date(2018+1900, 10, 28); // 11/28/2018
+		toTime2 = new Time(9, 0, 0);
+		this.delegate.makeReservation(dlicense1, name1, phoneNum1, "2388 Western Parkway", location1, vtname1, fromDate2, fromTime2, toDate2, toTime2);
 
 
 		bufferedReader = new BufferedReader(new InputStreamReader(System.in));
