@@ -2,6 +2,9 @@ package ca.ubc.cs304.delegates;
 
 import ca.ubc.cs304.model.*;
 
+import java.sql.Date;
+import java.sql.Time;
+
 /**
  * This interface uses the delegation design pattern where instead of having
  * the TerminalTransactions class try to do everything, it will only
@@ -29,6 +32,8 @@ public interface TerminalTransactionsDelegate {
 	public void insertRental(RentalModel r);
 	public void insertTimePeriod(TimePeriodModel t);
 	public void showBranch();
+	public VehicleSearchResults[] customerSearchVehicle(Boolean hasCarType, Boolean hasLocation, Boolean hasTimePeriod,
+								 String carType, String location, Date fromDate, Time fromTime, Date toDate, Time toTime);
 	// TODO: implement the Customer query transactions
 
 	

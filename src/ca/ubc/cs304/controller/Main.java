@@ -127,9 +127,14 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
     	dbHandler.deleteTimePeriod(t);
 	}
 
-	public void customerSearchVehicle(Boolean hasCarType, Boolean hasLocation, Boolean hasTimePeriod,
+	public VehicleSearchResults[] customerSearchVehicle(Boolean hasCarType, Boolean hasLocation, Boolean hasTimePeriod,
 									  String carType, String location, Date fromDate, Time fromTime, Date toDate, Time toTime) {
-    	//TODO: implement this
+    	if (!hasTimePeriod) {
+    		return dbHandler.customerSearchVehicle(carType, location, null);
+		} else {
+    		TimePeriodModel t = new TimePeriodModel(fromDate, fromTime, toDate, toTime);
+    		return dbHandler.customerSearchVehicle(carType, location, t);
+		}
 	}
 
 	/**

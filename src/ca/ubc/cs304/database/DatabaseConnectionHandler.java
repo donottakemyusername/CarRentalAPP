@@ -4,6 +4,7 @@ import ca.ubc.cs304.model.*;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * This class handles all database related transactions
@@ -372,88 +373,95 @@ public class DatabaseConnectionHandler {
 		}
 	}
 
-	// Query if we have inputted all three
 	public VehicleSearchResults[] customerSearchVehicle(String carType, String location, TimePeriodModel timePeriod) {
 		ArrayList<VehicleSearchResults> searchResults = new ArrayList<>();
-		Boolean hasCarType = false;
-		Boolean hasLocation = false;
-
-		if (carType != "") hasCarType = true;
-		if (location != "") hasLocation = true;
-
-		try {
-			String caseEndWithinTP = "((SELECT R.vlicense FROM Reservation R WHERE R.toDate > ?) UNION (SELECT R.vlicense FROM Reservation R WHERE R.toDate = ? AND R.toTime >= ?)) INTERSECT ((SELECT R.vlicense FROM Reservation R WHERE R.toDate < ?) UNION (SELECT R.vlicense FROM Reservation R WHERE R.toDate = ? AND R.toTime = ?))";
-			// fromDate, fromDate fromTime, toDate, toDate, toTime
-			String caseStartWithinTP = "((SELECT R.vlicense FROM Reservation R WHERE R.fromDate > ?) UNION (SELECT R.vlicense FROM Reservation R WHERE R.fromDate = ? AND R.fromTime >= ?)) INTERSECT ((SELECT R.vlicense FROM Reservation R WHERE R.fromDate < ?) UNION (SELECT R.vlicense FROM Reservation R WHERE R.fromDate = ? AND R.fromTime = ?))";
-			// fromDate, fromDate, fromTime, toDate, toDate, toTime
-			String caseEncompassTP = "((SELECT R.vlicense FROM Reservation R WHERE R.fromDate < ?) UNION (SELECT R.vlicense FROM Reservation R WHERE R.fromDate = ? AND R.fromTime <= ?)) INTERSECT ((SELECT R.vlicense FROM Reservation R WHERE R.toDate > ?) UNION (SELECT R.vlicense FROM Reservation R WHERE R.toDate = ? AND R.toTime >= ?))";
-			// fromDate, fromDate, fromTime, toDate, toDate, toTime
-
-			String queryStringVehicle = "SELECT COUNT(*) FROM Vehicle V WHERE";
-			if (hasCarType) queryStringVehicle += " V.vtname = ?";
-			if (hasLocation) queryStringVehicle += " V.location = ?";
-
-			PreparedStatement ps = connection.prepareStatement(queryStringVehicle+ " V.vlicense NOT IN ( " +
-					caseEndWithinTP + " UNION " + caseStartWithinTP + " UNION " + caseEncompassTP + ")");
-			int i=1;
-			if (hasCarType) ps.setString(i++, carType);
-			if (hasLocation) ps.setString(i++, location);
-			for (int j=0; j<2; j++) {
-				ps.setDate(i++, timePeriod.getFromDate());
-				ps.setDate(i++, timePeriod.getFromDate());
-				ps.setTime(i++, timePeriod.getFromTime());
-				ps.setDate(i++, timePeriod.getToDate());
-				ps.setDate(i++, timePeriod.getToDate());
-				ps.setTime(i++, timePeriod.getToTime());
-			}
-
-			ResultSet rs = ps.executeQuery();
-			//connection.commit();
-
-			while (rs.next()) {
-				VehicleSearchResults result = new VehicleSearchResults(hasCarType, hasLocation, true);
-				result.setVehicleType(carType);
-				result.setLocation(location);
-				result.setTimePeriod(timePeriod);
-				result.setNumAvailable(rs.getInt(1)); // double check the type
-				searchResults.add(result);
-			}
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return searchResults.toArray(new VehicleSearchResults[searchResults.size()]);
-	}
-
-	public VehicleSearchResults[] customerSearchVehicle(String carType, String location) {
-		ArrayList<VehicleSearchResults> searchResults = new ArrayList<>();
+		HashMap<VehicleSearchResults, Integer> count;
 
 		Boolean hasCarType = false;
 		Boolean hasLocation = false;
 
-		if (carType != "") hasCarType = true;
-		if (location != "") hasLocation = true;
+		if (carType != null) hasCarType = true;
+		if (location != null) hasLocation = true;
 
 		try {
-			String queryStringVehicle = "SELECT V.vtname COUNT(*) FROM Vehicle V";
+			String queryStringVehicle = "SELECT V.vtname, V.location, COUNT(*) FROM Vehicle V";
 			if (hasCarType || hasLocation) queryStringVehicle += " WHERE";
 			if (hasCarType) queryStringVehicle += " V.vtname = ?";
+			if (hasCarType && hasLocation) queryStringVehicle += " AND";
 			if (hasLocation) queryStringVehicle += " V.location = ?";
-			queryStringVehicle += " GROUP BY V.vtname";
+			queryStringVehicle += " GROUP BY V.vtname, V.location";
+
+			System.out.println(queryStringVehicle);
 
 			PreparedStatement ps = connection.prepareStatement(queryStringVehicle);
 			int i=1;
-			if (hasCarType) ps.setString(i++, carType);
-			if (hasLocation) ps.setString(i++, location);
+			if (hasCarType) {
+				ps.setString(i++, carType);
+			}
+			if (hasLocation) {
+				ps.setString(i++, location);
+			}
 
-			ResultSet rs = ps.executeQuery();
-			//connection.commit();
+			ResultSet rs1 = ps.executeQuery();
 
-			while (rs.next()) {
-				VehicleSearchResults result = new VehicleSearchResults(hasCarType, hasLocation, false);
-				result.setVehicleType(carType);
-				result.setNumAvailable(rs.getInt(2)); // double check the type
+			while (rs1.next()) {
+				VehicleSearchResults result = new VehicleSearchResults(rs1.getString(1), rs1.getString(2), null, rs1.getInt(3));
 				searchResults.add(result);
+			}
+
+			if (timePeriod != null) {
+				String caseEndWithinTP = "((SELECT R.confNo FROM Reservation R WHERE R.toDate > ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.toDate = ? AND R.toTime >= ?)) INTERSECT ((SELECT R.confNo FROM Reservation R WHERE R.toDate < ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.toDate = ? AND R.toTime = ?))";
+				// fromDate, fromDate fromTime, toDate, toDate, toTime
+				String caseStartWithinTP = "((SELECT R.confNo FROM Reservation R WHERE R.fromDate > ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.fromDate = ? AND R.fromTime >= ?)) INTERSECT ((SELECT R.confNo FROM Reservation R WHERE R.fromDate < ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.fromDate = ? AND R.fromTime = ?))";
+				// fromDate, fromDate, fromTime, toDate, toDate, toTime
+				String caseEncompassTP = "((SELECT R.confNo FROM Reservation R WHERE R.fromDate < ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.fromDate = ? AND R.fromTime <= ?)) INTERSECT ((SELECT R.confNo FROM Reservation R WHERE R.toDate > ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.toDate = ? AND R.toTime >= ?))";
+				// fromDate, fromDate, fromTime, toDate, toDate, toTime
+
+				String queryStringReservation = "SELECT R1.vtname, V.location, COUNT(DISTINCT(R1.confNo)) FROM Reservation R1, Vehicle V WHERE R1.vtname = V.vtname AND";
+				if (hasCarType) queryStringReservation += " R1.vtname = ? AND";
+				if (hasLocation) queryStringReservation += " V.location = ? AND";
+
+				String fullQueryString = queryStringReservation + " R1.confNo IN (" +
+						caseEndWithinTP + " UNION " + caseStartWithinTP + " UNION " + caseEncompassTP + ") GROUP BY R1.vtname, V.location";
+
+				System.out.println(fullQueryString);
+
+				ps = connection.prepareStatement(fullQueryString);
+
+				i = 1;
+				if (hasCarType) {
+					ps.setString(i++, carType);
+				}
+				if (hasLocation) {
+					ps.setString(i++, location);
+				}
+
+				for (int j = 0; j < 3; j++) {
+					ps.setDate(i++, timePeriod.getFromDate());
+					ps.setDate(i++, timePeriod.getFromDate());
+					ps.setTime(i++, timePeriod.getFromTime());
+					ps.setDate(i++, timePeriod.getToDate());
+					ps.setDate(i++, timePeriod.getToDate());
+					ps.setTime(i++, timePeriod.getToTime());
+				}
+
+				ResultSet rs2 = ps.executeQuery();
+
+				// compare the reservation counts with the vehicle counts as sorted by vehicletype and location
+				while (rs2.next()) {
+					VehicleSearchResults result = new VehicleSearchResults(rs2.getString(1), rs2.getString(2), null, rs2.getInt(3));
+					if (searchResults.contains(result)) {
+						int j = searchResults.indexOf(result);
+						int numLeft = searchResults.get(j).getNumAvailable() - result.getNumAvailable();
+						if (numLeft > 0) {
+							result.setTimePeriod(timePeriod);
+							result.setNumAvailable(numLeft);
+							searchResults.set(j, result);
+						} else {
+							searchResults.remove(j);
+						}
+					}
+				}
 			}
 
 		} catch (SQLException e) {
