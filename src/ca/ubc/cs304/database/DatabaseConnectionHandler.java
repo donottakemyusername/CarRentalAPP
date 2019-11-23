@@ -410,11 +410,11 @@ public class DatabaseConnectionHandler {
 			}
 
 			if (timePeriod != null) {
-				String caseEndWithinTP = "((SELECT R.confNo FROM Reservation R WHERE R.toDate > ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.toDate = ? AND R.toTime >= ?)) INTERSECT ((SELECT R.confNo FROM Reservation R WHERE R.toDate < ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.toDate = ? AND R.toTime = ?))";
+				String caseEndWithinTP = "((SELECT R.confNo FROM Reservation R WHERE R.toDate > ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.toDate = ? AND R.toTime >= ?)) INTERSECT ((SELECT R.confNo FROM Reservation R WHERE R.toDate < ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.toDate = ? AND R.toTime <= ?))";
 				// fromDate, fromDate fromTime, toDate, toDate, toTime
-				String caseStartWithinTP = "((SELECT R.confNo FROM Reservation R WHERE R.fromDate > ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.fromDate = ? AND R.fromTime >= ?)) INTERSECT ((SELECT R.confNo FROM Reservation R WHERE R.fromDate < ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.fromDate = ? AND R.fromTime = ?))";
+				String caseStartWithinTP = "((SELECT R.confNo FROM Reservation R WHERE R.fromDate < ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.fromDate = ? AND R.fromTime <= ?)) INTERSECT ((SELECT R.confNo FROM Reservation R WHERE R.toDate > ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.toDate = ? AND R.toTime >= ?))";
 				// fromDate, fromDate, fromTime, toDate, toDate, toTime
-				String caseEncompassTP = "((SELECT R.confNo FROM Reservation R WHERE R.fromDate < ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.fromDate = ? AND R.fromTime <= ?)) INTERSECT ((SELECT R.confNo FROM Reservation R WHERE R.toDate > ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.toDate = ? AND R.toTime >= ?))";
+				String caseEncompassTP = "((SELECT R.confNo FROM Reservation R WHERE R.fromDate > ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.fromDate = ? AND R.fromTime >= ?)) INTERSECT ((SELECT R.confNo FROM Reservation R WHERE R.fromDate < ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.fromDate = ? AND R.fromTime <= ?))";
 				// fromDate, fromDate, fromTime, toDate, toDate, toTime
 
 				String queryStringReservation = "SELECT R1.vtname, V.location, COUNT(DISTINCT(R1.confNo)) FROM Reservation R1, Vehicle V WHERE R1.vtname = V.vtname AND";
