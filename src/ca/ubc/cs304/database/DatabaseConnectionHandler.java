@@ -470,6 +470,61 @@ public class DatabaseConnectionHandler {
 		return searchResults.toArray(new VehicleSearchResults[searchResults.size()]);
 	}
 
+	public VehicleModel getRentalVehicle(String vtname, String location, TimePeriodModel timePeriod) {
+		try {
+			String caseEndWithinTP = "((SELECT R.vlicense FROM Rental R WHERE R.toDate > ?) UNION (SELECT R.vlicense FROM Rental R WHERE R.toDate = ? AND R.toTime >= ?)) INTERSECT ((SELECT R.vlicense FROM Rental R WHERE R.toDate < ?) UNION (SELECT R.vlicense FROM Rental R WHERE R.toDate = ? AND R.toTime <= ?))";
+			// fromDate, fromDate fromTime, toDate, toDate, toTime
+			String caseStartWithinTP = "((SELECT R.vlicense FROM Rental R WHERE R.fromDate < ?) UNION (SELECT R.vlicense FROM Rental R WHERE R.fromDate = ? AND R.fromTime <= ?)) INTERSECT ((SELECT R.vlicense FROM Rental R WHERE R.toDate > ?) UNION (SELECT R.vlicense FROM Rental R WHERE R.toDate = ? AND R.toTime >= ?))";
+			// fromDate, fromDate, fromTime, toDate, toDate, toTime
+			String caseEncompassTP = "((SELECT R.vlicense FROM Rental R WHERE R.fromDate > ?) UNION (SELECT R.vlicense FROM Rental R WHERE R.fromDate = ? AND R.fromTime >= ?)) INTERSECT ((SELECT R.vlicense FROM Rental R WHERE R.fromDate < ?) UNION (SELECT R.vlicense FROM Rental R WHERE R.fromDate = ? AND R.fromTime <= ?))";
+			// fromDate, fromDate, fromTime, toDate, toDate, toTime
+
+			PreparedStatement ps = connection.prepareStatement("SELECT * FROM Vehicle V WHERE V.vtname = ? AND V.location = location AND V.vlicense NOT IN (" + caseEndWithinTP +" UNION " + caseStartWithinTP + " UNION "+ caseEncompassTP +")" );
+			int i = 1;
+			ps.setString(i++, vtname);
+			ps.setString(i++, location);
+			for (int j = 0; j < 3; j++) {
+				ps.setDate(i++, timePeriod.getFromDate());
+				ps.setDate(i++, timePeriod.getFromDate());
+				ps.setTime(i++, timePeriod.getFromTime());
+				ps.setDate(i++, timePeriod.getToDate());
+				ps.setDate(i++, timePeriod.getToDate());
+				ps.setTime(i++, timePeriod.getToTime());
+			}
+
+			ResultSet rs = ps.executeQuery();
+			Boolean found = false;
+			while (rs.next()) {
+				found = true;
+				VehicleModel.Status s = VehicleModel.Status.AVAILABLE;
+				if (rs.getString("status") == "rented") s = VehicleModel.Status.RENTED;
+				else if (rs.getString("status") == "maintenance") s = VehicleModel.Status.MAINTENANCE;
+				VehicleModel result = new VehicleModel(rs.getString("vlicense"),
+						rs.getString("make"),
+						rs.getString("model"),
+						rs.getInt("year"),
+						rs.getString("color"),
+						rs.getDouble("odometer"),
+						s,
+						rs.getString("vtname"),
+						rs.getString("location"),
+						rs.getString("city"));
+				// update vehicle status
+				updateVehicleStatus(result.getVlicense());
+				return result;
+			}
+
+			// TODO: throw exception
+			if (!found) {
+				System.out.println("Sorry, there are no longer vehicles available for your rental.");
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	public BranchModel[] getBranchInfo() {
 		ArrayList<BranchModel> result = new ArrayList<BranchModel>();
 
@@ -518,6 +573,51 @@ public class DatabaseConnectionHandler {
 		return nextConfNum;
 	}
 
+	public int getNextRid() {
+		int nextRid = 1;
+		try {
+			PreparedStatement ps = connection.prepareStatement("SELECT MAX(rid) FROM Rental");
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				nextRid = rs.getInt(1)+1;
+			}
+
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+		}
+		return nextRid;
+	}
+
+	public ReservationModel findReservation(int confNum) {
+		try {
+			PreparedStatement ps = connection.prepareStatement("SELECT * FROM Reservation WHERE confNo = ?");
+			ps.setInt(1, confNum);
+			ResultSet rs = ps.executeQuery();
+
+			Boolean found = false;
+			while (rs.next()) {
+				found = true;
+				ReservationModel result = new ReservationModel(rs.getInt("confNo"),
+						rs.getString("vtname"),
+						rs.getString("dlicense"),
+						rs.getDate("fromDate"),
+						rs.getTime("fromTime"),
+						rs.getDate("toDate"),
+						rs.getTime("toTime"));
+				return result;
+			}
+
+			if (!found) {
+				// TODO: throw an exception
+				System.out.println("Reservation confirmation number: " + confNum + " not found.");
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	public CustomerModel[] getCustomerDetails() {
 		ArrayList<CustomerModel> customerDetails = new ArrayList();
 		try {
@@ -526,7 +626,7 @@ public class DatabaseConnectionHandler {
 
 			while (rs.next()) {
 				CustomerModel userModel = new CustomerModel(rs.getString("dlicense"), rs.getString("name"), rs.getString("phoneNumber"),
-						rs.getString("address"));
+						rs.getString("address"), rs.getInt("numPoints"));
 				customerDetails.add(userModel);
 			}
 
@@ -542,14 +642,14 @@ public class DatabaseConnectionHandler {
 		try {
 			ArrayList<CustomerModel> customers = new ArrayList<CustomerModel>();
 
-			PreparedStatement ps = connection.prepareStatement("SELECT dlicense, name, phoneNumber, address FROM Customer WHERE dlicense = ?");
+			PreparedStatement ps = connection.prepareStatement("SELECT * FROM Customer WHERE dlicense = ?");
 			ps.setString(1, dlicense);
 
 			ResultSet rs = ps.executeQuery();
 			Boolean found = false;
 			while (rs.next()) {
 				found = true;
-				CustomerModel cs = new CustomerModel(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4));
+				CustomerModel cs = new CustomerModel(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getInt(5));
 				// check any inconsistencies with our customer info and update it
 				String setClause = "";
 				if (!cs.getName().equals(cname)) setClause += " name = ?,";
@@ -573,13 +673,26 @@ public class DatabaseConnectionHandler {
 
 			// if there was no customer, then lets insert it
 			if (!found) {
-				CustomerModel cs = new CustomerModel(dlicense, cname, phoneNum, address);
+				CustomerModel cs = new CustomerModel(dlicense, cname, phoneNum, address, 0);
 				insertCustomer(cs);
 			}
 
 			ps.close();
 		} catch (SQLException e) {
 			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+		}
+	}
+
+	public void updateVehicleStatus(String vlicense) {
+		try {
+			PreparedStatement ps = connection.prepareStatement("UPDATE vehicle SET status = ? WHERE vlicense = ?");
+			ps.setString(1, "rented");
+			ps.setString(2, vlicense);
+			ps.executeUpdate();
+			connection.commit();
+			ps.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -607,6 +720,4 @@ public class DatabaseConnectionHandler {
 			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
 		}
 	}
-
-
 }

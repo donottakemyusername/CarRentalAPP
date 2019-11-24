@@ -18,7 +18,8 @@ public class RentalModel {
     private final Date expDate;
     private final int confNo;
 
-    public RentalModel(int rid, String vlicense, String dlicense, Date fromDate, Time fromTime, Date toDate, Time toTime, Double odometer, String cardName, String cardNo, Date expDate, int confNo) {
+    public RentalModel(int rid, String vlicense, String dlicense, Date fromDate, Time fromTime, Date toDate, Time toTime,
+                       Double odometer, String cardName, String cardNo, Date expDate, int confNo) {
         this.rid = rid;
         this.vlicense = vlicense;
         this.dlicense = dlicense;
