@@ -7,6 +7,9 @@ import ca.ubc.cs304.model.*;
 import ca.ubc.cs304.ui.LoginWindow;
 import ca.ubc.cs304.ui.TerminalTransactions;
 
+import java.sql.Date;
+import java.sql.Time;
+
 /**
  * This is the main controller class that will orchestrate everything.
  */
@@ -82,8 +85,8 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
 	}
 
 	// TODO: implement once we figure out what to name our table for User
-	public void insertUser(UserModel u) {
-    	//dbHandler.insertUser(u);
+	public void insertCustomer(CustomerModel u) {
+    	dbHandler.insertCustomer(u);
 	}
 
     /**
@@ -104,8 +107,8 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
 	}
 
 	// TODO: implement once we figure out our table for user
-	public void deleteUser(UserModel u) {
-    	//dbHandler.deleteUser(u);
+	public void deleteCustomer(CustomerModel u) {
+    	dbHandler.deleteCustomer(u);
 	}
 
 	public void deleteReservation(ReservationModel r) {
@@ -124,12 +127,43 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
     	dbHandler.deleteTimePeriod(t);
 	}
 
-    /**
+	public VehicleSearchResults[] customerSearchVehicle(Boolean hasCarType, Boolean hasLocation, Boolean hasTimePeriod,
+									  String carType, String location, Date fromDate, Time fromTime, Date toDate, Time toTime) {
+    	if (!hasTimePeriod) {
+    		return dbHandler.customerSearchVehicle(carType, location, null);
+		} else {
+    		TimePeriodModel t = new TimePeriodModel(fromDate, fromTime, toDate, toTime);
+    		return dbHandler.customerSearchVehicle(carType, location, t);
+		}
+	}
+
+	// return -1 if the reservation can't be made
+	@Override
+	public int makeReservation(String dlicense, String cname, String phoneNum, String address, String location, String vtname, Date fromDate, Time fromTime, Date toDate, Time toTime) {
+		// check if the customer exists in the database, if not add them
+    	dbHandler.findOrAddCustomer(dlicense, cname, phoneNum, address);
+
+    	// check if our desired reservation can be made
+		VehicleSearchResults[] result = customerSearchVehicle(true, true, true, vtname, location, fromDate, fromTime, toDate, toTime);
+		// if it is now gone, then send a sorry message
+		if (result.length == 0) {
+			System.out.println("Sorry, the vehicle type you wish to reserve is now gone.");
+			return -1;
+		}
+		// otherwise, make our desired reservation, first by getting the last confirmation number and incrementting (reservation confNo are in numerical order)
+		int nextConfNum = dbHandler.getNextConfNum();
+		ReservationModel rs = new ReservationModel(nextConfNum, vtname, dlicense, fromDate, fromTime, toDate, toTime);
+		insertReservation(rs);
+
+    	return nextConfNum;
+	}
+
+	/**
 	 * TermainalTransactionsDelegate Implementation
 	 * 
 	 * Displays information about varies bank branches.
 	 */
-    public void showBranch() {
+	public void showBranch() {
     	BranchModel[] models = dbHandler.getBranchInfo();
     	
     	for (int i = 0; i < models.length; i++) {
@@ -143,46 +177,6 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
     	}
     }
 
-    // TODO: implement all show methods
-
-	@Override
-	public void showVehicle(VehicleModel v) {
-
-	}
-
-	@Override
-	public void showVehicleType(VehicleTypeModel vt) {
-
-	}
-
-	@Override
-	public void showUser(UserModel u) {
-
-	}
-
-	@Override
-	public void showReservation(ReservationModel r) {
-
-	}
-
-	@Override
-	public void showReturn(ReturnModel r) {
-
-	}
-
-	@Override
-	public void showRental(RentalModel r) {
-
-	}
-
-	@Override
-	public void showTimePeriod(TimePeriodModel t) {
-
-	}
-
-	public void addCustomerDetails(UserModel userModel) {
-        dbHandler.addCustomerDetails(userModel);
-    }
 	
     /**
 	 * TerminalTransactionsDelegate Implementation
