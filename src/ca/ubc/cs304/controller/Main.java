@@ -158,6 +158,31 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
     	return nextConfNum;
 	}
 
+	@Override
+	public RentalReceipt makeRental(int confNum, String location, String cardName, String cardNo, Date expDate) {
+    	// get the reservation if it exists
+		// TODO: wrap in an exception
+		ReservationModel r = dbHandler.findReservation(confNum);
+		// the next rental id is in numerical order so the next one is one higher than the max
+		int nextRid = dbHandler.getNextRid();
+		// get the first vehicle that satisfies this
+		TimePeriodModel tp = new TimePeriodModel(r.getFromDate(), r.getFromTime(), r.getToDate(), r.getToTime());
+		VehicleModel v = dbHandler.getRentalVehicle(r.getVtname(), location, tp);
+		RentalModel rent = new RentalModel(nextRid, v.getVlicense(), r.getDlicense(), tp.getFromDate(), tp.getFromTime(), tp.getToDate(), tp.getToTime(),
+				v.getOdometer(), cardName, cardNo, expDate, r.getConfNum());
+		insertRental(rent);
+		// make Receipt and return
+		RentalReceipt receipt = new RentalReceipt(nextRid, confNum, tp, rent.getVlicense(), location);
+		return receipt;
+	}
+
+	@Override
+	public RentalReceipt makeRental(String dlicense, String cname, String phoneNum, String address, String location, String vtname, Date fromDate, Time fromTime, Date toDate, Time toTime, String cardName, String cardNo, Date expDate) {
+    	// make a reservation first
+		int confNum = makeReservation(dlicense, cname, phoneNum, address, location, vtname, fromDate, fromTime, toDate,toTime);
+		return makeRental(confNum, location, cardName, cardNo, expDate);
+	}
+
 	/**
 	 * TermainalTransactionsDelegate Implementation
 	 * 

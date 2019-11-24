@@ -2,9 +2,7 @@
 
 -- Drop all existing tables
 
-drop table Branch cascade constraints;
 drop table Customer cascade constraints;
-drop table TimePeriod cascade constraints;
 drop table VehicleType cascade constraints;
 drop table Reservation cascade constraints;
 drop table Vehicle cascade constraints;
@@ -17,7 +15,8 @@ create table Customer(
 dlicense varchar2(30) primary key,
 name varchar2(30),
 phoneNumber varchar2(20) not null,
-address varchar2(50));
+address varchar2(50),
+numPoints number(9,0));
 
 create table VehicleType(
 vtname varchar2(50) primary key,

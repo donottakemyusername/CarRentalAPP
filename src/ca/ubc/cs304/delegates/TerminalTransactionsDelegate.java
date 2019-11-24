@@ -35,6 +35,9 @@ public interface TerminalTransactionsDelegate {
 	public VehicleSearchResults[] customerSearchVehicle(Boolean hasCarType, Boolean hasLocation, Boolean hasTimePeriod,
 								 String carType, String location, Date fromDate, Time fromTime, Date toDate, Time toTime);
 	public int makeReservation(String dlicense, String cname, String phoneNum, String address, String location, String vtname, Date fromDate, Time fromTime, Date toDate, Time toTime);
+	public RentalReceipt makeRental(int confNum, String location, String cardName, String cardNo, Date expDate);
+	public RentalReceipt makeRental(String dlicense, String cname, String phoneNum, String address, String location, String vtname, Date fromDate, Time fromTime, Date toDate, Time toTime,
+									String cardName, String cardNo, Date expDate);
 	// TODO: implement the Customer query transactions
 
 	
