@@ -5,22 +5,21 @@ import java.sql.Time;
 
 public class RentalModel {
 
-    private int rid;
+    private final int rid;
     private String vlicense;
     private String dlicense;
     private Date fromDate;
     private Time fromTime;
     private Date toDate;
     private Time toTime;
-    private int odometer;
+    private Double odometer;
     private String cardName;
     private String cardNo;
     private Date expDate;
     private int confNo;
 
-    public RentalModel(){}
-
-    public RentalModel(int rid, String vlicense, String dlicense, Date fromDate, Time fromTime, Date toDate, Time toTime, int odometer, String cardName, String cardNo, Date expDate, int confNo) {
+    public RentalModel(int rid, String vlicense, String dlicense, Date fromDate, Time fromTime, Date toDate, Time toTime,
+                       Double odometer, String cardName, String cardNo, Date expDate, int confNo) {
         this.rid = rid;
         this.vlicense = vlicense;
         this.dlicense = dlicense;
@@ -36,10 +35,6 @@ public class RentalModel {
     }
 
     public int getRid() {return rid;}
-
-    public void setRid(int rid) {
-        this.rid = rid;
-    }
 
     public String getVlicense() {return vlicense;}
 
@@ -77,9 +72,9 @@ public class RentalModel {
         this.toTime = toTime;
     }
 
-    public int getOdometer() {return odometer;}
+    public Double getOdometer() {return odometer;}
 
-    public void setOdometer(int odometer) {
+    public void setOdometer(Double odometer) {
         this.odometer = odometer;
     }
 

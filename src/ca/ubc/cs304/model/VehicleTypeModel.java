@@ -5,16 +5,16 @@ import java.util.ArrayList;
 public class VehicleTypeModel {
     private final String vtname;
     private final String features;
-    private final float wrate;
-    private final float drate;
-    private final float hrate;
-    private final float wirate;
-    private final float dirate;
-    private final float hirate;
-    private final float krate;
+    private final Double  wrate;
+    private final Double drate;
+    private final Double hrate;
+    private final Double wirate;
+    private final Double dirate;
+    private final Double hirate;
+    private final Double krate;
 
-    public VehicleTypeModel(String vtname, String features, float wrate, float drate, float hrate,
-                            float wirate, float dirate, float hirate, float krate) {
+    public VehicleTypeModel(String vtname, String features, Double wrate, Double drate, Double hrate,
+                            Double  wirate, Double dirate, Double hirate, Double krate) {
         this.vtname = vtname;
         this.features = features;
         this.wrate = wrate;
@@ -34,31 +34,31 @@ public class VehicleTypeModel {
         return features;
     }
 
-    public float getWrate() {
+    public Double getWrate() {
         return wrate;
     }
 
-    public float getDrate() {
+    public Double getDrate() {
         return drate;
     }
 
-    public float getHrate() {
+    public Double getHrate() {
         return hrate;
     }
 
-    public float getWirate() {
+    public Double getWirate() {
         return wirate;
     }
 
-    public float getDirate() {
+    public Double getDirate() {
         return dirate;
     }
 
-    public float getHirate() {
+    public Double getHirate() {
         return hirate;
     }
 
-    public float getKrate() {
+    public Double getKrate() {
         return krate;
     }
 }

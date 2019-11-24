@@ -8,21 +8,19 @@ public class VehicleModel {
         AVAILABLE
     }
 
-    private int vid; // TODO: double check what the type of vid is
-    private String vlicense;
-    private String make;
-    private String model;
-    private int year;
-    private String color;
-    private Float odometer;
-    private Status status;
-    private String vtname; // TODO: figure out if I should exchange for VehicleTypeObject instead
-    private String location; // TODO: figure out if for location and city should be Branch object but keep simple for now
-    private String city;
+    //private final int vid; // TODO: double check what the type of vid is
+    private final String vlicense;
+    private final String make;
+    private final String model;
+    private final int year;
+    private final String color;
+    private final Double odometer;
+    private final Status status;
+    private final String vtname; // TODO: figure out if I should exchange for VehicleTypeObject instead
+    private final String location; // TODO: figure out if for location and city should be Branch object but keep simple for now
+    private final String city;
 
-    public VehicleModel() {}
-
-    public VehicleModel(int vid, String vlicense, String make, String model, int year, String color, Float odometer,
+    public VehicleModel(String vlicense, String make, String model, int year, String color, Double odometer,
                         Status status, String vtname, String location, String city) {
         this.vid = vid;
         this.vlicense = vlicense;
@@ -109,11 +107,11 @@ public class VehicleModel {
         this.location = location;
     }
 
-    public Float getOdometer() {
+    public Double getOdometer() {
         return odometer;
     }
 
-    public void setOdometer(Float odometer) {
+    public void setOdometer(Double odometer) {
         this.odometer = odometer;
     }
 
