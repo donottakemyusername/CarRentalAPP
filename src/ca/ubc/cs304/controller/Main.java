@@ -11,6 +11,7 @@ import ca.ubc.cs304.ui.TerminalTransactions;
  * This is the main controller class that will orchestrate everything.
  */
 public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
+
 	private DatabaseConnectionHandler dbHandler = null;
 	private LoginWindow loginWindow = null;
 
