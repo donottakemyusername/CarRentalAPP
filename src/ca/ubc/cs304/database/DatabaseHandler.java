@@ -1200,7 +1200,7 @@ public class DatabaseHandler {
 	
 			System.out.println("\nConnected to Oracle!");
 			return true;
-		} catch (SQLException e) {
+		} catch (SQLException e)  {
 			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
 			return false;
 		}
