@@ -5,13 +5,14 @@ import java.sql.Time;
 
 public class ReturnModel {
 
-    private final int rid;
-    private final Date rDate;
-    private final Time time;
-    private final Double odometer;
-    private final boolean fullTank;
-    private final Double value;
+    private int rid;
+    private Date rDate;
+    private Time time;
+    private Double odometer;
+    private boolean fullTank;
+    private Double value;
 
+    public ReturnModel() {};
     public ReturnModel(int rid, Date rDate, Time time, Double odometer, Boolean fullTank, Double value) {
         this.rid = rid;
         this.rDate = rDate;
@@ -21,7 +22,7 @@ public class ReturnModel {
         this.value = value;
     }
 
-    public void setValue(int value) {
+    public void setValue(Double value) {
         this.value = value;
     }
 
@@ -29,7 +30,7 @@ public class ReturnModel {
         this.fullTank = fullTank;
     }
 
-    public void setOdometer(int odometer) {
+    public void setOdometer(Double odometer) {
         this.odometer = odometer;
     }
 
@@ -44,8 +45,6 @@ public class ReturnModel {
     public void setRid(int rid) {
         this.rid = rid;
     }
-
-    private int value;
 
     public int getRid() {return rid;}
 

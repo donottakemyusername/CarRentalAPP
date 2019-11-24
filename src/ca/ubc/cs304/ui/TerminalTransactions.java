@@ -82,7 +82,7 @@ public class TerminalTransactions {
 
 		// example for Customer
 		String dlicense1 = "BC_ZHANG_231", name1 = "Hong Yang", phoneNum1 = "1234567890", address1 = "1234 Lower Mall";
-		CustomerModel c1 = new CustomerModel(dlicense1, name1, phoneNum1, address1);
+		CustomerModel c1 = new CustomerModel(dlicense1, name1, phoneNum1, address1, 0);
 		this.delegate.insertCustomer(c1);
 
 		// example for Reservation
@@ -309,8 +309,8 @@ public class TerminalTransactions {
 			city = readLine().trim();
 		}
 
-		BranchModel branchModel = new BranchModel()
-		delegate.insertBranch(model);
+		BranchModel branchModel = new BranchModel(location, city);
+		delegate.insertBranch(branchModel);
 	}
 	
 	private void handleQuitOption() {
