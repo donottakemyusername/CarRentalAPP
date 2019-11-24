@@ -32,6 +32,15 @@ public interface TerminalTransactionsDelegates {
 	public void insertRental(RentalModel r);
 	public void insertTimePeriod(TimePeriodModel t);
 	public void showBranch();
+    public int totalRental(Date date);
+    public VehicleRented[] getAllRental(int date);
+    public TotalCatModel[] totalCatgeory(Date date);
+    public TotalBranchModel[] totalBranch(Date date);
+    public int totalBranches(Date date, String city, String location);
+    public RentalModel[] rentedNotReturned();
+    public VehicleRented[] getAllBranchRental(Date date, String city, String location);
+    public BranchCat[] getBranchCategory(Date date, String city, String location);
+	public ReturnResult returnVehicle(int rentID, int d);
 	public VehicleSearchResults[] customerSearchVehicle(Boolean hasCarType, Boolean hasLocation, Boolean hasTimePeriod,
 								 String carType, String location, Date fromDate, Time fromTime, Date toDate, Time toTime);
 	public int makeReservation(String dlicense, String cname, String phoneNum, String address, String location, String vtname, Date fromDate, Time fromTime, Date toDate, Time toTime);

@@ -638,10 +638,10 @@ public class DatabaseHandler {
      */
 
     // total numbers of cars rented for a specific day by branch
-    public TotalBranchModel totalBranches(Date date, String city, String location) {
-        TotalBranchModel branchRental = new TotalBranchModel();
+    public int totalBranches(Date date, String city, String location) {
+        int cnt = 0;
         try {
-            PreparedStatement ps = connection.prepareStatement("SELECT v.city, v.location, Count(*)" +
+            PreparedStatement ps = connection.prepareStatement("SELECT Count(*)" +
                     "FROM Vehicle v, Rental r" +
                     "WHERE v.vlicense = r.vlicense AND r.fromDate = ? AND v.city = ? AND v.location = ?" +
                     "GROUP BY v.city, v.location");
@@ -651,13 +651,11 @@ public class DatabaseHandler {
             ResultSet resultSet = ps.executeQuery();
             connection.commit();
 
-            branchRental.setCity(resultSet.getString(1));
-            branchRental.setLocation(resultSet.getString(2));
-            branchRental.setCount(resultSet.getInt(3));
+            cnt = resultSet.getInt(1);
         } catch (SQLException e) {
             System.out.println(EXCEPTION_TAG + " " + e.getMessage());
         }
-        return branchRental;
+        return cnt;
     }
 
     public BranchCat[] getBranchCategory(Date date, String city, String location) {
@@ -1041,7 +1039,6 @@ public class DatabaseHandler {
                 returnResult.setDaysRent(resultSet.getInt(5));
                 returnResult.setdRate(resultSet.getInt(4));
                 returnResult.setPrice(resultSet.getInt(6));
-                //TODO: change car status to available
 
                 resultSet.close();
                 stmt.close();

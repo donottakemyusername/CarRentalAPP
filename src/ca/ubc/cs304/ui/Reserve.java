@@ -1,6 +1,5 @@
 package ca.ubc.cs304.ui;
 
-import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegates;
 
 import javax.swing.*;
@@ -13,16 +12,12 @@ import java.awt.event.ActionListener;
  */
 
 
+
 /**
  * @author unknown
  */
 public class Reserve extends JFrame {
-
-    private static final String EXCEPTION_TAG = "[EXCEPTION]";
-    private static final String WARNING_TAG = "[WARNING]";
-    private static final int INVALID_INPUT = Integer.MIN_VALUE;
-    private static final int EMPTY_INPUT = 0;
-    private TerminalTransactionsDelegates delegate = null;
+    public TerminalTransactionsDelegates delegate;
 
     public Reserve() {}
     public void showReserve(final TerminalTransactionsDelegates delegate){
@@ -39,10 +34,10 @@ public class Reserve extends JFrame {
         SetAllCars();
         personalSetup();
 
-        PerCityBox.addItem("Vancouver");
-        PerCityBox.addItem("Toronto");
-        PerCityBox.addItem("sss");
-        PerCityBox.addItem("we");
+        ResTypeBox.addItem("Vancouver");
+        ResTypeBox.addItem("Toronto");
+        ResTypeBox.addItem("sss");
+        ResTypeBox.addItem("we");
 
         String[] listData = new String[10];
         for (int i = 0; i <2; i++){
@@ -98,12 +93,12 @@ public class Reserve extends JFrame {
 
     private void personalSetup() {
         //get all cities and set up using for
-        PerCityBox.addItem("Vancouver");
+        PerCarTypeBox.addItem("Vancouver");
         String[] s = new String[1];
-        s[0] = (String) PerCityBox.getSelectedItem();
+        s[0] = (String) PerCarTypeBox.getSelectedItem();
         PerList.setListData(s);
         //get all car type and set up using for lopp
-        PerCityBox.addItem("SUV");
+        PerCarTypeBox.addItem("SUV");
 
     }
 
@@ -163,7 +158,9 @@ public class Reserve extends JFrame {
         label14 = new JLabel();
         PerCarTypeBox = new JComboBox();
         label13 = new JLabel();
-        PerCityBox = new JComboBox();
+        PerCity = new JTextField();
+        label2 = new JLabel();
+        PerAddress = new JTextField();
         label9 = new JLabel();
         PerFDBox = new JTextField();
         label10 = new JLabel();
@@ -214,11 +211,13 @@ public class Reserve extends JFrame {
         //======== dialogPane ========
         {
             dialogPane.setBorder(new EmptyBorder(12, 12, 12, 12));
-            dialogPane.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.TitledBorder(new EmptyBorder(0
-            ,0,0,0), "JF\u006frmDes\u0069gner \u0045valua\u0074ion",javax.swing.border.TitledBorder.CENTER,javax.swing.border.TitledBorder.BOTTOM
-            ,new Font("D\u0069alog", Font.BOLD,12), Color.red),
-            dialogPane. getBorder()));dialogPane. addPropertyChangeListener(new java.beans.PropertyChangeListener(){@Override public void propertyChange(java.beans.PropertyChangeEvent e
-            ){if("\u0062order".equals(e.getPropertyName()))throw new RuntimeException();}});
+            dialogPane.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax
+            . swing. border. EmptyBorder( 0, 0, 0, 0) , "JF\u006frmDes\u0069gner \u0045valua\u0074ion", javax. swing
+            . border. TitledBorder. CENTER, javax. swing. border. TitledBorder. BOTTOM, new java .awt .
+            Font ("D\u0069alog" ,java .awt .Font .BOLD ,12 ), java. awt. Color. red
+            ) ,dialogPane. getBorder( )) ); dialogPane. addPropertyChangeListener (new java. beans. PropertyChangeListener( ){ @Override
+            public void propertyChange (java .beans .PropertyChangeEvent e) {if ("\u0062order" .equals (e .getPropertyName (
+            ) )) throw new RuntimeException( ); }} );
             dialogPane.setLayout(new BorderLayout());
 
             //======== contentPanel ========
@@ -325,35 +324,47 @@ public class Reserve extends JFrame {
 
                             //======== panel1 ========
                             {
-                                panel1.setLayout(new GridLayout(6, 2));
+                                panel1.setLayout(new GridLayout(7, 2));
 
                                 //---- label14 ----
                                 label14.setText("Car Type:");
+                                label14.setHorizontalAlignment(SwingConstants.CENTER);
                                 panel1.add(label14);
                                 panel1.add(PerCarTypeBox);
 
                                 //---- label13 ----
-                                label13.setText("Address:");
+                                label13.setText("City:");
+                                label13.setHorizontalAlignment(SwingConstants.CENTER);
                                 panel1.add(label13);
-                                panel1.add(PerCityBox);
+                                panel1.add(PerCity);
+
+                                //---- label2 ----
+                                label2.setText("Address:");
+                                label2.setHorizontalAlignment(SwingConstants.CENTER);
+                                panel1.add(label2);
+                                panel1.add(PerAddress);
 
                                 //---- label9 ----
                                 label9.setText("From Date:");
+                                label9.setHorizontalAlignment(SwingConstants.CENTER);
                                 panel1.add(label9);
                                 panel1.add(PerFDBox);
 
                                 //---- label10 ----
                                 label10.setText("From Time:");
+                                label10.setHorizontalAlignment(SwingConstants.CENTER);
                                 panel1.add(label10);
                                 panel1.add(PerFTBox);
 
                                 //---- label11 ----
                                 label11.setText("To Date:");
+                                label11.setHorizontalAlignment(SwingConstants.CENTER);
                                 panel1.add(label11);
                                 panel1.add(PerTDBox);
 
                                 //---- label12 ----
                                 label12.setText("To Time:");
+                                label12.setHorizontalAlignment(SwingConstants.CENTER);
                                 panel1.add(label12);
                                 panel1.add(PerTTBox);
                             }
@@ -575,7 +586,9 @@ public class Reserve extends JFrame {
     private JLabel label14;
     private JComboBox PerCarTypeBox;
     private JLabel label13;
-    private JComboBox PerCityBox;
+    private JTextField PerCity;
+    private JLabel label2;
+    private JTextField PerAddress;
     private JLabel label9;
     private JTextField PerFDBox;
     private JLabel label10;

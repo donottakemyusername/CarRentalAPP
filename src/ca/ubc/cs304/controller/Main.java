@@ -92,6 +92,10 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegates 
     	dbHandler.insertCustomer(u);
 	}
 
+    public ReturnResult returnVehicle(int rentID,int date){
+        Date d = new Date(date);
+        return (dbHandler.returnVehicle(rentID,d));
+    }
     /**
 	 * TermainalTransactionsDelegate Implementation
 	 * 
@@ -129,6 +133,38 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegates 
 	public void deleteTimePeriod(TimePeriodModel t) {
     	dbHandler.deleteTimePeriod(t);
 	}
+
+    public VehicleRented[] getAllBranchRental(Date date, String city, String location){
+        return dbHandler.getAllBranchRental(date,city,location);
+    }
+
+    public int totalRental(Date date){
+        return dbHandler.totalRental(date);
+    }
+
+    public RentalModel[] rentedNotReturned(){
+        return dbHandler.rentedNotReturned();
+    }
+
+    public BranchCat[] getBranchCategory(Date date, String city, String location){
+        return dbHandler.getBranchCategory(date,city,location);
+    }
+
+    public int totalBranches(Date date, String city, String location){
+        return dbHandler.totalBranches(date,city,location);
+    }
+
+    public TotalBranchModel[] totalBranch(Date date){
+        return dbHandler.totalBranch(date);
+    }
+
+    public TotalCatModel[] totalCatgeory(Date date){
+        return dbHandler.totalCatgeory(date);
+    }
+
+    public VehicleRented[] getAllRental(int date){
+        return dbHandler.getAllRental(new Date(date));
+    }
 
 	public VehicleSearchResults[] customerSearchVehicle(Boolean hasCarType, Boolean hasLocation, Boolean hasTimePeriod,
 									  String carType, String location, Date fromDate, Time fromTime, Date toDate, Time toTime) {

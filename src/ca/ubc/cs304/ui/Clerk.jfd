@@ -45,57 +45,22 @@ new FormModel {
 							name: "panel1"
 							add( new FormComponent( "javax.swing.JLabel" ) {
 								name: "label10"
-								"text": "ReservationID:"
+								"text": "Rent ID:"
 								"foreground": #SwingColor0
+								"horizontalAlignment": 0
 							}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-								"x": 60
-								"y": 40
+								"x": 50
+								"y": 100
 								"width": 110
 								"height": 45
 							} )
 							add( new FormComponent( "javax.swing.JTextField" ) {
-								name: "textField7"
+								name: "ReturnDate"
 							}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 								"x": 170
-								"y": 35
+								"y": 165
 								"width": 125
 								"height": 40
-							} )
-							add( new FormComponent( "javax.swing.JLabel" ) {
-								name: "label12"
-								"text": "Odemeter:"
-								"foreground": #SwingColor0
-							}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-								"x": 60
-								"y": 95
-								"width": 90
-								"height": 15
-							} )
-							add( new FormComponent( "javax.swing.JTextField" ) {
-								name: "textField8"
-							}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-								"width": 125
-								"height": 40
-								"x": 170
-								"y": 80
-							} )
-							add( new FormComponent( "javax.swing.JTextField" ) {
-								name: "textField9"
-							}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-								"width": 125
-								"height": 40
-								"x": 170
-								"y": 125
-							} )
-							add( new FormComponent( "javax.swing.JLabel" ) {
-								name: "label16"
-								"text": "City:"
-								"foreground": #SwingColor0
-							}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-								"x": 60
-								"y": 130
-								"width": 60
-								"height": 25
 							} )
 							add( new FormComponent( "javax.swing.JButton" ) {
 								name: "ReturnCar"
@@ -116,24 +81,76 @@ new FormModel {
 								"x": 60
 								"y": 175
 							} )
-							add( new FormComponent( "javax.swing.JTextField" ) {
-								name: "textField10"
+							add( new FormComponent( "javax.swing.JComboBox" ) {
+								name: "RentIDBox"
 							}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-								"width": 125
-								"height": 40
-								"x": 170
-								"y": 170
+								"x": 175
+								"y": 105
+								"width": 115
+								"height": 35
 							} )
-							add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
-								name: "scrollPane3"
-								add( new FormComponent( "javax.swing.JList" ) {
-									name: "list5"
+							add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
+								"rows": 6
+							} ) {
+								name: "panel5"
+								add( new FormComponent( "javax.swing.JLabel" ) {
+									name: "label9"
+									"text": "Comfirmation Number:"
+								} )
+								add( new FormComponent( "javax.swing.JLabel" ) {
+									name: "ReturnCN"
+								} )
+								add( new FormComponent( "javax.swing.JLabel" ) {
+									name: "label4"
+									"text": "Rental Date:"
+								} )
+								add( new FormComponent( "javax.swing.JLabel" ) {
+									name: "ReturnRentD"
+								} )
+								add( new FormComponent( "javax.swing.JLabel" ) {
+									name: "label12"
+									"text": "Return Date:"
+								} )
+								add( new FormComponent( "javax.swing.JLabel" ) {
+									name: "ReturnReturnD"
+								} )
+								add( new FormComponent( "javax.swing.JLabel" ) {
+									name: "label20"
+									"text": "Daily Rate:"
+								} )
+								add( new FormComponent( "javax.swing.JLabel" ) {
+									name: "ReturnRate"
+								} )
+								add( new FormComponent( "javax.swing.JLabel" ) {
+									name: "label21"
+									"text": "Duration:"
+								} )
+								add( new FormComponent( "javax.swing.JLabel" ) {
+									name: "ReturnDur"
+								} )
+								add( new FormComponent( "javax.swing.JLabel" ) {
+									name: "label23"
+									"text": "Total Price:"
+								} )
+								add( new FormComponent( "javax.swing.JLabel" ) {
+									name: "ReturnTP"
 								} )
 							}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-								"x": 395
-								"y": 35
-								"width": 345
-								"height": 400
+								"x": 450
+								"y": 60
+								"height": 390
+								"width": 310
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "label24"
+								"text": "Receipt"
+								"horizontalAlignment": 0
+								"foreground": sfield java.awt.Color pink
+							}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+								"x": 505
+								"y": 25
+								"width": 220
+								"height": 40
 							} )
 						}, new FormLayoutConstraints( null ) {
 							"title": "Return"
@@ -166,21 +183,51 @@ new FormModel {
 									"text": "Search"
 									"foreground": #SwingColor0
 								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-									"x": 595
+									"x": 645
 									"y": 30
 									"width": 110
 									"height": 35
 								} )
-								add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
-									name: "scrollPane1"
-									add( new FormComponent( "javax.swing.JList" ) {
-										name: "list1"
+								add( new FormContainer( "javax.swing.JTabbedPane", new FormLayoutManager( class javax.swing.JTabbedPane ) ) {
+									name: "tabbedPane4"
+									add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+										name: "scrollPane1"
+										add( new FormComponent( "javax.swing.JList" ) {
+											name: "RentalDetailAllList"
+										} )
+									}, new FormLayoutConstraints( null ) {
+										"title": "Detail of All Rentals On The Day"
+									} )
+									add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+										name: "scrollPane5"
+										add( new FormComponent( "javax.swing.JList" ) {
+											name: "RentalTypeAllList"
+										} )
+									}, new FormLayoutConstraints( null ) {
+										"title": "Group By Category"
+									} )
+									add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+										name: "scrollPane6"
+										add( new FormComponent( "javax.swing.JList" ) {
+											name: "RentalBraAllList"
+										} )
+									}, new FormLayoutConstraints( null ) {
+										"title": "Group By Branch"
 									} )
 								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-									"x": 30
+									"x": 25
 									"y": 70
-									"width": 745
-									"height": 375
+									"width": 740
+									"height": 370
+								} )
+								add( new FormComponent( "javax.swing.JLabel" ) {
+									name: "totalRentNum"
+									"foreground": &SwingColor1 new com.jformdesigner.model.SwingColor( "Button.default.endBackground" )
+								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+									"x": 25
+									"y": 25
+									"width": 305
+									"height": 30
 								} )
 							}, new FormLayoutConstraints( null ) {
 								"title": "For all branchs"
@@ -194,7 +241,7 @@ new FormModel {
 									"foreground": #SwingColor0
 								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 									"x": 25
-									"y": 30
+									"y": 15
 									"width": 50
 									"height": 30
 								} )
@@ -202,7 +249,7 @@ new FormModel {
 									name: "RentDateForEach"
 								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 									"x": 60
-									"y": 20
+									"y": 5
 									"width": 110
 									"height": 40
 								} )
@@ -213,13 +260,13 @@ new FormModel {
 									"foreground": #SwingColor0
 								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 									"x": 185
-									"y": 40
+									"y": 25
 								} )
 								add( new FormComponent( "javax.swing.JComboBox" ) {
 									name: "RentCity"
 								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 									"x": 220
-									"y": 25
+									"y": 10
 									"width": 130
 									"height": 35
 								} )
@@ -230,7 +277,7 @@ new FormModel {
 									"foreground": #SwingColor0
 								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 									"x": 355
-									"y": 35
+									"y": 20
 									"width": 120
 									"height": 25
 								} )
@@ -240,7 +287,7 @@ new FormModel {
 									"width": 135
 									"height": 40
 									"x": 470
-									"y": 25
+									"y": 10
 								} )
 								add( new FormComponent( "javax.swing.JButton" ) {
 									name: "RentEachButton"
@@ -249,17 +296,42 @@ new FormModel {
 									"foreground": #SwingColor0
 								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 									"x": 615
-									"y": 25
+									"y": 10
 									"width": 95
 									"height": 40
 								} )
-								add( new FormComponent( "javax.swing.JList" ) {
-									name: "list2"
+								add( new FormContainer( "javax.swing.JTabbedPane", new FormLayoutManager( class javax.swing.JTabbedPane ) ) {
+									name: "tabbedPane5"
+									add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+										name: "scrollPane3"
+										add( new FormComponent( "javax.swing.JList" ) {
+											name: "RentalDetailEachList"
+										} )
+									}, new FormLayoutConstraints( null ) {
+										"title": "Detail of All Rentals On The Day"
+									} )
+									add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+										name: "scrollPane7"
+										add( new FormComponent( "javax.swing.JList" ) {
+											name: "RentalTypeEachList"
+										} )
+									}, new FormLayoutConstraints( null ) {
+										"title": "Group By Category"
+									} )
 								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-									"width": 760
-									"height": 370
+									"width": 785
+									"height": 310
+									"x": 0
+									"y": 105
+								} )
+								add( new FormComponent( "javax.swing.JLabel" ) {
+									name: "braRentNum"
+									"foreground": #SwingColor1
+								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+									"width": 420
+									"height": 30
 									"x": 10
-									"y": 75
+									"y": 50
 								} )
 							}, new FormLayoutConstraints( null ) {
 								"title": "For each branch"
@@ -268,7 +340,7 @@ new FormModel {
 							"title": "Rental Report"
 						} )
 						add( new FormContainer( "javax.swing.JTabbedPane", new FormLayoutManager( class javax.swing.JTabbedPane ) ) {
-							name: "tabbedPane3"
+							name: "TotalReturnNum"
 							"foreground": #SwingColor0
 							add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
 								name: "panel6"
@@ -302,16 +374,57 @@ new FormModel {
 										"width": 110
 										"height": 35
 									} )
-									add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
-										name: "scrollPane2"
-										add( new FormComponent( "javax.swing.JList" ) {
-											name: "list3"
+									add( new FormContainer( "javax.swing.JTabbedPane", new FormLayoutManager( class javax.swing.JTabbedPane ) ) {
+										name: "tabbedPane6"
+										add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+											name: "scrollPane2"
+											add( new FormComponent( "javax.swing.JList" ) {
+												name: "ReturnDetailAllList"
+											} )
+										}, new FormLayoutConstraints( null ) {
+											"title": "Detail of All Rentals On The Day"
+										} )
+										add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+											name: "scrollPane9"
+											add( new FormComponent( "javax.swing.JList" ) {
+												name: "ReturnTypeAllList"
+											} )
+										}, new FormLayoutConstraints( null ) {
+											"title": "Group By Category"
+										} )
+										add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+											name: "scrollPane10"
+											add( new FormComponent( "javax.swing.JList" ) {
+												name: "RentalBraAllList2"
+											} )
+										}, new FormLayoutConstraints( null ) {
+											"title": "Group By Branch"
 										} )
 									}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-										"x": 30
-										"y": 80
-										"width": 745
-										"height": 360
+										"width": 765
+										"height": 380
+										"x": 0
+										"y": 65
+									} )
+									add( new FormComponent( "javax.swing.JLabel" ) {
+										name: "totalReturnNum"
+										"text": "Total Number of Return on this date:"
+										"foreground": #SwingColor1
+									}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+										"x": 20
+										"y": 0
+										"width": 330
+										"height": 30
+									} )
+									add( new FormComponent( "javax.swing.JLabel" ) {
+										name: "totalReturnRev"
+										"text": "Total Revenue on this date:"
+										"foreground": #SwingColor1
+									}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+										"x": 20
+										"y": 35
+										"width": 200
+										"height": 25
 									} )
 								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 									"width": 784
@@ -333,7 +446,7 @@ new FormModel {
 									"height": 35
 								} )
 								add( new FormComponent( "javax.swing.JTextField" ) {
-									name: "ReturnDate"
+									name: "ReturnDateEach"
 								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 									"x": 60
 									"y": 5
@@ -349,7 +462,7 @@ new FormModel {
 									"y": 25
 								} )
 								add( new FormComponent( "javax.swing.JComboBox" ) {
-									name: "ReturnCity"
+									name: "ReturnCityEach"
 								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 									"x": 220
 									"y": 10
@@ -376,21 +489,57 @@ new FormModel {
 									"width": 95
 									"height": 40
 								} )
-								add( new FormComponent( "javax.swing.JList" ) {
-									name: "list4"
-								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-									"width": 760
-									"height": 370
-									"x": 10
-									"y": 75
-								} )
 								add( new FormComponent( "javax.swing.JComboBox" ) {
-									name: "ReturnAddr"
+									name: "ReturnAddrEach"
 								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 									"x": 475
 									"y": 10
 									"width": 125
 									"height": 35
+								} )
+								add( new FormContainer( "javax.swing.JTabbedPane", new FormLayoutManager( class javax.swing.JTabbedPane ) ) {
+									name: "tabbedPane7"
+									add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+										name: "scrollPane4"
+										add( new FormComponent( "javax.swing.JList" ) {
+											name: "ReturnDetailAllList2"
+										} )
+									}, new FormLayoutConstraints( null ) {
+										"title": "Detail of All Rentals On The Day"
+									} )
+									add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+										name: "scrollPane11"
+										add( new FormComponent( "javax.swing.JList" ) {
+											name: "ReturnTypeAllList2"
+										} )
+									}, new FormLayoutConstraints( null ) {
+										"title": "Group By Category"
+									} )
+								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+									"width": 780
+									"height": 370
+									"x": 5
+									"y": 65
+								} )
+								add( new FormComponent( "javax.swing.JLabel" ) {
+									name: "braReturnNum"
+									"text": "Total Number of Return for This Branch on This Date:"
+									"foreground": #SwingColor1
+								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+									"x": 15
+									"y": 45
+									"width": 455
+									"height": 25
+								} )
+								add( new FormComponent( "javax.swing.JLabel" ) {
+									name: "braReturnRev"
+									"text": "Total Revenue for This Branch:"
+									"foreground": #SwingColor1
+								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+									"x": 485
+									"y": 45
+									"width": 215
+									"height": 25
 								} )
 							}, new FormLayoutConstraints( null ) {
 								"title": "For each branch"
