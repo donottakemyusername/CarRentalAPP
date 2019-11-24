@@ -1,12 +1,18 @@
 package ca.ubc.cs304.ui;
 
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegates;
+import ca.ubc.cs304.model.Branches;
+import ca.ubc.cs304.model.VehicleSearchResults;
+import ca.ubc.cs304.model.VehicleTypeModel;
+import ca.ubc.cs304.model.Vehicles;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Date;
+import java.sql.Time;
 /*
  * Created by JFormDesigner on Tue Nov 19 22:58:41 PST 2019
  */
@@ -31,31 +37,42 @@ public class Reserve extends JFrame {
         //frame.setSize(800, 600);
         frame.setVisible(true);
 
-        SetAllCars();
+        SetAllCars(); // TODO: remove this window, not important
         personalSetup();
-
-        ResTypeBox.addItem("Vancouver");
-        ResTypeBox.addItem("Toronto");
-        ResTypeBox.addItem("sss");
-        ResTypeBox.addItem("we");
-
-        String[] listData = new String[10];
-        for (int i = 0; i <2; i++){
-            listData[i] = String.format("%-4.4s", "" + "sss")+
-                    String.format("%-10s", "" + "aaaaaa");
-        }
-
-        AvaCarsList.setListData(listData);
-
-
+        reserveSetup();
+        // This is the current date shown in Available cars...just show all vehicles there are
+        SetAvailableCars();
 
         //ActionListener
 
         PerSearch.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                AvaCarNum.setText("20");
+                String carType = (String) PerCarTypeBox.getSelectedItem();
+                Boolean hasCarType = false;
+                if (carType != null && !carType.isEmpty()) hasCarType = true;
+                String city = PerCity.getText();
+                String address = PerAddress.getText();
+                boolean hasLocation = false;
+                if (address != null && !address.isEmpty()) hasLocation = true;
+                Date fromDate = parseDateFromString(PerFDBox.getText());
+                Time fromTime = parseTimeFromString(PerFTBox.getText());
+                Date toDate = parseDateFromString(PerTDBox.getText());
+                Time toTime = parseTimeFromString(PerFTBox.getText());
+                Boolean hasTimePeriod = false;
+                if (fromDate != null && fromTime != null && toDate != null && toTime != null) hasTimePeriod = true;
+                VehicleSearchResults[] searchResults = delegate.customerSearchVehicle(hasCarType, hasLocation, hasTimePeriod,
+                        carType, address, fromDate, fromTime, toDate, toTime);
+                String[] listData = new String[searchResults.length +1];
+                for (int i=0; i<searchResults.length; i++ ){
+                    listData[i] = String.format("%-20.15s", "" + searchResults[i].getVehicleType())+
+                            String.format("%-20.15s", "" + searchResults[i].getLocation()) +
+                            String.format("%-20.15s", "" + PerFDBox.getText()) +
+                            String.format("%-20.15s", "" + PerTDBox.getText()) +
+                            String.format("%-20.15s", "" + searchResults[i].getNumAvailable());
+                    System.out.println(listData[i]);
+                }
+                PerList.setListData(listData);
                 JOptionPane.showMessageDialog(null,"yes");
             }
         }
@@ -64,8 +81,19 @@ public class Reserve extends JFrame {
         reservebutton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                AvaCarNum.setText("20");
-                JOptionPane.showMessageDialog(null,"yes");
+                String carType = (String) ResTypeBox.getSelectedItem();
+                String dlicense = RevDlic.getText();
+                String cname = ResCname.getText();
+                String phoneNum = ResCphone.getText();
+                String caddress = ResCaddr.getText();
+                String branchAddress = ResBA.getText();
+                Date fromDate = parseDateFromString(ResFD.getText());
+                Time fromTime = parseTimeFromString(ResFT.getText());
+                Date toDate = parseDateFromString(ResTD.getText());
+                Time toTime = parseTimeFromString(textField12.getText());
+                int confNo = delegate.makeReservation(dlicense, cname, phoneNum, caddress, branchAddress, carType,
+                        fromDate, fromTime, toDate, toTime);
+                JOptionPane.showMessageDialog(null,"Reservation Made! Confirmation Number is " + confNo);
             }
         }
         );
@@ -91,43 +119,66 @@ public class Reserve extends JFrame {
 
     }
 
+    private Date parseDateFromString(String dateStr) {
+        String[] parts = dateStr.split("/");
+        // TODO: need to add more checks
+        if (dateStr.isEmpty() || parts.length != 3) return null;
+        return new Date(Integer.parseInt(parts[2])+1900, Integer.parseInt(parts[0])-1, Integer.parseInt(parts[1]));
+    }
+
+    private Time parseTimeFromString(String timeStr) {
+        String[] parts = timeStr.split(":");
+        // TODO: need more checks
+        if (timeStr.isEmpty() || parts.length != 2) return null;
+        return new Time(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), 0);
+    }
+
     private void personalSetup() {
-        //get all cities and set up using for
-        PerCarTypeBox.addItem("Vancouver");
+        // adds all possible vehicle types into the drop down window for "Reserve"
+        VehicleTypeModel[] vehicleTypes = this.delegate.getAllVehicleTypes();
+        for (VehicleTypeModel vt : vehicleTypes) {
+            ResTypeBox.addItem(vt.getVtname());
+            PerCarTypeBox.addItem(vt.getVtname());
+        }
+
         String[] s = new String[1];
         s[0] = (String) PerCarTypeBox.getSelectedItem();
         PerList.setListData(s);
-        //get all car type and set up using for lopp
-        PerCarTypeBox.addItem("SUV");
 
+    }
+
+    public void reserveSetup() {
+        // adds all possible vehicle types into the drop down window for "Reserve"
+        VehicleTypeModel[] vehicleTypes = this.delegate.getAllVehicleTypes();
+        for (VehicleTypeModel vt : vehicleTypes) {
+            ResTypeBox.addItem(vt.getVtname());
+        }
     }
 
     private void SetAllCars() {
-        ////get All cars
-        // int AllCarsSize = allcars.size()
-
-        //String[] allcarsinfo = new String[AllCarsSize]
-        //
-//        for (int i = 0; i<=AllCarsSize; i++){
-//            Vehicle v = allcars.get(i);
-//            allcarsinfo = ...
-//        }
-//        AllCarsList.setListData(allcarsinfo);
+        // show all of the vehicles that are possibly available
+        Vehicles[] allVehicles = this.delegate.getAllVehicles();
+        String[] listData = new String[allVehicles.length +1];
+        for (int i=0; i<allVehicles.length; i++) {
+            listData[i] = allVehicles[i].getVlicense();
+        }
+        AllCarsList.setListData(listData);
     }
 
     private void SetAvailableCars() {
-        ////get available cars
-        // int AvaCarsSize = AvaCars.size()
-
-        //String[] avacarsinfo = new String[AvaCarsSize]
-        //
-//        for (int i = 0; i<=AvaCarsSize; i++){
-//            Vehicle v = allcars.get(i);
-//            avacarsinfo = ...
-//        }
-//        AvaCarsList.setListData(avacarsinfo);
+        // show all of the vehicles that are possibly available
+        Vehicles[] allVehicles = this.delegate.getAllVehicles();
+        String[] listData = new String[allVehicles.length +1];
+        for (int i=0; i<allVehicles.length; i++) {
+            listData[i] = String.format("%-20.15s", "" + allVehicles[i].getVtname())+
+                    String.format("%-4.4s", " " + allVehicles[i].getMake()) +
+                    String.format("%-20.15s", "" + allVehicles[i].getModel()) +
+                    String.format("%-20.15s", "" + allVehicles[i].getVlicense()) +
+                    String.format("%-20.15s", "" + allVehicles[i].getLocation()) +
+                    String.format("%-20.15s", "" + allVehicles[i].getCity());
+        }
+        AvaCarsList.setListData(listData);
     }
-        //AvaCarNum.setText(AvaCarsSize)
 
 
     {
@@ -197,6 +248,8 @@ public class Reserve extends JFrame {
         ResTD = new JTextField();
         label31 = new JLabel();
         textField12 = new JTextField();
+        label35 = new JLabel();
+        ResBA = new JTextField();
         reservebutton = new JButton();
         buttonBar = new JPanel();
         ReturnButton = new JButton();
@@ -345,25 +398,25 @@ public class Reserve extends JFrame {
                                 panel1.add(PerAddress);
 
                                 //---- label9 ----
-                                label9.setText("From Date:");
+                                label9.setText("From Date (MM/DD/YYYY):");
                                 label9.setHorizontalAlignment(SwingConstants.CENTER);
                                 panel1.add(label9);
                                 panel1.add(PerFDBox);
 
                                 //---- label10 ----
-                                label10.setText("From Time:");
+                                label10.setText("From Time (hh:mm):");
                                 label10.setHorizontalAlignment(SwingConstants.CENTER);
                                 panel1.add(label10);
                                 panel1.add(PerFTBox);
 
                                 //---- label11 ----
-                                label11.setText("To Date:");
+                                label11.setText("To Date (MM/DD/YYYY):");
                                 label11.setHorizontalAlignment(SwingConstants.CENTER);
                                 panel1.add(label11);
                                 panel1.add(PerTDBox);
 
                                 //---- label12 ----
-                                label12.setText("To Time:");
+                                label12.setText("To Time (hh:mm):");
                                 label12.setHorizontalAlignment(SwingConstants.CENTER);
                                 panel1.add(label12);
                                 panel1.add(PerTTBox);
@@ -434,7 +487,7 @@ public class Reserve extends JFrame {
 
                         //======== panel2 ========
                         {
-                            panel2.setLayout(new GridLayout(9, 2));
+                            panel2.setLayout(new GridLayout(10, 2));
 
                             //---- label26 ----
                             label26.setText("Vehicle Type Name");
@@ -467,28 +520,34 @@ public class Reserve extends JFrame {
                             panel2.add(ResCaddr);
 
                             //---- label27 ----
-                            label27.setText("From Date");
+                            label27.setText("From Date (MM/DD/YYYY)");
                             label27.setHorizontalAlignment(SwingConstants.CENTER);
                             panel2.add(label27);
                             panel2.add(ResFD);
 
                             //---- label29 ----
-                            label29.setText("From Time");
+                            label29.setText("From Time (hh:mm)");
                             label29.setHorizontalAlignment(SwingConstants.CENTER);
                             panel2.add(label29);
                             panel2.add(ResFT);
 
                             //---- label30 ----
-                            label30.setText("To Date");
+                            label30.setText("To Date (MM/DD/YYYY)");
                             label30.setHorizontalAlignment(SwingConstants.CENTER);
                             panel2.add(label30);
                             panel2.add(ResTD);
 
                             //---- label31 ----
-                            label31.setText("To Time");
+                            label31.setText("To Time (hh:mm)");
                             label31.setHorizontalAlignment(SwingConstants.CENTER);
                             panel2.add(label31);
                             panel2.add(textField12);
+
+                            //---- label35 ----
+                            label35.setText("Branch Address:");
+                            label35.setHorizontalAlignment(SwingConstants.CENTER);
+                            panel2.add(label35);
+                            panel2.add(ResBA);
                         }
                         ResTT.add(panel2);
                         panel2.setBounds(110, 20, 350, 375);
@@ -625,6 +684,8 @@ public class Reserve extends JFrame {
     private JTextField ResTD;
     private JLabel label31;
     private JTextField textField12;
+    private JLabel label35;
+    private JTextField ResBA;
     private JButton reservebutton;
     private JPanel buttonBar;
     private JButton ReturnButton;

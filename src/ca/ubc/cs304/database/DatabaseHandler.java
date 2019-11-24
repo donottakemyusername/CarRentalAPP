@@ -1,5 +1,7 @@
 package ca.ubc.cs304.database;
 
+import ca.ubc.cs304.exceptions.IllegalTimePeriodException;
+import ca.ubc.cs304.exceptions.InvalidReservationException;
 import ca.ubc.cs304.model.*;
 import javafx.util.Pair;
 
@@ -384,13 +386,13 @@ public class DatabaseHandler {
 		if (carType != null) hasCarType = true;
 		if (location != null) hasLocation = true;
 
-		try {
-			String queryStringVehicle = "SELECT V.vtname, V.location, COUNT(*) FROM Vehicle V";
+		try {	
+			String queryStringVehicle = "SELECT vtname, location, COUNT(*) FROM Vehicle";
 			if (hasCarType || hasLocation) queryStringVehicle += " WHERE";
-			if (hasCarType) queryStringVehicle += " V.vtname = ?";
+			if (hasCarType) queryStringVehicle += " vtname = ?";
 			if (hasCarType && hasLocation) queryStringVehicle += " AND";
-			if (hasLocation) queryStringVehicle += " V.location = ?";
-			queryStringVehicle += " GROUP BY V.vtname, V.location";
+			if (hasLocation) queryStringVehicle += " location = ?";
+			queryStringVehicle += " GROUP BY vtname, location";
 
 			System.out.println(queryStringVehicle);
 
@@ -406,11 +408,22 @@ public class DatabaseHandler {
 			ResultSet rs1 = ps.executeQuery();
 
 			while (rs1.next()) {
-				VehicleSearchResults result = new VehicleSearchResults(rs1.getString(1), rs1.getString(2), null, rs1.getInt(3));
+				VehicleSearchResults result = new VehicleSearchResults(rs1.getString("vtname"),
+						rs1.getString("location"), null, rs1.getInt("COUNT(*)"));
 				searchResults.add(result);
 			}
 
 			if (timePeriod != null) {
+				if (timePeriod.getFromDate().compareTo(timePeriod.getToTime()) >= 0 ||
+						(timePeriod.getFromDate().compareTo(timePeriod.getToTime()) == 0 && timePeriod.getFromTime().compareTo(timePeriod.getToTime()) >= 0)) {
+					throw new IllegalTimePeriodException("time period specified is invalid.");
+				}
+
+				Date earliestDate = new Date (1900+1900, 0, 1);
+				if (timePeriod.getFromDate().compareTo(earliestDate) < 0 || timePeriod.getToDate().compareTo(earliestDate) < 0) {
+					throw new IllegalTimePeriodException("time period specified is unreasonable.");
+				}
+
 				String caseEndWithinTP = "((SELECT R.confNo FROM Reservation R WHERE R.toDate > ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.toDate = ? AND R.toTime >= ?)) INTERSECT ((SELECT R.confNo FROM Reservation R WHERE R.toDate < ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.toDate = ? AND R.toTime <= ?))";
 				// fromDate, fromDate fromTime, toDate, toDate, toTime
 				String caseStartWithinTP = "((SELECT R.confNo FROM Reservation R WHERE R.fromDate < ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.fromDate = ? AND R.fromTime <= ?)) INTERSECT ((SELECT R.confNo FROM Reservation R WHERE R.toDate > ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.toDate = ? AND R.toTime >= ?))";
@@ -465,9 +478,33 @@ public class DatabaseHandler {
 				}
 			}
 
-		} catch (SQLException e) {
-			e.printStackTrace();
+			// get the details of all the vehicles that could be available
+			for (VehicleSearchResults sr : searchResults) {
+				ps = connection.prepareStatement("SELECT * FROM Vehicle WHERE vtname = ? AND location = ?");
+				ps.setString(1, sr.getVehicleType());
+				ps.setString(2, sr.getLocation());
+				ResultSet rs = ps.executeQuery();
+				while (rs.next()) {
+					Vehicles.Status s = Vehicles.Status.AVAILABLE;
+					if (rs1.getString("status").equals("rented")) s = Vehicles.Status.RENTED;
+					else if (rs1.getString("status").equals("maintenance")) s = Vehicles.Status.MAINTENANCE;
+					Vehicles v = new Vehicles(rs1.getString("vlicense"),
+							rs1.getString("make"),
+							rs1.getString("model"),
+							rs1.getInt("year"),
+							rs1.getString("color"),
+							rs1.getDouble("odometer"),
+							s,
+							rs1.getString("vtname"),
+							rs1.getString("location"),
+							rs1.getString("city"));
+					sr.addVehicle(v);
+				}
+			}
+		} catch (SQLException | IllegalTimePeriodException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
 		}
+
 		return searchResults.toArray(new VehicleSearchResults[searchResults.size()]);
 	}
 
@@ -531,7 +568,7 @@ public class DatabaseHandler {
 
 		try {
 			Statement stmt = connection.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM branch WHERE location = ?");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM branch");
 
 //    		// get info on ResultSet
 //    		ResultSetMetaData rsmd = rs.getMetaData();
@@ -1098,7 +1135,7 @@ public class DatabaseHandler {
 		return nextRid;
 	}
 
-	public ReservationModel findReservation(int confNum) {
+	public ReservationModel findReservation(int confNum) throws InvalidReservationException {
 		try {
 			PreparedStatement ps = connection.prepareStatement("SELECT * FROM Reservation WHERE confNo = ?");
 			ps.setInt(1, confNum);
@@ -1118,8 +1155,7 @@ public class DatabaseHandler {
 			}
 
 			if (!found) {
-				// TODO: throw an exception
-				System.out.println("Reservation confirmation number: " + confNum + " not found.");
+				throw new InvalidReservationException("reservation confNo does not exist");
 			}
 
 		} catch (SQLException e) {
@@ -1209,5 +1245,59 @@ public class DatabaseHandler {
 		} catch (SQLException e) {
 			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
 		}
+	}
+
+	public VehicleTypeModel[] getAllVehicleTypes() {
+    	ArrayList<VehicleTypeModel> searchResults = new ArrayList<>();
+    	try {
+    		PreparedStatement ps = connection.prepareStatement("SELECT * from VehicleType");
+    		ResultSet rs = ps.executeQuery();
+
+    		while (rs.next()) {
+    			VehicleTypeModel vt = new VehicleTypeModel(rs.getString("vtname"),
+						rs.getString("features"),
+						rs.getDouble("wrate"),
+						rs.getDouble("drate"),
+						rs.getDouble("hrate"),
+						rs.getDouble("wirate"),
+						rs.getDouble("dirate"),
+						rs.getDouble("hirate"),
+						rs.getDouble("krate"));
+    			searchResults.add(vt);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return searchResults.toArray(new VehicleTypeModel[searchResults.size()]);
+	}
+
+	public Vehicles[] getAllVehicles() {
+		ArrayList<Vehicles> searchResults = new ArrayList<>();
+		try {
+			PreparedStatement ps = connection.prepareStatement("SELECT * from Vehicle");
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				Vehicles.Status s = Vehicles.Status.AVAILABLE;
+				if (rs.getString("status").equals("rented")) s = Vehicles.Status.RENTED;
+				else if (rs.getString("status").equals("maintenance")) s = Vehicles.Status.MAINTENANCE;
+				Vehicles v = new Vehicles(rs.getString("vlicense"),
+						rs.getString("make"),
+						rs.getString("model"),
+						rs.getInt("year"),
+						rs.getString("color"),
+						rs.getDouble("odometer"),
+						s,
+						rs.getString("vtname"),
+						rs.getString("location"),
+						rs.getString("city"));
+				searchResults.add(v);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return searchResults.toArray(new Vehicles[searchResults.size()]);
 	}
 }

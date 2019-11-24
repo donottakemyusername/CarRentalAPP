@@ -3,6 +3,8 @@ package ca.ubc.cs304.controller;
 import ca.ubc.cs304.database.DatabaseHandler;
 import ca.ubc.cs304.delegates.LoginWindowDelegate;
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegates;
+import ca.ubc.cs304.exceptions.InvalidDetailsException;
+import ca.ubc.cs304.exceptions.InvalidReservationException;
 import ca.ubc.cs304.model.*;
 import ca.ubc.cs304.ui.LoginWindow;
 import ca.ubc.cs304.ui.RoleChoose;
@@ -168,6 +170,7 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegates 
 
 	public VehicleSearchResults[] customerSearchVehicle(Boolean hasCarType, Boolean hasLocation, Boolean hasTimePeriod,
 									  String carType, String location, Date fromDate, Time fromTime, Date toDate, Time toTime) {
+
     	if (!hasTimePeriod) {
     		return dbHandler.customerSearchVehicle(carType, location, null);
 		} else {
@@ -176,42 +179,66 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegates 
 		}
 	}
 
+	public void checkParameters(String dlicense, String cname, String phoneNum, String address,
+								String location, String vtname, Date fromDate, Time fromTime,
+								Date toDate, Time toTime) throws InvalidDetailsException{
+    	if (dlicense == null || cname == null || phoneNum == null || address == null  || location == null || vtname == null || fromDate == null || fromTime == null || toDate == null || toTime == null) {
+    		throw new InvalidDetailsException("One or more parameters are null");
+		}
+
+    	if (dlicense.isEmpty() || cname.isEmpty() || phoneNum.isEmpty() || address.isEmpty() || location.isEmpty() || vtname.isEmpty()) {
+    		throw new InvalidDetailsException("One or more of the required reservation fields are empty.");
+		}
+	}
+
 	// return -1 if the reservation can't be made
 	@Override
 	public int makeReservation(String dlicense, String cname, String phoneNum, String address, String location, String vtname, Date fromDate, Time fromTime, Date toDate, Time toTime) {
-		// check if the customer exists in the database, if not add them
-    	dbHandler.findOrAddCustomer(dlicense, cname, phoneNum, address);
+		int nextConfNum = -1;
+    	try {
+    		// check that all of our parameters are valid
+			checkParameters(dlicense, cname, phoneNum, address, location, vtname, fromDate, fromTime, toDate, toTime);
 
-    	// check if our desired reservation can be made
-		VehicleSearchResults[] result = customerSearchVehicle(true, true, true, vtname, location, fromDate, fromTime, toDate, toTime);
-		// if it is now gone, then send a sorry message
-		if (result.length == 0) {
-			System.out.println("Sorry, the vehicle type you wish to reserve is now gone.");
-			return -1;
+			// check if the customer exists in the database, if not add them
+			dbHandler.findOrAddCustomer(dlicense, cname, phoneNum, address);
+
+			// check if our desired reservation can be made
+			VehicleSearchResults[] result = customerSearchVehicle(true, true, true, vtname, location, fromDate, fromTime, toDate, toTime);
+			// if it is now gone, then send a sorry message
+			if (result.length == 0) {
+				System.out.println("Sorry, the vehicle type you wish to reserve is now gone.");
+				return -1;
+			}
+			// otherwise, make our desired reservation, first by getting the last confirmation number and incrementting (reservation confNo are in numerical order)
+			nextConfNum = dbHandler.getNextConfNum();
+			ReservationModel rs = new ReservationModel(nextConfNum, vtname, dlicense, fromDate, fromTime, toDate, toTime);
+			insertReservation(rs);
+		} catch (InvalidDetailsException e) {
+			System.out.println("[EXCEPTION] " + e.getMessage());
 		}
-		// otherwise, make our desired reservation, first by getting the last confirmation number and incrementting (reservation confNo are in numerical order)
-		int nextConfNum = dbHandler.getNextConfNum();
-		ReservationModel rs = new ReservationModel(nextConfNum, vtname, dlicense, fromDate, fromTime, toDate, toTime);
-		insertReservation(rs);
-
-    	return nextConfNum;
+		return nextConfNum;
 	}
 
 	@Override
 	public RentalReceipt makeRental(int confNum, String location, String cardName, String cardNo, Date expDate) {
     	// get the reservation if it exists
-		// TODO: wrap in an exception
-		ReservationModel r = dbHandler.findReservation(confNum);
-		// the next rental id is in numerical order so the next one is one higher than the max
-		int nextRid = dbHandler.getNextRid();
-		// get the first vehicle that satisfies this
-		TimePeriodModel tp = new TimePeriodModel(r.getFromDate(), r.getFromTime(), r.getToDate(), r.getToTime());
-		Vehicles v = dbHandler.getRentalVehicle(r.getVtname(), location, tp);
-		RentalModel rent = new RentalModel(nextRid, v.getVlicense(), r.getDlicense(), tp.getFromDate(), tp.getFromTime(), tp.getToDate(), tp.getToTime(),
-				v.getOdometer(), cardName, cardNo, expDate, r.getConfNum());
-		insertRental(rent);
-		// make Receipt and return
-		RentalReceipt receipt = new RentalReceipt(nextRid, confNum, tp, rent.getVlicense(), location);
+		RentalReceipt receipt = null;
+		try {
+			ReservationModel r = dbHandler.findReservation(confNum);
+			// the next rental id is in numerical order so the next one is one higher than the max
+			int nextRid = dbHandler.getNextRid();
+			// get the first vehicle that satisfies this
+			TimePeriodModel tp = new TimePeriodModel(r.getFromDate(), r.getFromTime(), r.getToDate(), r.getToTime());
+			Vehicles v = dbHandler.getRentalVehicle(r.getVtname(), location, tp);
+			RentalModel rent = new RentalModel(nextRid, v.getVlicense(), r.getDlicense(), tp.getFromDate(), tp.getFromTime(), tp.getToDate(), tp.getToTime(),
+					v.getOdometer(), cardName, cardNo, expDate, r.getConfNum());
+			insertRental(rent);
+			// make Receipt and return
+			receipt = new RentalReceipt(nextRid, confNum, tp, rent.getVlicense(), location);
+			return receipt;
+		} catch (InvalidReservationException e) {
+			System.out.println("[EXCEPTION] " + e.getMessage());
+		}
 		return receipt;
 	}
 
@@ -254,8 +281,23 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegates 
     	
     	System.exit(0);
     }
-    
-	/**
+
+    @Override
+    public VehicleTypeModel[] getAllVehicleTypes() {
+        return dbHandler.getAllVehicleTypes();
+    }
+
+    @Override
+    public Branches[] getAllBranches() {
+        return dbHandler.getBranchInfo();
+    }
+
+    @Override
+    public Vehicles[] getAllVehicles() {
+        return dbHandler.getAllVehicles();
+    }
+
+    /**
 	 * Main method called at launch time
 	 */
 	public static void main(String args[]) {

@@ -51,4 +51,9 @@ public interface TerminalTransactionsDelegates {
 
 	
 	public void terminalTransactionsFinished();
+
+    public VehicleTypeModel[] getAllVehicleTypes();
+
+	Branches[] getAllBranches();
+	Vehicles[] getAllVehicles();
 }

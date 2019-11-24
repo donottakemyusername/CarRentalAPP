@@ -1,5 +1,6 @@
 package ca.ubc.cs304.model;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class VehicleSearchResults {
@@ -7,6 +8,7 @@ public class VehicleSearchResults {
     private String location;
     private TimePeriodModel timePeriod;
     private int numAvailable;
+    private ArrayList<Vehicles> vehicles;
 
     public VehicleSearchResults(String vehicleType, String location, TimePeriodModel timePeriod, int numAvailable) {
         // if something is null it means that it was not set (not searched for) except for vehicleType (vehicleType will never be null)
@@ -14,6 +16,7 @@ public class VehicleSearchResults {
         this.location = location;
         this.timePeriod = timePeriod;
         this.numAvailable = numAvailable;
+        this.vehicles = new ArrayList<>();
     }
 
     public String getVehicleType() {
@@ -44,6 +47,10 @@ public class VehicleSearchResults {
 
     public void setNumAvailable(int numAvailable) {
         this.numAvailable = numAvailable;
+    }
+
+    public void addVehicle(Vehicles v) {
+        vehicles.add(v);
     }
 
     @Override
