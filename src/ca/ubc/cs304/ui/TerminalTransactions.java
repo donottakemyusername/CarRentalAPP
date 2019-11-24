@@ -82,7 +82,7 @@ public class TerminalTransactions {
 
 		// example for Customer
 		String dlicense1 = "BC_ZHANG_231", name1 = "Hong Yang", phoneNum1 = "1234567890", address1 = "1234 Lower Mall";
-		CustomerModel c1 = new CustomerModel(dlicense1, name1, phoneNum1, address1);
+		CustomerModel c1 = new CustomerModel(dlicense1, name1, phoneNum1, address1, 0);
 		this.delegate.insertCustomer(c1);
 
 		// example for Reservation
@@ -217,6 +217,10 @@ public class TerminalTransactions {
 		toDate2 = new Date(2018+1900, 10, 28); // 11/28/2018
 		toTime2 = new Time(9, 0, 0);
 		this.delegate.makeReservation(dlicense1, name1, phoneNum1, "2388 Western Parkway", location1, vtname1, fromDate2, fromTime2, toDate2, toTime2);
+		printSearchResults(vr);
+
+		// make a reservation
+
 
 
 		bufferedReader = new BufferedReader(new InputStreamReader(System.in));
