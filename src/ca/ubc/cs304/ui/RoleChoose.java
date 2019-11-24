@@ -107,6 +107,9 @@ public class RoleChoose extends JFrame {
                 contentPanel.add(ClerkButton);
                 ClerkButton.setBounds(new Rectangle(new Point(185, 95), ClerkButton.getPreferredSize()));
 
+                ButtonGroup bg = new ButtonGroup();
+                bg.add(CusButton);
+                bg.add(ClerkButton);
                 {
                     // compute preferred size
                     Dimension preferredSize = new Dimension();
