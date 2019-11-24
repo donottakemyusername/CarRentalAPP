@@ -1207,7 +1207,7 @@ public class DatabaseHandler {
 	}
 
 	private void rollbackConnection() {
-		try  {
+		try {
 			connection.rollback();	
 		} catch (SQLException e) {
 			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
