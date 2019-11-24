@@ -170,7 +170,6 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegates 
 
 	public VehicleSearchResults[] customerSearchVehicle(Boolean hasCarType, Boolean hasLocation, Boolean hasTimePeriod,
 									  String carType, String location, Date fromDate, Time fromTime, Date toDate, Time toTime) {
-
     	if (!hasTimePeriod) {
     		return dbHandler.customerSearchVehicle(carType, location, null);
 		} else {

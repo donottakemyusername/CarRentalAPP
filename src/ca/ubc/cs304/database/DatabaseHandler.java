@@ -378,13 +378,12 @@ public class DatabaseHandler {
 
 	public VehicleSearchResults[] customerSearchVehicle(String carType, String location, TimePeriodModel timePeriod) {
 		ArrayList<VehicleSearchResults> searchResults = new ArrayList<>();
-		HashMap<VehicleSearchResults, Integer> count;
 
 		Boolean hasCarType = false;
 		Boolean hasLocation = false;
 
-		if (carType != null) hasCarType = true;
-		if (location != null) hasLocation = true;
+		if (carType != null && !carType.isEmpty() && !carType.equals("All")) hasCarType = true;
+		if (location != null && !location.isEmpty()) hasLocation = true;
 
 		try {	
 			String queryStringVehicle = "SELECT vtname, location, COUNT(*) FROM Vehicle";
@@ -486,18 +485,18 @@ public class DatabaseHandler {
 				ResultSet rs = ps.executeQuery();
 				while (rs.next()) {
 					Vehicles.Status s = Vehicles.Status.AVAILABLE;
-					if (rs1.getString("status").equals("rented")) s = Vehicles.Status.RENTED;
-					else if (rs1.getString("status").equals("maintenance")) s = Vehicles.Status.MAINTENANCE;
-					Vehicles v = new Vehicles(rs1.getString("vlicense"),
-							rs1.getString("make"),
-							rs1.getString("model"),
-							rs1.getInt("year"),
-							rs1.getString("color"),
-							rs1.getDouble("odometer"),
+					if (rs.getString("status").equals("rented")) s = Vehicles.Status.RENTED;
+					else if (rs.getString("status").equals("maintenance")) s = Vehicles.Status.MAINTENANCE;
+					Vehicles v = new Vehicles(rs.getString("vlicense"),
+							rs.getString("make"),
+							rs.getString("model"),
+							rs.getInt("year"),
+							rs.getString("color"),
+							rs.getDouble("odometer"),
 							s,
-							rs1.getString("vtname"),
-							rs1.getString("location"),
-							rs1.getString("city"));
+							rs.getString("vtname"),
+							rs.getString("location"),
+							rs.getString("city"));
 					sr.addVehicle(v);
 				}
 			}

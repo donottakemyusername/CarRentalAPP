@@ -50,11 +50,12 @@ public class Reserve extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String carType = (String) PerCarTypeBox.getSelectedItem();
                 Boolean hasCarType = false;
-                if (carType != null && !carType.isEmpty()) hasCarType = true;
+                if (carType != null && !carType.isEmpty() && !carType.equals("All")) hasCarType = true;
                 String city = PerCity.getText();
                 String address = PerAddress.getText();
                 boolean hasLocation = false;
                 if (address != null && !address.isEmpty()) hasLocation = true;
+                System.out.println("Time period is not filled out: " + PerFDBox.getText());
                 Date fromDate = parseDateFromString(PerFDBox.getText());
                 Time fromTime = parseTimeFromString(PerFTBox.getText());
                 Date toDate = parseDateFromString(PerTDBox.getText());
@@ -135,16 +136,11 @@ public class Reserve extends JFrame {
 
     private void personalSetup() {
         // adds all possible vehicle types into the drop down window for "Reserve"
+        PerCarTypeBox.addItem("All");
         VehicleTypeModel[] vehicleTypes = this.delegate.getAllVehicleTypes();
         for (VehicleTypeModel vt : vehicleTypes) {
-            ResTypeBox.addItem(vt.getVtname());
             PerCarTypeBox.addItem(vt.getVtname());
         }
-
-        String[] s = new String[1];
-        s[0] = (String) PerCarTypeBox.getSelectedItem();
-        PerList.setListData(s);
-
     }
 
     public void reserveSetup() {

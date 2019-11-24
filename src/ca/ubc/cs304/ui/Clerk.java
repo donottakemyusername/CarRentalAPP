@@ -362,6 +362,7 @@ public class Clerk extends JFrame {
         buttonBar = new JPanel();
         ReturnButton = new JButton();
         FinishButton = new JButton();
+        label25 = new JLabel();
 
         //======== this ========
         Container contentPane = getContentPane();
@@ -389,6 +390,12 @@ public class Clerk extends JFrame {
                     //======== panel2 ========
                     {
                         panel2.setLayout(null);
+
+                        //---- label25 ----
+                        label25.setText("Please enter a confirmation number OR details for reservation.\n\n");
+                        panel2.add(label25);
+                        label25.setBounds(new Rectangle(new Point(60, 30), label25.getPreferredSize()));
+
 
                         //---- label1 ----
                         label1.setText("Confirmation Num:");
@@ -957,5 +964,6 @@ public class Clerk extends JFrame {
     private JPanel buttonBar;
     private JButton ReturnButton;
     private JButton FinishButton;
+    private JLabel label25;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }
