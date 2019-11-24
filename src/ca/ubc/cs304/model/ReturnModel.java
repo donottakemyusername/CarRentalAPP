@@ -21,6 +21,32 @@ public class ReturnModel {
         this.value = value;
     }
 
+    public void setValue(int value) {
+        this.value = value;
+    }
+
+    public void setFullTank(boolean fullTank) {
+        this.fullTank = fullTank;
+    }
+
+    public void setOdometer(int odometer) {
+        this.odometer = odometer;
+    }
+
+    public void setTime(Time time) {
+        this.time = time;
+    }
+
+    public void setrDate(Date rDate) {
+        this.rDate = rDate;
+    }
+
+    public void setRid(int rid) {
+        this.rid = rid;
+    }
+
+    private int value;
+
     public int getRid() {return rid;}
 
     public Date getRDate() {return rDate;}

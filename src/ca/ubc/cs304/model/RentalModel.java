@@ -6,17 +6,17 @@ import java.sql.Time;
 public class RentalModel {
 
     private final int rid;
-    private final String vlicense;
-    private final String dlicense;
-    private final Date fromDate;
-    private final Time fromTime;
-    private final Date toDate;
-    private final Time toTime;
-    private final Double odometer;
-    private final String cardName;
-    private final String cardNo;
-    private final Date expDate;
-    private final int confNo;
+    private String vlicense;
+    private String dlicense;
+    private Date fromDate;
+    private Time fromTime;
+    private Date toDate;
+    private Time toTime;
+    private Double odometer;
+    private String cardName;
+    private String cardNo;
+    private Date expDate;
+    private int confNo;
 
     public RentalModel(int rid, String vlicense, String dlicense, Date fromDate, Time fromTime, Date toDate, Time toTime,
                        Double odometer, String cardName, String cardNo, Date expDate, int confNo) {
@@ -38,23 +38,67 @@ public class RentalModel {
 
     public String getVlicense() {return vlicense;}
 
+    public void setVlicense(String vlicense) {
+        this.vlicense = vlicense;
+    }
+
     public String getDlicense() {return dlicense;}
+
+    public void setDlicense(String dlicense) {
+        this.dlicense = dlicense;
+    }
 
     public Date getFromDate() {return fromDate;}
 
+    public void setFromDate(Date date) {
+        date = fromDate;
+    }
+
     public Time getFromTime() {return fromTime;}
+
+    public void setFromTime(Time time) {
+        time = fromTime;
+    }
 
     public Date getToDate() {return toDate;}
 
+    public void setToDate(Date date) {
+        date = toDate;
+    }
+
     public Time getToTime() {return toTime;}
+
+    public void setToTime(Time toTime) {
+        this.toTime = toTime;
+    }
 
     public Double getOdometer() {return odometer;}
 
+    public void setOdometer(Double odometer) {
+        this.odometer = odometer;
+    }
+
     public String getCardName() {return cardName;}
+
+    public void setCardName(String cardName) {
+        this.cardName = cardName;
+    }
 
     public String getCardNo() {return cardNo;}
 
+    public void setCardNo(String cardNo) {
+        this.cardNo = cardNo;
+    }
+
     public Date getExpDate() {return expDate;}
 
+    public void setExpDate(Date date) {
+        date = expDate;
+    }
+
     public int getConfNo() {return confNo;}
+
+    public void setConfNo(int confNo) {
+        this.confNo = confNo;
+    }
 }

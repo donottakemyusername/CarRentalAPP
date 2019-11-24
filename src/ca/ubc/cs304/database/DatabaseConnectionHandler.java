@@ -1,6 +1,7 @@
 package ca.ubc.cs304.database;
 
 import ca.ubc.cs304.model.*;
+import jdk.internal.net.http.common.Pair;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class DatabaseConnectionHandler {
 
 	private Connection connection = null;
 
-	public DatabaseConnectionHandler() {
+    public DatabaseConnectionHandler() {
 		try {
 			// Load the Oracle JDBC driver
 			// Note that the path could change for new drivers
@@ -542,10 +543,9 @@ public class DatabaseConnectionHandler {
 //    			// get column name and print it
 //    			System.out.printf("%-15s", rsmd.getColumnName(i + 1));
 //    		}
-
-			while (rs.next()) {
-				BranchModel model = new BranchModel(rs.getString("location"),
-						rs.getString("city"));
+			
+			while(rs.next()) {
+				BranchModel model = new BranchModel(rs.getString("location"), rs.getString("city"));
 				result.add(model);
 			}
 
@@ -558,6 +558,519 @@ public class DatabaseConnectionHandler {
 		return result.toArray(new BranchModel[result.size()]);
 	}
 
+    public void addCustomerDetails(CustomerModel userModel) {
+        try {
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO Customer VALUES (?,?,?,?)");
+            ps.setString(1, userModel.getDlicense());
+            ps.setString(2, userModel.getName());
+            ps.setString(3, userModel.getPhoneNum());
+            ps.setString(4, userModel.getAddress());
+
+            ps.executeUpdate();
+            connection.commit();
+
+            ps.close();
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+            rollbackConnection();
+        }
+    }
+
+    public CustomerModel[] getCustomerDetails() {
+	    ArrayList<CustomerModel> customerDetails = new ArrayList();
+	    try {
+	        Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM Customer");
+
+            while(rs.next()) {
+                CustomerModel userModel = new CustomerModel(rs.getString("dlicense"), rs.getString("name"), rs.getString("phoneNumber"),
+                        rs.getString("address"), rs.getInt("numPoints"));
+                        customerDetails.add(userModel);
+                    }
+
+                    rs.close();
+                    stmt.close();
+                } catch (SQLException e) {
+                    System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+                }
+            return customerDetails.toArray(new CustomerModel[customerDetails.size()]);
+        }
+
+	
+	public void updateBranch(String branch_location, String branch_city) {
+		try {
+		  PreparedStatement ps = connection.prepareStatement("UPDATE branch SET location = ? WHERE city = ?");
+		  ps.setString(1, branch_location);
+		  ps.setString(2, branch_city);
+
+		  int rowCount = ps.executeUpdate();
+		  if (rowCount == 0) {
+		      System.out.println(WARNING_TAG + " Branch " + branch_location + " does not exist!");
+		  }
+
+		  connection.commit();
+
+		  ps.close();
+		} catch (SQLException e) {
+			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+			rollbackConnection();
+		}
+	}
+
+    /*
+    Transactions performed by clerk
+     */
+
+//    public ReservationModel rentalWithReservation(int confNo) {
+//        try {
+//            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Reservation r WHERE r.confNo = ?");
+//            ps.setInt(1,confNo);
+//            ResultSet resultSet = ps.executeQuery();
+//
+//        } catch (SQLException e) {
+//            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+//        }
+//    }
+
+    /*
+    The function returns all rented vehicles with the selected date (for report purpose)
+    //TODO: Group by branch ---> I assume we just need to order by city & location because if you group by only city and location then the details of the vehciles will not be shown
+     */
+
+    // total numbers of cars rented for a specific day by branch
+    public TotalBranchModel totalBranches(Date date, String city, String location) {
+        TotalBranchModel branchRental = new TotalBranchModel();
+        try {
+            PreparedStatement ps = connection.prepareStatement("SELECT v.city, v.location, Count(*)" +
+                    "FROM Vehicle v, Rental r" +
+                    "WHERE v.vlicense = r.vlicense AND r.fromDate = ? AND v.city = ? AND v.location = ?" +
+                    "GROUP BY v.city, v.location");
+            ps.setDate(1,date);
+            ps.setString(2,city);
+            ps.setString(3,location);
+            ResultSet resultSet = ps.executeQuery();
+            connection.commit();
+
+            branchRental.setCity(resultSet.getString(1));
+            branchRental.setLocation(resultSet.getString(2));
+            branchRental.setCount(resultSet.getInt(3));
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+        }
+        return branchRental;
+    }
+
+    public BranchCat[] getBranchCategory(Date date, String city, String location) {
+        ArrayList<BranchCat> branchRentals = new ArrayList<>();
+        try {
+            PreparedStatement ps = connection.prepareStatement("SELECT v.city, v.location, v.vtname, Count(*)" +
+                    "FROM Vehicle v, Rental r" +
+                    "WHERE v.vlicense = r.vlicense AND r.fromDate = ? AND v.city = ? AND v.location = ?" +
+                    "GROUP BY v.city, v.location, v.vtname");
+            ps.setDate(1,date);
+            ps.setString(2,city);
+            ps.setString(3,location);
+            ResultSet resultSet = ps.executeQuery();
+            connection.commit();
+
+            while (resultSet.next()) {
+                BranchCat branchRental = new BranchCat();
+                branchRental.setCity(resultSet.getString(1));
+                branchRental.setLocation(resultSet.getString(2));
+                branchRental.setVtname(resultSet.getString(3));
+                branchRental.setCount(resultSet.getInt(4));
+
+                branchRentals.add(branchRental);
+            }
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+        }
+        return branchRentals.toArray(new BranchCat[branchRentals.size()]);
+    }
+
+    public VehicleRented[] getAllBranchRental(Date date, String city, String location) {
+        ArrayList<VehicleRented> vehicles = new ArrayList();
+        try {
+            PreparedStatement ps = connection.prepareStatement("SELECT v.vlicense, v.make, v.model, v.vtname, v.city, v.location" +
+                    "FROM Vehicle v, Rental r" +
+                    "WHERE v.vlicense = r.vlicense AND r.fromDate = ? AND v.city = ? AND v.location = ?" +
+                    "ORDER BY v.city, v.location, v.vtname");
+            ps.setDate(1,date);
+            ps.setString(2, city);
+            ps.setString(3, location);
+            ResultSet resultSet = ps.executeQuery();
+            connection.commit();
+            while(resultSet.next()) {
+                VehicleRented vehicleRented = new VehicleRented();
+                vehicleRented.setVlicense(resultSet.getString(1));
+                vehicleRented.setMake(resultSet.getString(2));
+                vehicleRented.setModel(resultSet.getString(3));
+                vehicleRented.setVtname(resultSet.getString(4));
+                vehicles.add(vehicleRented);
+            }
+            ps.close();
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+        }
+        return vehicles.toArray(new VehicleRented[vehicles.size()]);
+    }
+
+    public VehicleRented[] getAllRental(Date date) {
+        ArrayList<VehicleRented> vehicles = new ArrayList();
+        try {
+            PreparedStatement ps = connection.prepareStatement("SELECT v.vlicense, v.make, v.model, v.vtname, v.city, v.location" +
+                    "FROM Vehicle v, Rental r" +
+                    "WHERE v.vlicense = r.vlicense AND r.fromDate = ?" +
+                    "ORDER BY v.city, v.location, v.vtname");
+            ps.setDate(1,date);
+            ResultSet resultSet = ps.executeQuery();
+            connection.commit();
+            while(resultSet.next()) {
+                VehicleRented vehicleRented = new VehicleRented();
+                vehicleRented.setVlicense(resultSet.getString(1));
+                vehicleRented.setMake(resultSet.getString(2));
+                vehicleRented.setModel(resultSet.getString(3));
+                vehicleRented.setVtname(resultSet.getString(4));
+                vehicles.add(vehicleRented);
+            }
+            ps.close();
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+        }
+        return vehicles.toArray(new VehicleRented[vehicles.size()]);
+    }
+
+    // total numbers of cars rented for a specific day by category
+    public TotalCatModel[] totalCatgeory(Date date) {
+        ArrayList<TotalCatModel> branchRentals = new ArrayList<>();
+        try {
+            PreparedStatement ps = connection.prepareStatement("SELECT v.vtname, Count(*)" +
+                    "FROM Vehicle v, Rental r" +
+                    "WHERE v.vlicense = r.vlicense AND r.fromDate = ?" +
+                    "GROUP BY v.vtname");
+            ps.setDate(1,date);
+            ResultSet resultSet = ps.executeQuery();
+            connection.commit();
+
+            while (resultSet.next()) {
+                TotalCatModel branchRental = new TotalCatModel();
+                branchRental.setVtname(resultSet.getString(1));
+                branchRental.setCount(resultSet.getInt(2));
+                branchRentals.add(branchRental);
+            }
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+        }
+        return branchRentals.toArray(new TotalCatModel[branchRentals.size()]);
+    }
+
+    // total car rentals for a specific day
+    public int totalRental(Date date) {
+        int cnt = 0;
+        try {
+            PreparedStatement ps = connection.prepareStatement("SELECT Count(*) FROM Rental WHERE fromDate = ?");
+            ps.setDate(1,date);
+            ResultSet resultSet = ps.executeQuery();
+            connection.commit();
+            cnt = resultSet.getInt(1);
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+        }
+        return cnt;
+    }
+
+    // total numbers of cars rented for a specific day by branch
+    public TotalBranchModel[] totalBranch(Date date) {
+        ArrayList<TotalBranchModel> branchRentals = new ArrayList<>();
+        try {
+            PreparedStatement ps = connection.prepareStatement("SELECT v.city, v.location, Count(*)" +
+                    "FROM Vehicle v, Rental r" +
+                    "WHERE v.vlicense = r.vlicense AND r.fromDate = ?" +
+                    "GROUP BY v.city, v.location");
+            ps.setDate(1,date);
+            ResultSet resultSet = ps.executeQuery();
+            connection.commit();
+
+            while (resultSet.next()) {
+                TotalBranchModel branchRental = new TotalBranchModel();
+                branchRental.setCity(resultSet.getString(1));
+                branchRental.setLocation(resultSet.getString(2));
+                branchRental.setCount(resultSet.getInt(3));
+                branchRentals.add(branchRental);
+            }
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+        }
+        return branchRentals.toArray(new TotalBranchModel[branchRentals.size()]);
+    }
+
+
+    /*
+    a list of rentals that have not been returned
+     */
+    public RentalModel[] rentedNotReturned() {
+        ArrayList<RentalModel> rentalModels = new ArrayList();
+        try {
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM Rental r WHERE r.rid NOT IN (SELECT r2.rid FROM Return r2)");
+
+            while(rs.next()) {
+                RentalModel rentalModel = new RentalModel(rs.getInt(1),
+						rs.getString("vlicense"),
+						rs.getString("dlicense"),
+						rs.getDate("fromDate"),
+						rs.getTime("fromTime"),
+						rs.getDate("toDate"),
+						rs.getTime("toTime"),
+						rs.getDouble("odometer"),
+						rs.getString("cardName"),
+						rs.getString("cardNo"),
+						rs.getDate("expDate"),
+						rs.getInt("confNo"));
+                rentalModels.add(rentalModel);
+            }
+
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+        }
+        return rentalModels.toArray(new RentalModel[rentalModels.size()]);
+    }
+
+    /*
+    return report
+     */
+
+    // detail info of vehicles being returned on a particular day
+    public VehicleRented[] getReturn(Date date) {
+        ArrayList<VehicleRented> vehicles = new ArrayList();
+        try {
+            PreparedStatement ps = connection.prepareStatement("SELECT v.vlicense, v.make, v.model, v.vtname, v.city, v.location" +
+                    "FROM Vehicle v, Rental r, Return t" +
+                    "WHERE v.vlicense = r.vlicense AND r.rid = t.rid AND r.fromDate = ?" +
+                    "ORDER BY v.city, v.location, v.vtname");
+            ps.setDate(1,date);
+            ResultSet resultSet = ps.executeQuery();
+            connection.commit();
+            while(resultSet.next()) {
+                VehicleRented vehicleRented = new VehicleRented();
+                vehicleRented.setVlicense(resultSet.getString(1));
+                vehicleRented.setMake(resultSet.getString(2));
+                vehicleRented.setModel(resultSet.getString(3));
+                vehicleRented.setVtname(resultSet.getString(4));
+                vehicles.add(vehicleRented);
+            }
+            ps.close();
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+        }
+        return vehicles.toArray(new VehicleRented[vehicles.size()]);
+    }
+
+    // detail info of vehicles being returned on a particular day for a specific branch
+    public VehicleRented[] getReturnBranch(Date date, String city, String location) {
+        ArrayList<VehicleRented> vehicles = new ArrayList();
+        try {
+            PreparedStatement ps = connection.prepareStatement("SELECT v.vlicense, v.make, v.model, v.vtname, v.city, v.location" +
+                    "FROM Vehicle v, Rental r, Return t" +
+                    "WHERE v.vlicense = r.vlicense AND r.rid = t.rid AND r.fromDate = ? AND v.city = ? AND v.location = ?" +
+                    "ORDER BY v.city, v.location, v.vtname");
+            ps.setDate(1,date);
+            ps.setString(2, city);
+            ps.setString(3, location);
+            ResultSet resultSet = ps.executeQuery();
+            connection.commit();
+            while(resultSet.next()) {
+                VehicleRented vehicleRented = new VehicleRented();
+                vehicleRented.setVlicense(resultSet.getString(1));
+                vehicleRented.setMake(resultSet.getString(2));
+                vehicleRented.setModel(resultSet.getString(3));
+                vehicleRented.setVtname(resultSet.getString(4));
+                vehicles.add(vehicleRented);
+            }
+            ps.close();
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+        }
+        return vehicles.toArray(new VehicleRented[vehicles.size()]);
+    }
+
+    public RevenueBranch[] revenueBranch(Date date) {
+        ArrayList<RevenueBranch> branchRentals = new ArrayList<>();
+        try {
+            PreparedStatement ps = connection.prepareStatement("SELECT city, location, Count(*), Sum(rev) AS Total"+
+                    "FROM (SELECT v.city AS city, v.location AS location, vt.drate*(rt.rDate-ra.fromDate) AS rev"+
+                    "FROM Vehicle v, Rental r, VehicleType vt"+
+                    "WHERE v.vtname = vt.vtname AND r.vlicense = v.vlicense AND rt.rDate = ?)"+
+                    "GROUP BY city, location");
+            ps.setDate(1,date);
+            ResultSet resultSet = ps.executeQuery();
+            connection.commit();
+
+            while (resultSet.next()) {
+                RevenueBranch branchRental = new RevenueBranch();
+                branchRental.setCity(resultSet.getString(1));
+                branchRental.setLocation(resultSet.getString(2));
+                branchRental.setCount(resultSet.getInt(3));
+                branchRental.setRevenue(resultSet.getInt(4));
+                branchRentals.add(branchRental);
+            }
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+        }
+        return branchRentals.toArray(new RevenueBranch[branchRentals.size()]);
+    }
+
+    public Pair<Integer, Integer> totalRevenue(Date date) {
+        Pair<Integer,Integer> cntRevenue = new Pair<>(0,0);
+        try {
+            PreparedStatement ps = connection.prepareStatement("SELECT Count(*), Sum(rev) AS Total"+
+                    "FROM (SELECT vt.drate*(rt.rDate-ra.fromDate) AS rev"+
+                    "FROM Vehicle v, Rental r, VehicleType vt"+
+                    "WHERE v.vtname = vt.vtname AND r.vlicense = v.vlicense AND rt.rDate = ?)");
+            ps.setDate(1,date);
+            ResultSet resultSet = ps.executeQuery();
+            connection.commit();
+            cntRevenue = new Pair<>(resultSet.getInt(1),resultSet.getInt(2));
+            } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+        }
+        return cntRevenue;
+    }
+
+    public RevenueCat[] revenueCat(Date date) {
+        ArrayList<RevenueCat> branchRentals = new ArrayList<>();
+        try {
+            PreparedStatement ps = connection.prepareStatement("SELECT vtname, Count(*), Sum(rev) AS Total"+
+                    "FROM (SELECT v.vtname AS vtname, vt.drate*(rt.rDate-ra.fromDate) AS rev"+
+                    "FROM Vehicle v, Rental r, VehicleType vt"+
+                    "WHERE v.vtname = vt.vtname AND r.vlicense = v.vlicense AND rt.rDate = ?)"+
+                    "GROUP BY vtname");
+            ps.setDate(1,date);
+            ResultSet resultSet = ps.executeQuery();
+            connection.commit();
+
+            while (resultSet.next()) {
+                RevenueCat branchRental = new RevenueCat();
+                branchRental.setVtname(resultSet.getString(1));
+                branchRental.setCount(resultSet.getInt(2));
+                branchRental.setRevenue(resultSet.getInt(3));
+                branchRentals.add(branchRental);
+            }
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+        }
+        return branchRentals.toArray(new RevenueCat[branchRentals.size()]);
+    }
+
+    public RevenueBranch getRevenueBranch(Date date, String city, String location) {
+        RevenueBranch branchRental = new RevenueBranch();
+        try {
+            PreparedStatement ps = connection.prepareStatement("SELECT city, location, Count(*), Sum(rev) AS Total"+
+                    "FROM (SELECT v.city AS city, v.location AS location, vt.drate*(rt.rDate-ra.fromDate) AS rev"+
+                    "FROM Vehicle v, Rental r, VehicleType vt"+
+                    "WHERE v.vtname = vt.vtname AND r.vlicense = v.vlicense AND rt.rDate = ? AND city = ? AND location = ?)"+
+                    "GROUP BY city, location");
+            ps.setDate(1,date);
+            ps.setString(2,city);
+            ps.setString(3,location);
+            ResultSet resultSet = ps.executeQuery();
+            connection.commit();
+            branchRental.setCity(resultSet.getString(1));
+            branchRental.setLocation(resultSet.getString(2));
+            branchRental.setCount(resultSet.getInt(3));
+            branchRental.setRevenue(resultSet.getInt(4));
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+        }
+        return branchRental;
+    }
+
+    public RevenueBranchCat[] getRevenueBranchCat(Date date, String city, String location) {
+        ArrayList<RevenueBranchCat> branchRentals = new ArrayList<>();
+        try {
+            PreparedStatement ps = connection.prepareStatement("SELECT city, location, vtname, Count(*), Sum(rev) AS Total"+
+                    "FROM (SELECT v.city AS city, v.location AS location, v.vtname AS vtname, vt.drate*(rt.rDate-ra.fromDate) AS rev"+
+                    "FROM Vehicle v, Rental r, VehicleType vt"+
+                    "WHERE v.vtname = vt.vtname AND r.vlicense = v.vlicense AND rt.rDate = ? AND city = ? AND location = ?)"+
+                    "GROUP BY city, location, vtname");
+            ps.setDate(1,date);
+            ps.setString(2,city);
+            ps.setString(3,location);
+            ResultSet resultSet = ps.executeQuery();
+            connection.commit();
+
+            while (resultSet.next()) {
+                RevenueBranchCat branchRental = new RevenueBranchCat();
+                branchRental.setCity(resultSet.getString(1));
+                branchRental.setLocation(resultSet.getString(2));
+                branchRental.setVtname(resultSet.getString(3));
+                branchRental.setCount(resultSet.getInt(4));
+                branchRental.setRevenue(resultSet.getInt(5));
+                branchRentals.add(branchRental);
+            }
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+        }
+        return branchRentals.toArray(new RevenueBranchCat[branchRentals.size()]);
+    }
+
+    // TODO: we cannot know the details about odometer & fullTank when the car is returned, maybe we should not display them?
+    /*
+    when a car is returned, I will first record the rentalID and returnDate into the return table, and then print out the receipt for
+    the customer, using dRate (retrieved from VehicleType) * (returnDate - rental.fromDate)
+     */
+    public ReturnResult returnVehicle(int rid, Date date) {
+        ReturnResult returnResult = new ReturnResult();
+        if (compareDates(rid, date)) {
+            ReturnModel returnModel = new ReturnModel();
+            returnResult.setReturnDate(date);
+            returnModel.setrDate(date);
+            returnModel.setRid(rid);
+            insertReturn(returnModel);
+            try {
+                Statement stmt = connection.createStatement();
+                ResultSet resultSet = stmt.executeQuery(
+                        "SELECT ra.confNum, ra.fromDate, rt.rdate, vt.drate, rt.rdate-ra.fromDate, vt.drate*(rt.rdate-ra.fromDate) AS total" +
+                                "FROM Rental ra, Return rt, VehicleType vt, Vehicle v" +
+                                "WHERE v.vlicense = ra.vlicense AND v.vtname = vt.vtname AND rt.rid = ra.rid");
+                returnResult.setConfNum(resultSet.getInt(1));
+                returnResult.setFromDate(resultSet.getDate(2));
+                returnResult.setReturnDate(resultSet.getDate(3));
+                returnResult.setDaysRent(resultSet.getInt(5));
+                returnResult.setdRate(resultSet.getInt(4));
+                returnResult.setPrice(resultSet.getInt(6));
+                //TODO: change car status to available
+
+                resultSet.close();
+                stmt.close();
+            } catch (SQLException e) {
+                System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+            }
+        } else {
+            //TODO: throw an exception
+            System.out.println("Please select a return date earlier than the rental date!");
+        }
+        return returnResult;
+    }
+
+    public boolean compareDates(int rid, Date date) {
+        try {
+            PreparedStatement ps = connection.prepareStatement("SELECT fromDate FROM Rental WHERE rid = ?");
+            ps.setInt(1, rid);
+            ResultSet resultSet = ps.executeQuery();
+            connection.commit();
+            Date fromDate = resultSet.getDate("fromDate");
+            if (fromDate.compareTo(date)<0) {
+                return true;
+            }
+            ps.close();
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+        }
+        return false;
+    }
 	public int getNextConfNum() {
 		int nextConfNum = 1;
 		try {
@@ -616,26 +1129,6 @@ public class DatabaseConnectionHandler {
 			e.printStackTrace();
 		}
 		return null;
-	}
-
-	public CustomerModel[] getCustomerDetails() {
-		ArrayList<CustomerModel> customerDetails = new ArrayList();
-		try {
-			Statement stmt = connection.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Customer");
-
-			while (rs.next()) {
-				CustomerModel userModel = new CustomerModel(rs.getString("dlicense"), rs.getString("name"), rs.getString("phoneNumber"),
-						rs.getString("address"), rs.getInt("numPoints"));
-				customerDetails.add(userModel);
-			}
-
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
-		}
-		return customerDetails.toArray(new CustomerModel[customerDetails.size()]);
 	}
 
 	public void findOrAddCustomer(String dlicense, String cname, String phoneNum, String address) {

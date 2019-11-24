@@ -308,9 +308,8 @@ public class TerminalTransactions {
 			System.out.print("Please enter the branch city you wish to insert: ");
 			city = readLine().trim();
 		}
-		
-		BranchModel model = new BranchModel(location,
-											city);
+
+		BranchModel branchModel = new BranchModel()
 		delegate.insertBranch(model);
 	}
 	

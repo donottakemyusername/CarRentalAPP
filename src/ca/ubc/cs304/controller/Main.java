@@ -14,6 +14,7 @@ import java.sql.Time;
  * This is the main controller class that will orchestrate everything.
  */
 public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
+
 	private DatabaseConnectionHandler dbHandler = null;
 	private LoginWindow loginWindow = null;
 
