@@ -1,7 +1,7 @@
 package ca.ubc.cs304.database;
 
 import ca.ubc.cs304.model.*;
-import jdk.internal.net.http.common.Pair;
+import javafx.util.Pair;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.HashMap;
 /**
  * This class handles all database related transactions
  */
-public class DatabaseConnectionHandler {
+public class DatabaseHandler {
 	//private static final String ORACLE_URL = "jdbc:oracle:thin:@dbhost.students.cs.ubc.ca:1522:stu";
 	private static final String ORACLE_URL = "jdbc:oracle:thin:@localhost:1522:stu";
 	private static final String EXCEPTION_TAG = "[EXCEPTION]";
@@ -18,7 +18,7 @@ public class DatabaseConnectionHandler {
 
 	private Connection connection = null;
 
-    public DatabaseConnectionHandler() {
+    public DatabaseHandler() {
 		try {
 			// Load the Oracle JDBC driver
 			// Note that the path could change for new drivers
@@ -38,7 +38,7 @@ public class DatabaseConnectionHandler {
 		}
 	}
 
-	public void deleteBranch(BranchModel branchModel) {
+	public void deleteBranch(Branches branchModel) {
 		try {
 			PreparedStatement ps = connection.prepareStatement("DELETE FROM branch WHERE location = ? AND city = ?");
 			ps.setString(1, branchModel.getLocation());
@@ -58,14 +58,14 @@ public class DatabaseConnectionHandler {
 		}
 	}
 
-	public void deleteVehicle(VehicleModel vehicleModel) {
+	public void deleteVehicle(Vehicles vehicles) {
 		try {
 			PreparedStatement ps = connection.prepareStatement("DELETE FROM Vehicle WHERE vlicense = ?");
-			ps.setString(1, vehicleModel.getVlicense());
+			ps.setString(1, vehicles.getVlicense());
 
 			int rowCount = ps.executeUpdate();
 			if (rowCount == 0) {
-				System.out.println(WARNING_TAG + " Vehicle " + vehicleModel.getVlicense() + " does not exist!");
+				System.out.println(WARNING_TAG + " Vehicle " + vehicles.getVlicense() + " does not exist!");
 			}
 
 			connection.commit();
@@ -199,7 +199,7 @@ public class DatabaseConnectionHandler {
 
 	// TODO: UserModel (decide on table name), currently table name is Customer but should represent both customer or clerk
 
-	public void insertBranch(BranchModel model) {
+	public void insertBranch(Branches model) {
 		try {
 			PreparedStatement ps = connection.prepareStatement("INSERT INTO branch VALUES (?,?)");
 			ps.setString(1, model.getLocation());
@@ -215,7 +215,7 @@ public class DatabaseConnectionHandler {
 		}
 	}
 
-	public void insertVehicle(VehicleModel model) {
+	public void insertVehicle(Vehicles model) {
 		try {
 			PreparedStatement ps = connection.prepareStatement("INSERT INTO Vehicle VALUES (?,?,?,?,?,?,?,?,?,?)");
 			ps.setString(1, model.getVlicense());
@@ -224,9 +224,9 @@ public class DatabaseConnectionHandler {
 			ps.setInt(4, model.getYear());
 			ps.setString(5, model.getColor());
 			ps.setDouble(6, model.getOdometer());
-			if (model.getStatus() == VehicleModel.Status.RENTED) {
+			if (model.getStatus() == Vehicles.Status.RENTED) {
 				ps.setString(7, "rented");
-			} else if (model.getStatus() == VehicleModel.Status.MAINTENANCE) {
+			} else if (model.getStatus() == Vehicles.Status.MAINTENANCE) {
 				ps.setString(7, "maintenance");
 			} else {
 				ps.setString(7, "available");
@@ -471,7 +471,7 @@ public class DatabaseConnectionHandler {
 		return searchResults.toArray(new VehicleSearchResults[searchResults.size()]);
 	}
 
-	public VehicleModel getRentalVehicle(String vtname, String location, TimePeriodModel timePeriod) {
+	public Vehicles getRentalVehicle(String vtname, String location, TimePeriodModel timePeriod) {
 		try {
 			String caseEndWithinTP = "((SELECT R.vlicense FROM Rental R WHERE R.toDate > ?) UNION (SELECT R.vlicense FROM Rental R WHERE R.toDate = ? AND R.toTime >= ?)) INTERSECT ((SELECT R.vlicense FROM Rental R WHERE R.toDate < ?) UNION (SELECT R.vlicense FROM Rental R WHERE R.toDate = ? AND R.toTime <= ?))";
 			// fromDate, fromDate fromTime, toDate, toDate, toTime
@@ -497,10 +497,10 @@ public class DatabaseConnectionHandler {
 			Boolean found = false;
 			while (rs.next()) {
 				found = true;
-				VehicleModel.Status s = VehicleModel.Status.AVAILABLE;
-				if (rs.getString("status") == "rented") s = VehicleModel.Status.RENTED;
-				else if (rs.getString("status") == "maintenance") s = VehicleModel.Status.MAINTENANCE;
-				VehicleModel result = new VehicleModel(rs.getString("vlicense"),
+				Vehicles.Status s = Vehicles.Status.AVAILABLE;
+				if (rs.getString("status") == "rented") s = Vehicles.Status.RENTED;
+				else if (rs.getString("status") == "maintenance") s = Vehicles.Status.MAINTENANCE;
+				Vehicles result = new Vehicles(rs.getString("vlicense"),
 						rs.getString("make"),
 						rs.getString("model"),
 						rs.getInt("year"),
@@ -526,8 +526,8 @@ public class DatabaseConnectionHandler {
 		return null;
 	}
 
-	public BranchModel[] getBranchInfo() {
-		ArrayList<BranchModel> result = new ArrayList<BranchModel>();
+	public Branches[] getBranchInfo() {
+		ArrayList<Branches> result = new ArrayList<Branches>();
 
 		try {
 			Statement stmt = connection.createStatement();
@@ -545,7 +545,7 @@ public class DatabaseConnectionHandler {
 //    		}
 			
 			while(rs.next()) {
-				BranchModel model = new BranchModel(rs.getString("location"), rs.getString("city"));
+				Branches model = new Branches(rs.getString("location"), rs.getString("city"));
 				result.add(model);
 			}
 
@@ -555,7 +555,7 @@ public class DatabaseConnectionHandler {
 			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
 		}
 
-		return result.toArray(new BranchModel[result.size()]);
+		return result.toArray(new Branches[result.size()]);
 	}
 
     public void addCustomerDetails(CustomerModel userModel) {

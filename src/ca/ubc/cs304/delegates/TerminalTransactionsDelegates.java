@@ -14,17 +14,17 @@ import java.sql.Time;
  * TerminalTransactions calls the methods that we have listed below but 
  * Bank is the actual class that will implement the methods.
  */
-public interface TerminalTransactionsDelegate {
-	public void deleteBranch(BranchModel b);
-	public void deleteVehicle(VehicleModel v);
+public interface TerminalTransactionsDelegates {
+	public void deleteBranch(Branches b);
+	public void deleteVehicle(Vehicles v);
 	public void deleteVehicleType(VehicleTypeModel vt);
 	public void deleteCustomer(CustomerModel u);
 	public void deleteReservation(ReservationModel r);
 	public void deleteReturn(ReturnModel r);
 	public void deleteRental(RentalModel r);
 	public void deleteTimePeriod(TimePeriodModel t);
-	public void insertBranch(BranchModel b);
-	public void insertVehicle(VehicleModel v);
+	public void insertBranch(Branches b);
+	public void insertVehicle(Vehicles v);
 	public void insertVehicleType(VehicleTypeModel vt);
 	public void insertCustomer(CustomerModel u);
 	public void insertReservation(ReservationModel r);

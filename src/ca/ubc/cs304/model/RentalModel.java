@@ -5,7 +5,9 @@ import java.sql.Time;
 
 public class RentalModel {
 
-    private final int rid;
+
+
+    private int rid;
     private String vlicense;
     private String dlicense;
     private Date fromDate;
@@ -32,6 +34,10 @@ public class RentalModel {
         this.cardNo = cardNo;
         this.expDate = expDate;
         this.confNo = confNo;
+    }
+
+    public void setRid(int rid) {
+        this.rid = rid;
     }
 
     public int getRid() {return rid;}

@@ -3,15 +3,15 @@ package ca.ubc.cs304.model;
 import java.util.ArrayList;
 
 public class VehicleTypeModel {
-    private final String vtname;
-    private final String features;
-    private final Double  wrate;
-    private final Double drate;
-    private final Double hrate;
-    private final Double wirate;
-    private final Double dirate;
-    private final Double hirate;
-    private final Double krate;
+    private String vtname;
+    private String features;
+    private Double  wrate;
+    private Double drate;
+    private Double hrate;
+    private Double wirate;
+    private Double dirate;
+    private Double hirate;
+    private Double krate;
 
     public VehicleTypeModel(String vtname, String features, Double wrate, Double drate, Double hrate,
                             Double  wirate, Double dirate, Double hirate, Double krate) {

@@ -1,10 +1,10 @@
 package ca.ubc.cs304.model;
 
 public class CustomerModel {
-    private final String dlicense;
-    private final String name;
-    private final String phoneNum;
-    private final String address;
+    private String dlicense;
+    private String name;
+    private String phoneNum;
+    private String address;
     private int numPoints;
 
     public CustomerModel(String dlicense, String name, String phoneNum, String address, int numPoints){
@@ -13,6 +13,22 @@ public class CustomerModel {
         this.phoneNum = phoneNum;
         this.address = address;
         this.numPoints = numPoints;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setPhoneNum(String phoneNum) {
+        this.phoneNum = phoneNum;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDlicense(String dlicense) {
+        this.dlicense = dlicense;
     }
 
     public String getDlicense() {return dlicense;}

@@ -1,11 +1,11 @@
 package ca.ubc.cs304.controller;
 
-import ca.ubc.cs304.database.DatabaseConnectionHandler;
+import ca.ubc.cs304.database.DatabaseHandler;
 import ca.ubc.cs304.delegates.LoginWindowDelegate;
-import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
+import ca.ubc.cs304.delegates.TerminalTransactionsDelegates;
 import ca.ubc.cs304.model.*;
 import ca.ubc.cs304.ui.LoginWindow;
-import ca.ubc.cs304.ui.TerminalTransactions;
+import ca.ubc.cs304.ui.RoleChoose;
 
 import java.sql.Date;
 import java.sql.Time;
@@ -13,13 +13,13 @@ import java.sql.Time;
 /**
  * This is the main controller class that will orchestrate everything.
  */
-public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
+public class Main implements LoginWindowDelegate, TerminalTransactionsDelegates {
 
-	private DatabaseConnectionHandler dbHandler = null;
+	private DatabaseHandler dbHandler = null;
 	private LoginWindow loginWindow = null;
 
 	public Main() {
-		dbHandler = new DatabaseConnectionHandler();
+		dbHandler = new DatabaseHandler();
 	}
 	
 	private void start() {
@@ -39,8 +39,10 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
 			// Once connected, remove login window and start text transaction flow
 			loginWindow.dispose();
 
-			TerminalTransactions transaction = new TerminalTransactions();
-			transaction.showMainMenu(this);
+            RoleChoose rc = new RoleChoose();
+            rc.showClerk(this);
+			//TerminalTransactions transaction = new TerminalTransactions();
+			//transaction.showMainMenu(this);
 		} else {
 			loginWindow.handleLoginFailed();
 
@@ -57,11 +59,11 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
 	 * 
 	 * Insert a branch with the given info
 	 */
-    public void insertBranch(BranchModel b) {
+    public void insertBranch(Branches b) {
     	dbHandler.insertBranch(b);
     }
 
-    public void insertVehicle(VehicleModel v) {
+    public void insertVehicle(Vehicles v) {
     	dbHandler.insertVehicle(v);
 	}
 
@@ -95,11 +97,11 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
 	 * 
 	 * Delete branch with given branch ID.
 	 */ 
-    public void deleteBranch(BranchModel branchModel) {
+    public void deleteBranch(Branches branchModel) {
     	dbHandler.deleteBranch(branchModel);
     }
 
-	public void deleteVehicle(VehicleModel v) {
+	public void deleteVehicle(Vehicles v) {
     	dbHandler.deleteVehicle(v);
 	}
 
@@ -168,7 +170,7 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
 		int nextRid = dbHandler.getNextRid();
 		// get the first vehicle that satisfies this
 		TimePeriodModel tp = new TimePeriodModel(r.getFromDate(), r.getFromTime(), r.getToDate(), r.getToTime());
-		VehicleModel v = dbHandler.getRentalVehicle(r.getVtname(), location, tp);
+		Vehicles v = dbHandler.getRentalVehicle(r.getVtname(), location, tp);
 		RentalModel rent = new RentalModel(nextRid, v.getVlicense(), r.getDlicense(), tp.getFromDate(), tp.getFromTime(), tp.getToDate(), tp.getToTime(),
 				v.getOdometer(), cardName, cardNo, expDate, r.getConfNum());
 		insertRental(rent);
@@ -190,10 +192,10 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegate {
 	 * Displays information about varies bank branches.
 	 */
 	public void showBranch() {
-    	BranchModel[] models = dbHandler.getBranchInfo();
+    	Branches[] models = dbHandler.getBranchInfo();
     	
     	for (int i = 0; i < models.length; i++) {
-    		BranchModel model = models[i];
+    		Branches model = models[i];
     		
     		// simplified output formatting; truncation may occur
 			System.out.printf("%-15.15s", model.getLocation());
