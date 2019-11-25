@@ -509,7 +509,6 @@ new FormModel {
 									} )
 									add( new FormComponent( "javax.swing.JLabel" ) {
 										name: "totalReturnNum"
-										"text": "Total Number of Return on this date:"
 										"foreground": #SwingColor1
 									}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 										"x": 20
@@ -519,7 +518,6 @@ new FormModel {
 									} )
 									add( new FormComponent( "javax.swing.JLabel" ) {
 										name: "totalReturnRev"
-										"text": "Total Revenue on this date:"
 										"foreground": #SwingColor1
 									}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 										"x": 20
@@ -624,7 +622,6 @@ new FormModel {
 								} )
 								add( new FormComponent( "javax.swing.JLabel" ) {
 									name: "braReturnNum"
-									"text": "Total Number of Return for This Branch on This Date:"
 									"foreground": #SwingColor1
 								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 									"x": 15
@@ -634,7 +631,6 @@ new FormModel {
 								} )
 								add( new FormComponent( "javax.swing.JLabel" ) {
 									name: "braReturnRev"
-									"text": "Total Revenue for This Branch:"
 									"foreground": #SwingColor1
 								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 									"x": 485

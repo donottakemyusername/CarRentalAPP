@@ -1,6 +1,7 @@
 package ca.ubc.cs304.delegates;
 
 import ca.ubc.cs304.model.*;
+import javafx.util.Pair;
 
 import java.sql.Date;
 import java.sql.Time;
@@ -42,6 +43,12 @@ public interface TerminalTransactionsDelegates {
     public BranchCat[] getBranchCategory(Date date, String city, String location);
 	public ReturnResult returnVehicle(int rentID, int d);
     public RevenueCat[] revenueCat(Date date);
+    public RevenueBranch[] revenueBranch(Date date);
+    public Pair<Integer, Integer> totalRevenue(Date date);
+    public VehicleRented[] getReturnBranch(Date date, String city, String location);
+    public VehicleRented[] getReturn(Date date);
+    public RevenueBranchCat[] getRevenueBranchCat(Date date, String city, String location);
+    public RevenueBranch getRevenueBranch(Date date, String city, String location);
 	public VehicleSearchResults[] customerSearchVehicle(Boolean hasCarType, Boolean hasLocation, Boolean hasTimePeriod,
 								 String carType, String location, String city, Date fromDate, Time fromTime, Date toDate, Time toTime);
 	public int makeReservation(String dlicense, String cname, String phoneNum, String address, String city, String location, String vtname, Date fromDate, Time fromTime, Date toDate, Time toTime);

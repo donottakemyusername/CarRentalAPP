@@ -60,7 +60,7 @@ public class Reserve extends JFrame {
                 Boolean hasTimePeriod = false;
                 if (fromDate != null && fromTime != null && toDate != null && toTime != null) hasTimePeriod = true;
                 VehicleSearchResults[] searchResults = delegate.customerSearchVehicle(hasCarType, hasLocation, hasTimePeriod,
-                        carType, address, fromDate, fromTime, toDate, toTime);
+                        carType, address,city, fromDate, fromTime, toDate, toTime);
                 String[] listData = new String[searchResults.length +1];
                 for (int i=0; i<searchResults.length; i++ ){
                     listData[i] = String.format("%-20.15s", "" + searchResults[i].getVehicleType())+
@@ -90,9 +90,9 @@ public class Reserve extends JFrame {
                 Time fromTime = parseTimeFromString(ResFT.getText());
                 Date toDate = parseDateFromString(ResTD.getText());
                 Time toTime = parseTimeFromString(textField12.getText());
-                int confNo = delegate.makeReservation(dlicense, cname, phoneNum, caddress, branchAddress, carType,
-                        fromDate, fromTime, toDate, toTime);    //TODO: change the dbhandler.makeReservation and add city into the parameter
-                JOptionPane.showMessageDialog(null,"Reservation Made! Confirmation Number is " + confNo);
+                //int confNo = delegate.makeReservation(dlicense, cname, phoneNum, caddress, branchAddress, carType,
+                 //       fromDate, fromTime, toDate, toTime);    //TODO: change the dbhandler.makeReservation and add city into the parameter
+                //JOptionPane.showMessageDialog(null,"Reservation Made! Confirmation Number is " + confNo);
             }
         }
         );
