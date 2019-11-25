@@ -222,6 +222,25 @@ public class Clerk extends JFrame {
                       }
                       RentalDetailEachList.setListData(listbc);
 
+                      RevenueCat[] rc;
+                      rc = delegate.revenueCat(new Date(date));
+                      String[] listrc = new String[rc.length+1];
+
+                      listrc[0] = String.format("%-20.15s", "Vehicle Type")+
+                              String.format("%-20.15s", " " + "COUNT")+
+                              String.format("%-20.15s", " " + "Revenue")
+                      ;
+
+                      for (int i = 1; i < rc.length; i++) {
+                          RevenueCat r = rc[i];
+                          listrc[i] = String.format("%-20.15s", "" + r.getVtname())+
+                                  String.format("%-20.15s", "" + r.getCount())+
+                                  String.format("%-20.15s", " " + r.getRevenue())
+                          ;
+                      }
+                      ReturnTypeAllList.setListData(listrc);
+
+                      
                   }
                   else
                       JOptionPane.showMessageDialog(null, "Not Valid, Try again");
@@ -447,13 +466,6 @@ public class Clerk extends JFrame {
         buttonBar = new JPanel();
         ReturnButton = new JButton();
         FinishButton = new JButton();
-<<<<<<< HEAD
-=======
-        label25 = new JLabel();
-        panel7 = new JPanel();
-        label26 = new JLabel();
-        InsDMWhereBox = new JComboBox();
->>>>>>> master
 
         //======== this ========
         Container contentPane = getContentPane();
@@ -462,12 +474,11 @@ public class Clerk extends JFrame {
         //======== dialogPane ========
         {
             dialogPane.setBorder(new EmptyBorder(12, 12, 12, 12));
-            dialogPane.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder
-            (0,0,0,0), "JF\u006frmDes\u0069gner \u0045valua\u0074ion",javax.swing.border.TitledBorder.CENTER,javax.swing.border
-            .TitledBorder.BOTTOM,new java.awt.Font("D\u0069alog",java.awt.Font.BOLD,12),java.awt
-            .Color.red),dialogPane. getBorder()));dialogPane. addPropertyChangeListener(new java.beans.PropertyChangeListener(){@Override public void
-            propertyChange(java.beans.PropertyChangeEvent e){if("\u0062order".equals(e.getPropertyName()))throw new RuntimeException()
-            ;}});
+            dialogPane.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax. swing. border. EmptyBorder( 0
+            , 0, 0, 0) , "JF\u006frmD\u0065sig\u006eer \u0045val\u0075ati\u006fn", javax. swing. border. TitledBorder. CENTER, javax. swing. border. TitledBorder. BOTTOM
+            , new java .awt .Font ("Dia\u006cog" ,java .awt .Font .BOLD ,12 ), java. awt. Color. red) ,
+            dialogPane. getBorder( )) ); dialogPane. addPropertyChangeListener (new java. beans. PropertyChangeListener( ){ @Override public void propertyChange (java .beans .PropertyChangeEvent e
+            ) {if ("\u0062ord\u0065r" .equals (e .getPropertyName () )) throw new RuntimeException( ); }} );
             dialogPane.setLayout(new BorderLayout());
 
             //======== contentPanel ========
@@ -477,18 +488,6 @@ public class Clerk extends JFrame {
                 //======== tabbedPane1 ========
                 {
                     tabbedPane1.setForeground(UIManager.getColor("Link.hoverForeground"));
-
-                    {
-                        panel7.setLayout(new GridLayout(6, 2));
-
-                        //----- label26 -----
-                        label26.setText("Which table do you want to view into?");
-                        label26.setHorizontalAlignment(SwingConstants.CENTER);
-                        panel7.add(label26);
-                        panel7.add(InsDMWhereBox);
-                        
-                    }
-                    tabbedPane1.addTab("Insert Data Manipulations", panel7);
 
                     //======== panel2 ========
                     {
@@ -1179,12 +1178,5 @@ public class Clerk extends JFrame {
     private JPanel buttonBar;
     private JButton ReturnButton;
     private JButton FinishButton;
-<<<<<<< HEAD
-=======
-    private JLabel label25;
-    private JPanel panel7;
-    private JLabel label26;
-    private JComboBox InsDMWhereBox;
->>>>>>> master
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }

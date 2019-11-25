@@ -167,6 +167,9 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegates 
     public VehicleRented[] getAllRental(int date){
         return dbHandler.getAllRental(new Date(date));
     }
+    public RevenueCat[] revenueCat(Date date){
+        return dbHandler.revenueCat(date);
+    }
 
 	public VehicleSearchResults[] customerSearchVehicle(Boolean hasCarType, Boolean hasLocation, Boolean hasTimePeriod,
 									  String carType, String location, String city, Date fromDate, Time fromTime, Date toDate, Time toTime) {
