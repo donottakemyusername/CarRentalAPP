@@ -26,13 +26,7 @@ import java.util.ArrayList;
 public class Clerk extends JFrame {
     public TerminalTransactionsDelegates delegate = null;
     public Clerk(){}
-
-    private Date parseDateFromString(String dateStr) {
-        String[] parts = dateStr.split("/");
-        // TODO: need to add more checks
-        if (dateStr.isEmpty() || parts.length != 3) return null;
-        return new Date(Integer.parseInt(parts[2])+1900, Integer.parseInt(parts[0])-1, Integer.parseInt(parts[1]));
-    }
+    
 
     public void showClerk(final TerminalTransactionsDelegates delegate){
         this.delegate = delegate;
