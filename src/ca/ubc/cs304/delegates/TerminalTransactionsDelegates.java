@@ -1,5 +1,7 @@
 package ca.ubc.cs304.delegates;
 
+import ca.ubc.cs304.exceptions.InvalidDetailsException;
+import ca.ubc.cs304.exceptions.InvalidReservationException;
 import ca.ubc.cs304.model.*;
 
 import java.sql.Date;
@@ -43,10 +45,10 @@ public interface TerminalTransactionsDelegates {
 	public ReturnResult returnVehicle(int rentID, int d);
 	public VehicleSearchResults[] customerSearchVehicle(Boolean hasCarType, Boolean hasLocation, Boolean hasTimePeriod,
 								 String carType, String location, String city, Date fromDate, Time fromTime, Date toDate, Time toTime);
-	public int makeReservation(String dlicense, String cname, String phoneNum, String address, String city, String location, String vtname, Date fromDate, Time fromTime, Date toDate, Time toTime);
-	public RentalReceipt makeRental(int confNum, String city, String location, String cardName, String cardNo, Date expDate);
+	public int makeReservation(String dlicense, String cname, String phoneNum, String address, String city, String location, String vtname, Date fromDate, Time fromTime, Date toDate, Time toTime) throws InvalidDetailsException;
+	public RentalReceipt makeRental(int confNum, String city, String location, String cardName, String cardNo, Date expDate) throws InvalidReservationException, InvalidDetailsException;
 	public RentalReceipt makeRental(String dlicense, String cname, String phoneNum, String address, String city, String location, String vtname, Date fromDate, Time fromTime, Date toDate, Time toTime,
-									String cardName, String cardNo, Date expDate);
+									String cardName, String cardNo, Date expDate) throws InvalidDetailsException, InvalidReservationException;
 	// TODO: implement the Customer query transactions
 
 	

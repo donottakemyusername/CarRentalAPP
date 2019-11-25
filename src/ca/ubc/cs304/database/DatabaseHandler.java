@@ -1,6 +1,7 @@
 package ca.ubc.cs304.database;
 
 import ca.ubc.cs304.exceptions.IllegalTimePeriodException;
+import ca.ubc.cs304.exceptions.InvalidDetailsException;
 import ca.ubc.cs304.exceptions.InvalidReservationException;
 import ca.ubc.cs304.model.*;
 import javafx.util.Pair;
@@ -510,7 +511,7 @@ public class DatabaseHandler {
 		return searchResults.toArray(new VehicleSearchResults[searchResults.size()]);
 	}
 
-	public Vehicles getRentalVehicle(String vtname, String location, String city, TimePeriodModel timePeriod) {
+	public Vehicles getRentalVehicle(String vtname, String location, String city, TimePeriodModel timePeriod) throws InvalidDetailsException {
 		try {
 			String caseEndWithinTP = "((SELECT R.vlicense FROM Rental R WHERE R.toDate > ?) UNION (SELECT R.vlicense FROM Rental R WHERE R.toDate = ? AND R.toTime >= ?)) INTERSECT ((SELECT R.vlicense FROM Rental R WHERE R.toDate < ?) UNION (SELECT R.vlicense FROM Rental R WHERE R.toDate = ? AND R.toTime <= ?))";
 			// fromDate, fromDate fromTime, toDate, toDate, toTime
@@ -555,9 +556,8 @@ public class DatabaseHandler {
 				return result;
 			}
 
-			// TODO: throw exception
 			if (!found) {
-				System.out.println("Sorry, there are no longer vehicles available for your rental.");
+				throw new InvalidDetailsException("The vehicle type you wish to rent is no longer available.");
 			}
 
 		} catch (SQLException e) {

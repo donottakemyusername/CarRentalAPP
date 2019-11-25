@@ -178,25 +178,25 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegates 
 		}
 	}
 
-	public void checkParameters(String dlicense, String cname, String phoneNum, String address,
-								String city, String location, String vtname, Date fromDate, Time fromTime,
-								Date toDate, Time toTime) throws InvalidDetailsException{
+	public void checkReservationParameters(String dlicense, String cname, String phoneNum, String address,
+										   String city, String location, String vtname, Date fromDate, Time fromTime,
+										   Date toDate, Time toTime) throws InvalidDetailsException{
     	if (dlicense == null || cname == null || phoneNum == null || address == null  || location == null || vtname == null || fromDate == null || fromTime == null || toDate == null || toTime == null) {
     		throw new InvalidDetailsException("One or more parameters are null");
 		}
 
     	if (dlicense.isEmpty() || cname.isEmpty() || phoneNum.isEmpty() || address.isEmpty() || location.isEmpty() || vtname.isEmpty()) {
-    		throw new InvalidDetailsException("One or more of the required reservation fields are empty.");
+    		throw new InvalidDetailsException("One or more of the required fields are empty.");
 		}
 	}
 
 	// return -1 if the reservation can't be made
 	@Override
-	public int makeReservation(String dlicense, String cname, String phoneNum, String address, String city, String location, String vtname, Date fromDate, Time fromTime, Date toDate, Time toTime) {
+	public int makeReservation(String dlicense, String cname, String phoneNum, String address, String city, String location,
+							   String vtname, Date fromDate, Time fromTime, Date toDate, Time toTime) throws InvalidDetailsException {
 		int nextConfNum = -1;
-    	try {
     		// check that all of our parameters are valid
-			checkParameters(dlicense, cname, phoneNum, address, city, location, vtname, fromDate, fromTime, toDate, toTime);
+			checkReservationParameters(dlicense, cname, phoneNum, address, city, location, vtname, fromDate, fromTime, toDate, toTime);
 
 			// check if the customer exists in the database, if not add them
 			dbHandler.findOrAddCustomer(dlicense, cname, phoneNum, address);
@@ -212,38 +212,49 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegates 
 			nextConfNum = dbHandler.getNextConfNum();
 			ReservationModel rs = new ReservationModel(nextConfNum, vtname, dlicense, fromDate, fromTime, toDate, toTime);
 			insertReservation(rs);
-		} catch (InvalidDetailsException e) {
-			System.out.println("[EXCEPTION] " + e.getMessage());
-		}
+
 		return nextConfNum;
 	}
 
+
 	@Override
-	public RentalReceipt makeRental(int confNum, String city, String location, String cardName, String cardNo, Date expDate) {
+	public RentalReceipt makeRental(int confNum, String city, String location, String cardName, String cardNo, Date expDate) throws InvalidReservationException, InvalidDetailsException{
     	// get the reservation if it exists
+		checkRentalParameters(confNum, city, location, cardName, cardNo, expDate);
 		RentalReceipt receipt = null;
-		try {
-			ReservationModel r = dbHandler.findReservation(confNum);
-			// the next rental id is in numerical order so the next one is one higher than the max
-			int nextRid = dbHandler.getNextRid();
-			// get the first vehicle that satisfies this
-			TimePeriodModel tp = new TimePeriodModel(r.getFromDate(), r.getFromTime(), r.getToDate(), r.getToTime());
-			Vehicles v = dbHandler.getRentalVehicle(r.getVtname(), location, city, tp);
-			RentalModel rent = new RentalModel(nextRid, v.getVlicense(), r.getDlicense(), tp.getFromDate(), tp.getFromTime(), tp.getToDate(), tp.getToTime(),
+		ReservationModel r = dbHandler.findReservation(confNum);
+		// the next rental id is in numerical order so the next one is one higher than the max
+		int nextRid = dbHandler.getNextRid();
+		// get the first vehicle that satisfies this
+		TimePeriodModel tp = new TimePeriodModel(r.getFromDate(), r.getFromTime(), r.getToDate(), r.getToTime());
+		Vehicles v = dbHandler.getRentalVehicle(r.getVtname(), location, city, tp);
+		RentalModel rent = new RentalModel(nextRid, v.getVlicense(), r.getDlicense(), tp.getFromDate(), tp.getFromTime(), tp.getToDate(), tp.getToTime(),
 					v.getOdometer(), cardName, cardNo, expDate, r.getConfNum());
-			insertRental(rent);
-			// make Receipt and return
-			receipt = new RentalReceipt(nextRid, confNum, tp, rent.getVlicense(), location);
-			return receipt;
-		} catch (InvalidReservationException e) {
-			System.out.println("[EXCEPTION] " + e.getMessage());
-		}
+		insertRental(rent);
+		// make Receipt and return
+		receipt = new RentalReceipt(nextRid, confNum, tp, rent.getVlicense(), location);
 		return receipt;
 	}
 
+	public void checkRentalParameters(int confNum, String city, String location, String cardName, String cardNo, Date expDate) throws InvalidDetailsException{
+		if (confNum == -1 || city == null || location == null || cardName == null  || cardNo == null || expDate == null) {
+			throw new InvalidDetailsException("One or more parameters are null\nYou need to either enter (confirmation number, branch city, branch location, card name, card number, expiryDate)\nOR\n" +
+					"(Drivers License, Name, Phone Number, Address, City, Location, Vehicle Type, from date, from time, to date, to time, card name, card number, expdate)");
+		}
+
+		if (city.isEmpty() || city.isEmpty() || location.isEmpty() || cardName.isEmpty() || cardNo.isEmpty()) {
+			throw new InvalidDetailsException("One or more of the required fields are empty.\nYou need to either enter (confirmation number, branch city, branch location, card name, card number, expiryDate)\nOR\n"
+			+ "(Drivers License, Name, Phone Number, Address, City, Location, Vehicle Type, from date, from time, to date, to time, card name, card number, expdate)");
+
+		}
+	}
+
 	@Override
-	public RentalReceipt makeRental(String dlicense, String cname, String phoneNum, String address, String city, String location, String vtname, Date fromDate, Time fromTime, Date toDate, Time toTime, String cardName, String cardNo, Date expDate) {
+	public RentalReceipt makeRental(String dlicense, String cname, String phoneNum, String address, String city,
+									String location, String vtname, Date fromDate, Time fromTime, Date toDate, Time toTime,
+									String cardName, String cardNo, Date expDate) throws InvalidDetailsException, InvalidReservationException {
     	// make a reservation first
+		checkReservationParameters(dlicense, cname, phoneNum, address, city, location, vtname, fromDate, fromTime, toDate, toTime);
 		int confNum = makeReservation(dlicense, cname, phoneNum, address, city, location, vtname, fromDate, fromTime, toDate,toTime);
 		return makeRental(confNum, city, location, cardName, cardNo, expDate);
 	}

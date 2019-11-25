@@ -1,6 +1,7 @@
 package ca.ubc.cs304.ui;
 
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegates;
+import ca.ubc.cs304.exceptions.InvalidDetailsException;
 import ca.ubc.cs304.model.VehicleSearchResults;
 import ca.ubc.cs304.model.VehicleTypeModel;
 
@@ -71,7 +72,6 @@ public class Reserve extends JFrame {
                     System.out.println(listData[i]);
                 }
                 PerList.setListData(listData);
-                JOptionPane.showMessageDialog(null,"yes");
             }
         }
         );
@@ -90,9 +90,13 @@ public class Reserve extends JFrame {
                 Time fromTime = parseTimeFromString(ResFT.getText());
                 Date toDate = parseDateFromString(ResTD.getText());
                 Time toTime = parseTimeFromString(textField12.getText());
-                //int confNo = delegate.makeReservation(dlicense, cname, phoneNum, caddress, branchAddress, carType,
-                 //       fromDate, fromTime, toDate, toTime);    //TODO: change the dbhandler.makeReservation and add city into the parameter
-                JOptionPane.showMessageDialog(null,"Reservation Made! Confirmation Number is " + confNo);
+                try {
+                    int confNo = delegate.makeReservation(dlicense, cname, phoneNum, caddress, city, branchAddress, carType,
+                            fromDate, fromTime, toDate, toTime);
+                    JOptionPane.showMessageDialog(null,"Reservation Made! Confirmation Number is " + confNo);
+                } catch (InvalidDetailsException ex) {
+                    JOptionPane.showMessageDialog(null,"[EXCEPTION] Reservation not made: " + ex.getMessage());
+                }
             }
         }
         );

@@ -1,6 +1,8 @@
 package ca.ubc.cs304.ui;
 
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegates;
+import ca.ubc.cs304.exceptions.InvalidDetailsException;
+import ca.ubc.cs304.exceptions.InvalidReservationException;
 import ca.ubc.cs304.model.*;
 
 import javax.swing.*;
@@ -9,6 +11,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Date;
+import java.sql.Time;
 import java.util.ArrayList;
 /*
  * Created by JFormDesigner on Wed Nov 20 00:18:48 PST 2019
@@ -33,6 +36,7 @@ public class Clerk extends JFrame {
         //frame.setSize(800, 600);
         frame.setVisible(true);
 
+        RentSetUp();
         ReturnSetUp();
         RentalReportSetUp();
         ReturnReportSetUp();
@@ -309,11 +313,72 @@ public class Clerk extends JFrame {
            }
         );
 
+        rentbutton.addActionListener(new ActionListener() {
+                                            @Override
+                                            public void actionPerformed(ActionEvent e) {
+                                                RentalReceipt receipt = null;
+                                                String confNo = ResConf.getText();
+                                                String carType = (String) ResTypeBox.getSelectedItem();
+                                                String dlicense = RevDlic.getText();
+                                                String cname = ResCname.getText();
+                                                String phoneNum = ResCphone.getText();
+                                                String caddress = ResCaddr.getText();
+                                                String city = ResCity.getText();
+                                                String branchAddress = ResBA.getText();
+                                                Date fromDate = parseDateFromString(ResFD.getText());
+                                                Time fromTime = parseTimeFromString(ResFT.getText());
+                                                Date toDate = parseDateFromString(ResTD.getText());
+                                                Time toTime = parseTimeFromString(textField12.getText());
+                                                String cardName = cardNameTextField.getText();
+                                                String cardNo = cardNoTextField.getText();
+                                                Date expDate = parseDateFromString(expDateTextField.getText());
+                                                try {
+                                                    if (confNo != null || !confNo.isEmpty())
+                                                        receipt = delegate.makeRental(Integer.parseInt(confNo), city, branchAddress, cardName, cardNo, expDate);
+                                                    else
+                                                        receipt = delegate.makeRental(dlicense, cname, phoneNum, caddress, city, branchAddress, carType, fromDate, fromTime, toDate, toTime, cardName, cardNo, expDate);
+                                                } catch (InvalidReservationException | InvalidDetailsException ex) {
+                                                    JOptionPane.showMessageDialog(null,"[EXCEPTION] Rental not made: " + ex.getMessage());
+                                                }
+                                                if (receipt != null) {
+                                                    String receiptString = "Rental Receipt:\n\nRental ID: " + receipt.getRid()
+                                                        + "\nBranch Address: " + receipt.getLocation()
+                                                        + "\nVehicle Type: " + receipt.getVtname()
+                                                        + "\n for Time Period" + ResFD.getText() + " to " + ResTD.getText();
+                                                    JOptionPane.showMessageDialog(null,receiptString); }
+
+                                           }
+                                        }
+        );
+
     }
 
 
     {
         initComponents();
+    }
+
+    private Date parseDateFromString(String dateStr) {
+        String[] parts = dateStr.split("/");
+        // TODO: need to add more checks
+        if (parts.length == 2) return new Date(Integer.parseInt(parts[1])+1900, Integer.parseInt(parts[0])-1, 0);
+        if (dateStr.isEmpty() || parts.length != 3) return null;
+        return new Date(Integer.parseInt(parts[2])+1900, Integer.parseInt(parts[0])-1, Integer.parseInt(parts[1]));
+    }
+
+    private Time parseTimeFromString(String timeStr) {
+        String[] parts = timeStr.split(":");
+        // TODO: need more checks
+        if (timeStr.isEmpty() || parts.length != 2) return null;
+        return new Time(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), 0);
+    }
+
+    public void RentSetUp() {
+        // adds all possible vehicle types into the drop down window for "Reserve"
+        VehicleTypeModel[] vehicleTypes = this.delegate.getAllVehicleTypes();
+        for (VehicleTypeModel vt : vehicleTypes) {
+            ResTypeBox.addItem(vt.getVtname());
+        }
     }
 
     public void ReturnSetUp(){
@@ -341,7 +406,7 @@ public class Clerk extends JFrame {
         tabbedPane1 = new JTabbedPane();
         panel2 = new JPanel();
         ResTT = new JPanel();
-        reservebutton = new JButton();
+        rentbutton = new JButton();
         panel7 = new JPanel();
         label1 = new JLabel();
         ResConf = new JTextField();
@@ -447,6 +512,12 @@ public class Clerk extends JFrame {
         buttonBar = new JPanel();
         ReturnButton = new JButton();
         FinishButton = new JButton();
+        cardNameLabel = new JLabel();
+        cardNoLabel = new JLabel();
+        expDateLabel = new JLabel();
+        cardNameTextField = new JTextField();
+        cardNoTextField = new JTextField();
+        expDateTextField = new JTextField();
 
         //======== this ========
         Container contentPane = getContentPane();
@@ -478,10 +549,9 @@ public class Clerk extends JFrame {
                         label26.setText("Which table do you want to view into?");
                         label26.setHorizontalAlignment(SwingConstants.CENTER);
                         panel7.add(label26);
-                        panel7.add(InsDMWhereBox);
-                        
+
                     }
-                    tabbedPane1.addTab("Insert Data Manipulations", panel7);
+                    tabbedPane1.addTab("View Data Manipulations", panel7);
 
                     //======== panel2 ========
                     {
@@ -492,13 +562,13 @@ public class Clerk extends JFrame {
                             ResTT.setLayout(null);
 
                             //---- reservebutton ----
-                            reservebutton.setText("CLICK HERE TO RESERVE!");
-                            ResTT.add(reservebutton);
-                            reservebutton.setBounds(495, 305, 270, 75);
+                            rentbutton.setText("CLICK HERE TO RENT!");
+                            ResTT.add(rentbutton);
+                            rentbutton.setBounds(495, 305, 270, 75);
 
                             //======== panel7 ========
                             {
-                                panel7.setLayout(new GridLayout(12, 2));
+                                panel7.setLayout(new GridLayout(15, 2));
 
                                 //---- label1 ----
                                 label1.setText("Confirmation Number");
@@ -571,6 +641,21 @@ public class Clerk extends JFrame {
                                 label31.setHorizontalAlignment(SwingConstants.CENTER);
                                 panel7.add(label31);
                                 panel7.add(textField12);
+
+                                cardNameLabel.setText("Card Name");
+                                cardNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                                panel7.add(cardNameLabel);
+                                panel7.add(cardNameTextField);
+
+                                cardNoLabel.setText("Card Number");
+                                cardNoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                                panel7.add(cardNoLabel);
+                                panel7.add(cardNoTextField);
+
+                                expDateLabel.setText("Exp Date (MM/YYYY)");
+                                expDateLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                                panel7.add(expDateLabel);
+                                panel7.add(expDateTextField);
                             }
                             ResTT.add(panel7);
                             panel7.setBounds(60, 25, 350, 375);
@@ -1066,7 +1151,7 @@ public class Clerk extends JFrame {
     private JTabbedPane tabbedPane1;
     private JPanel panel2;
     private JPanel ResTT;
-    private JButton reservebutton;
+    private JButton rentbutton;
     private JPanel panel7;
     private JLabel label1;
     private JTextField ResConf;
@@ -1172,5 +1257,11 @@ public class Clerk extends JFrame {
     private JPanel buttonBar;
     private JButton ReturnButton;
     private JButton FinishButton;
+    private JLabel cardNameLabel;
+    private JLabel cardNoLabel;
+    private JLabel expDateLabel;
+    private JTextField cardNameTextField;
+    private JTextField cardNoTextField;
+    private JTextField expDateTextField = new JTextField();
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }
