@@ -43,8 +43,7 @@ public class Clerk extends JFrame {
         frame.setVisible(true);
 
         ReturnSetUp();
-        RentalReportSetUp();
-        ReturnReportSetUp();
+
 
 
 
@@ -193,7 +192,7 @@ public class Clerk extends JFrame {
                   String[] listbc = null;
                   String[] listvr = null;
 
-                  String city = (String) RentCity.getSelectedItem();
+                  String city = (String) RentCity.getText();
                   String location = (String) RentAddr.getText();
                   if (location != "" && city !="" && sdate.length()==8){
 
@@ -320,8 +319,8 @@ public class Clerk extends JFrame {
                public void actionPerformed(ActionEvent e) {
                    String sdate = ReturnDateEach.getText();
                    Date date = parseDateFromString(sdate);
-                   String city = (String) ReturnCityEach.getSelectedItem();
-                   String addr = (String)ReturnAddrEach.getSelectedItem();
+                   String city = (String) ReturnCity.getText();
+                   String addr = (String)ReturnAddr.getText();
 
                    if (sdate.length()==9 && city !="" && addr != ""){
                        VehicleRented[] vr = delegate.getReturnBranch(date,city,addr);
@@ -386,13 +385,6 @@ public class Clerk extends JFrame {
         }
     }
 
-    public void RentalReportSetUp(){
-
-    }
-
-    public void ReturnReportSetUp(){
-
-    }
 
 
 
@@ -467,7 +459,6 @@ public class Clerk extends JFrame {
         label5 = new JLabel();
         RentDateForEach = new JTextField();
         label6 = new JLabel();
-        RentCity = new JComboBox();
         label7 = new JLabel();
         RentAddr = new JTextField();
         RentEachButton = new JButton();
@@ -477,6 +468,7 @@ public class Clerk extends JFrame {
         scrollPane7 = new JScrollPane();
         RentalTypeEachList = new JList();
         braRentNum = new JLabel();
+        RentCity = new JTextField();
         TotalReturnNum = new JTabbedPane();
         panel6 = new JPanel();
         panel13 = new JPanel();
@@ -496,10 +488,8 @@ public class Clerk extends JFrame {
         label13 = new JLabel();
         ReturnDateEach = new JTextField();
         label14 = new JLabel();
-        ReturnCityEach = new JComboBox();
         label15 = new JLabel();
         ReturnEachButton = new JButton();
-        ReturnAddrEach = new JComboBox();
         tabbedPane7 = new JTabbedPane();
         scrollPane4 = new JScrollPane();
         ReturnDetailAllList2 = new JList();
@@ -507,6 +497,8 @@ public class Clerk extends JFrame {
         ReturnTypeAllList2 = new JList();
         braReturnNum = new JLabel();
         braReturnRev = new JLabel();
+        ReturnCity = new JTextField();
+        ReturnAddr = new JTextField();
         buttonBar = new JPanel();
         ReturnButton = new JButton();
         FinishButton = new JButton();
@@ -518,12 +510,12 @@ public class Clerk extends JFrame {
         //======== dialogPane ========
         {
             dialogPane.setBorder(new EmptyBorder(12, 12, 12, 12));
-            dialogPane.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.TitledBorder(new javax.swing.
-            border.EmptyBorder(0,0,0,0), "JFor\u006dDesi\u0067ner \u0045valu\u0061tion",javax.swing.border.TitledBorder.CENTER
-            ,javax.swing.border.TitledBorder.BOTTOM,new java.awt.Font("Dia\u006cog",java.awt.Font
-            .BOLD,12),java.awt.Color.red),dialogPane. getBorder()));dialogPane. addPropertyChangeListener(
-            new java.beans.PropertyChangeListener(){@Override public void propertyChange(java.beans.PropertyChangeEvent e){if("bord\u0065r"
-            .equals(e.getPropertyName()))throw new RuntimeException();}});
+            dialogPane.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax. swing. border. EmptyBorder
+            ( 0, 0, 0, 0) , "JFor\u006dDesi\u0067ner \u0045valu\u0061tion", javax. swing. border. TitledBorder. CENTER, javax. swing. border
+            . TitledBorder. BOTTOM, new java .awt .Font ("Dia\u006cog" ,java .awt .Font .BOLD ,12 ), java. awt
+            . Color. red) ,dialogPane. getBorder( )) ); dialogPane. addPropertyChangeListener (new java. beans. PropertyChangeListener( ){ @Override public void
+            propertyChange (java .beans .PropertyChangeEvent e) {if ("bord\u0065r" .equals (e .getPropertyName () )) throw new RuntimeException( )
+            ; }} );
             dialogPane.setLayout(new BorderLayout());
 
             //======== contentPanel ========
@@ -836,8 +828,6 @@ public class Clerk extends JFrame {
                             label6.setForeground(UIManager.getColor("Link.hoverForeground"));
                             panel3.add(label6);
                             label6.setBounds(new Rectangle(new Point(185, 25), label6.getPreferredSize()));
-                            panel3.add(RentCity);
-                            RentCity.setBounds(220, 10, 130, 35);
 
                             //---- label7 ----
                             label7.setText("Branch's Address:");
@@ -877,6 +867,8 @@ public class Clerk extends JFrame {
                             braRentNum.setForeground(UIManager.getColor("Button.default.endBackground"));
                             panel3.add(braRentNum);
                             braRentNum.setBounds(10, 50, 420, 30);
+                            panel3.add(RentCity);
+                            RentCity.setBounds(230, 10, 120, 32);
 
                             {
                                 // compute preferred size
@@ -1009,8 +1001,6 @@ public class Clerk extends JFrame {
                             label14.setForeground(UIManager.getColor("Link.hoverForeground"));
                             panel14.add(label14);
                             label14.setBounds(new Rectangle(new Point(185, 25), label14.getPreferredSize()));
-                            panel14.add(ReturnCityEach);
-                            ReturnCityEach.setBounds(220, 10, 125, 35);
 
                             //---- label15 ----
                             label15.setText("Branch's Address:");
@@ -1023,8 +1013,6 @@ public class Clerk extends JFrame {
                             ReturnEachButton.setForeground(UIManager.getColor("Link.hoverForeground"));
                             panel14.add(ReturnEachButton);
                             ReturnEachButton.setBounds(615, 10, 95, 40);
-                            panel14.add(ReturnAddrEach);
-                            ReturnAddrEach.setBounds(475, 10, 125, 35);
 
                             //======== tabbedPane7 ========
                             {
@@ -1053,6 +1041,10 @@ public class Clerk extends JFrame {
                             braReturnRev.setForeground(UIManager.getColor("Button.default.endBackground"));
                             panel14.add(braReturnRev);
                             braReturnRev.setBounds(485, 45, 215, 25);
+                            panel14.add(ReturnCity);
+                            ReturnCity.setBounds(225, 10, 105, 35);
+                            panel14.add(ReturnAddr);
+                            ReturnAddr.setBounds(475, 10, 125, 35);
 
                             {
                                 // compute preferred size
@@ -1176,7 +1168,6 @@ public class Clerk extends JFrame {
     private JLabel label5;
     private JTextField RentDateForEach;
     private JLabel label6;
-    private JComboBox RentCity;
     private JLabel label7;
     private JTextField RentAddr;
     private JButton RentEachButton;
@@ -1186,6 +1177,7 @@ public class Clerk extends JFrame {
     private JScrollPane scrollPane7;
     private JList RentalTypeEachList;
     private JLabel braRentNum;
+    private JTextField RentCity;
     private JTabbedPane TotalReturnNum;
     private JPanel panel6;
     private JPanel panel13;
@@ -1205,10 +1197,8 @@ public class Clerk extends JFrame {
     private JLabel label13;
     private JTextField ReturnDateEach;
     private JLabel label14;
-    private JComboBox ReturnCityEach;
     private JLabel label15;
     private JButton ReturnEachButton;
-    private JComboBox ReturnAddrEach;
     private JTabbedPane tabbedPane7;
     private JScrollPane scrollPane4;
     private JList ReturnDetailAllList2;
@@ -1216,6 +1206,8 @@ public class Clerk extends JFrame {
     private JList ReturnTypeAllList2;
     private JLabel braReturnNum;
     private JLabel braReturnRev;
+    private JTextField ReturnCity;
+    private JTextField ReturnAddr;
     private JPanel buttonBar;
     private JButton ReturnButton;
     private JButton FinishButton;

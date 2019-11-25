@@ -363,14 +363,6 @@ new FormModel {
 									"x": 185
 									"y": 25
 								} )
-								add( new FormComponent( "javax.swing.JComboBox" ) {
-									name: "RentCity"
-								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-									"x": 220
-									"y": 10
-									"width": 130
-									"height": 35
-								} )
 								add( new FormComponent( "javax.swing.JLabel" ) {
 									name: "label7"
 									"text": "Branch's Address:"
@@ -433,6 +425,14 @@ new FormModel {
 									"height": 30
 									"x": 10
 									"y": 50
+								} )
+								add( new FormComponent( "javax.swing.JTextField" ) {
+									name: "RentCity"
+								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+									"x": 230
+									"y": 10
+									"width": 120
+									"height": 32
 								} )
 							}, new FormLayoutConstraints( null ) {
 								"title": "For each branch"
@@ -560,14 +560,6 @@ new FormModel {
 									"x": 185
 									"y": 25
 								} )
-								add( new FormComponent( "javax.swing.JComboBox" ) {
-									name: "ReturnCityEach"
-								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-									"x": 220
-									"y": 10
-									"width": 125
-									"height": 35
-								} )
 								add( new FormComponent( "javax.swing.JLabel" ) {
 									name: "label15"
 									"text": "Branch's Address:"
@@ -587,14 +579,6 @@ new FormModel {
 									"y": 10
 									"width": 95
 									"height": 40
-								} )
-								add( new FormComponent( "javax.swing.JComboBox" ) {
-									name: "ReturnAddrEach"
-								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-									"x": 475
-									"y": 10
-									"width": 125
-									"height": 35
 								} )
 								add( new FormContainer( "javax.swing.JTabbedPane", new FormLayoutManager( class javax.swing.JTabbedPane ) ) {
 									name: "tabbedPane7"
@@ -637,6 +621,22 @@ new FormModel {
 									"y": 45
 									"width": 215
 									"height": 25
+								} )
+								add( new FormComponent( "javax.swing.JTextField" ) {
+									name: "ReturnCity"
+								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+									"x": 225
+									"y": 10
+									"width": 105
+									"height": 35
+								} )
+								add( new FormComponent( "javax.swing.JTextField" ) {
+									name: "ReturnAddr"
+								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+									"x": 475
+									"y": 10
+									"width": 125
+									"height": 35
 								} )
 							}, new FormLayoutConstraints( null ) {
 								"title": "For each branch"
