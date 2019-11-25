@@ -156,7 +156,7 @@ new FormModel {
 							name: "ResTT"
 							add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
 								"columns": 2
-								"rows": 10
+								"rows": 11
 							} ) {
 								name: "panel2"
 								add( new FormComponent( "javax.swing.JLabel" ) {
@@ -198,6 +198,14 @@ new FormModel {
 								} )
 								add( new FormComponent( "javax.swing.JTextField" ) {
 									name: "ResCaddr"
+								} )
+								add( new FormComponent( "javax.swing.JLabel" ) {
+									name: "label4"
+									"text": "City"
+									"horizontalAlignment": 0
+								} )
+								add( new FormComponent( "javax.swing.JTextField" ) {
+									name: "ResCity"
 								} )
 								add( new FormComponent( "javax.swing.JLabel" ) {
 									name: "label3"

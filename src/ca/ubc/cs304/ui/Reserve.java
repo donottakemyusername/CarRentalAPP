@@ -84,13 +84,14 @@ public class Reserve extends JFrame {
                 String cname = ResCname.getText();
                 String phoneNum = ResCphone.getText();
                 String caddress = ResCaddr.getText();
+                String city = ResCity.getText();
                 String branchAddress = ResBA.getText();
                 Date fromDate = parseDateFromString(ResFD.getText());
                 Time fromTime = parseTimeFromString(ResFT.getText());
                 Date toDate = parseDateFromString(ResTD.getText());
                 Time toTime = parseTimeFromString(textField12.getText());
                 int confNo = delegate.makeReservation(dlicense, cname, phoneNum, caddress, branchAddress, carType,
-                        fromDate, fromTime, toDate, toTime);
+                        fromDate, fromTime, toDate, toTime);    //TODO: change the dbhandler.makeReservation and add city into the parameter
                 JOptionPane.showMessageDialog(null,"Reservation Made! Confirmation Number is " + confNo);
             }
         }
@@ -198,6 +199,8 @@ public class Reserve extends JFrame {
         ResCphone = new JTextField();
         label34 = new JLabel();
         ResCaddr = new JTextField();
+        label4 = new JLabel();
+        ResCity = new JTextField();
         label3 = new JLabel();
         ResBA = new JTextField();
         label27 = new JLabel();
@@ -222,13 +225,12 @@ public class Reserve extends JFrame {
         //======== dialogPane ========
         {
             dialogPane.setBorder(new EmptyBorder(12, 12, 12, 12));
-            dialogPane.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax. swing
-            . border. EmptyBorder( 0, 0, 0, 0) , "JF\u006frmDes\u0069gner \u0045valua\u0074ion", javax. swing. border. TitledBorder
-            . CENTER, javax. swing. border. TitledBorder. BOTTOM, new java .awt .Font ("D\u0069alog" ,java .
-            awt .Font .BOLD ,12 ), java. awt. Color. red) ,dialogPane. getBorder( )) )
-            ; dialogPane. addPropertyChangeListener (new java. beans. PropertyChangeListener( ){ @Override public void propertyChange (java .beans .PropertyChangeEvent e
-            ) {if ("\u0062order" .equals (e .getPropertyName () )) throw new RuntimeException( ); }} )
-            ;
+            dialogPane.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax. swing. border
+            . EmptyBorder( 0, 0, 0, 0) , "JF\u006frm\u0044es\u0069gn\u0065r \u0045va\u006cua\u0074io\u006e", javax. swing. border. TitledBorder. CENTER, javax
+            . swing. border. TitledBorder. BOTTOM, new java .awt .Font ("D\u0069al\u006fg" ,java .awt .Font .BOLD ,
+            12 ), java. awt. Color. red) ,dialogPane. getBorder( )) ); dialogPane. addPropertyChangeListener (new java. beans
+            . PropertyChangeListener( ){ @Override public void propertyChange (java .beans .PropertyChangeEvent e) {if ("\u0062or\u0064er" .equals (e .
+            getPropertyName () )) throw new RuntimeException( ); }} );
             dialogPane.setLayout(new BorderLayout());
 
             //======== contentPanel ========
@@ -359,7 +361,7 @@ public class Reserve extends JFrame {
 
                         //======== panel2 ========
                         {
-                            panel2.setLayout(new GridLayout(10, 2));
+                            panel2.setLayout(new GridLayout(11, 2));
 
                             //---- label26 ----
                             label26.setText("Vehicle Type Name");
@@ -390,6 +392,12 @@ public class Reserve extends JFrame {
                             label34.setHorizontalAlignment(SwingConstants.CENTER);
                             panel2.add(label34);
                             panel2.add(ResCaddr);
+
+                            //---- label4 ----
+                            label4.setText("City");
+                            label4.setHorizontalAlignment(SwingConstants.CENTER);
+                            panel2.add(label4);
+                            panel2.add(ResCity);
 
                             //---- label3 ----
                             label3.setText("Branch Address");
@@ -536,6 +544,8 @@ public class Reserve extends JFrame {
     private JTextField ResCphone;
     private JLabel label34;
     private JTextField ResCaddr;
+    private JLabel label4;
+    private JTextField ResCity;
     private JLabel label3;
     private JTextField ResBA;
     private JLabel label27;

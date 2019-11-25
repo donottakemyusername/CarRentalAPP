@@ -355,6 +355,8 @@ public class Clerk extends JFrame {
         ResCphone = new JTextField();
         label34 = new JLabel();
         ResCaddr = new JTextField();
+        label2 = new JLabel();
+        ResCity = new JTextField();
         label3 = new JLabel();
         ResBA = new JTextField();
         label27 = new JLabel();
@@ -453,13 +455,12 @@ public class Clerk extends JFrame {
         //======== dialogPane ========
         {
             dialogPane.setBorder(new EmptyBorder(12, 12, 12, 12));
-            dialogPane.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax.
-            swing. border. EmptyBorder( 0, 0, 0, 0) , "JF\u006frmDes\u0069gner \u0045valua\u0074ion", javax. swing. border
-            . TitledBorder. CENTER, javax. swing. border. TitledBorder. BOTTOM, new java .awt .Font ("D\u0069alog"
-            ,java .awt .Font .BOLD ,12 ), java. awt. Color. red) ,dialogPane. getBorder
-            ( )) ); dialogPane. addPropertyChangeListener (new java. beans. PropertyChangeListener( ){ @Override public void propertyChange (java
-            .beans .PropertyChangeEvent e) {if ("\u0062order" .equals (e .getPropertyName () )) throw new RuntimeException
-            ( ); }} );
+            dialogPane.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder
+            (0,0,0,0), "JF\u006frmDes\u0069gner \u0045valua\u0074ion",javax.swing.border.TitledBorder.CENTER,javax.swing.border
+            .TitledBorder.BOTTOM,new java.awt.Font("D\u0069alog",java.awt.Font.BOLD,12),java.awt
+            .Color.red),dialogPane. getBorder()));dialogPane. addPropertyChangeListener(new java.beans.PropertyChangeListener(){@Override public void
+            propertyChange(java.beans.PropertyChangeEvent e){if("\u0062order".equals(e.getPropertyName()))throw new RuntimeException()
+            ;}});
             dialogPane.setLayout(new BorderLayout());
 
             //======== contentPanel ========
@@ -485,7 +486,7 @@ public class Clerk extends JFrame {
 
                             //======== panel7 ========
                             {
-                                panel7.setLayout(new GridLayout(11, 2));
+                                panel7.setLayout(new GridLayout(12, 2));
 
                                 //---- label1 ----
                                 label1.setText("Confirmation Number");
@@ -522,6 +523,12 @@ public class Clerk extends JFrame {
                                 label34.setHorizontalAlignment(SwingConstants.CENTER);
                                 panel7.add(label34);
                                 panel7.add(ResCaddr);
+
+                                //---- label2 ----
+                                label2.setText("City");
+                                label2.setHorizontalAlignment(SwingConstants.CENTER);
+                                panel7.add(label2);
+                                panel7.add(ResCity);
 
                                 //---- label3 ----
                                 label3.setText("Branch Address");
@@ -1061,6 +1068,8 @@ public class Clerk extends JFrame {
     private JTextField ResCphone;
     private JLabel label34;
     private JTextField ResCaddr;
+    private JLabel label2;
+    private JTextField ResCity;
     private JLabel label3;
     private JTextField ResBA;
     private JLabel label27;
