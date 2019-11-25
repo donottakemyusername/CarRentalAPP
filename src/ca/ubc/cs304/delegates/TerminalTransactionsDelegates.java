@@ -37,14 +37,14 @@ public interface TerminalTransactionsDelegates {
 	public void insertTimePeriod(TimePeriodModel t);
 	public void showBranch();
     public int totalRental(Date date);
-    public VehicleRented[] getAllRental(int date);
+    public VehicleRented[] getAllRental(Date date);
     public TotalCatModel[] totalCatgeory(Date date);
     public TotalBranchModel[] totalBranch(Date date);
     public int totalBranches(Date date, String city, String location);
     public RentalModel[] rentedNotReturned();
     public VehicleRented[] getAllBranchRental(Date date, String city, String location);
     public BranchCat[] getBranchCategory(Date date, String city, String location);
-	public ReturnResult returnVehicle(int rentID, int d);
+	public ReturnResult returnVehicle(int rentID, Date date);
     public RevenueCat[] revenueCat(Date date);
     public RevenueBranch[] revenueBranch(Date date);
     public Pair<Integer, Integer> totalRevenue(Date date);

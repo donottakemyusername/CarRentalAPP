@@ -1,0 +1,22 @@
+README:
+Super Rent is a rental application that allows customers to reserve cars and make rentals. It also enables clerks to record rentals and returns and generate reports for daily branch rentals and returns.
+To run the project, you will first need to log in with our oracle account name and password to connect to the database:
+Username: ora_bowenwz
+Password: a42839548
+From the customer side, you can either check all available cars based on your customized search or make a reservation. You can choose the specific car type you want to rent.
+-	The “CustomerSearchVehicle” function will be called first to find all available vehicles according to customer reservation details. The customer could apply filters to achieve their searching result.
+From the clerk side, there are 3 functions to perform.
+1.	The clerk can first makes the rental. If the customer enters the confirmation number, then we will consider that to be “rental with reservation”. If the customer leaves that field empty, on the other hand, it is the case “rental without reservation”. In that case the system will put the customer in the reservation list according to the other functions he/she enters.
+-	The “GetRentalVehicle” function will be called next to avoid any time conflict with cars that will be rented out during the time period the customer specified.
+2.	The clerk needs to record the return when a customer returns a vehicle. The clerk will manually input the rental id and the date of return, and then a receipt with the associated information, including the price (calculated using length of rental * drate), will be calculated.
+-	The customer can only return a vehicle that is rented out and has not been returned. The clerk can choose a list of rental ids, and those ids are generated from the query function “rentedNotReturned”, which returns a list of rid that is not from the return list. The function will call insertReturn function from the DatabaseHandler class to make sure that the rental won’t be returned twice by customers.
+3.	The clerk can also generate reports for the branches. He/she doesn’t need to input anything, and a single click would do the job.
+-	When the clerk generates rental report for a specific branch on a specific day, the functions “totalBranches” and “getAllBranchRental” will be called to generate the numbers of vehicles being rented for that day and all vehicle information. The function “getBranchCategory” allows the clerk to get the numbers of cars being rented grouped by branch and car type.
+-	If the clerk doesn’t specify a branch, the report will return information of vehicles across all branches.
+-	When the clerk generates return report for a specific branch on a specific day, the functions “getReturnBranch” and “getRevenueBranch” will be called. The first one returns all vehicle information for that branch specified on the date the user picked, and the latter returns the total numbers of vehicles being returned and the total revenues the branch received (calculated using length of rental * drate).
+-	When the clerk generates return report for a specific branch on a specific day by category, the function “getRevenueBranchCat” will be called to group by branch and car type.
+-	The report will return information of vehicles across all branches if the clerk doesn’t specify the exact branch name.
+
+-	For the Database manipulation, we did not explicitly implement the insert/delete/update functions on UI, but we have those functions for all tables in the DatabaseHandler class so that users can easily call them from the terminal.
+
+-	For the date you enter, the format should be (MM/DD/YYYY), there should be 8 digits

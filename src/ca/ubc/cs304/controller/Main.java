@@ -96,9 +96,8 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegates 
     	dbHandler.insertCustomer(u);
 	}
 
-    public ReturnResult returnVehicle(int rentID,int date){
-        Date d = new Date(date);
-        return (dbHandler.returnVehicle(rentID,d));
+    public ReturnResult returnVehicle(int rentID, Date date){
+        return dbHandler.returnVehicle(rentID,date);
     }
     /**
 	 * TermainalTransactionsDelegate Implementation
@@ -166,8 +165,8 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegates 
         return dbHandler.totalCatgeory(date);
     }
 
-    public VehicleRented[] getAllRental(int date){
-        return dbHandler.getAllRental(new Date(date));
+    public VehicleRented[] getAllRental(Date date){
+        return dbHandler.getAllRental(date);
     }
     public RevenueCat[] revenueCat(Date date){
         return dbHandler.revenueCat(date);

@@ -7,8 +7,10 @@ import ca.ubc.cs304.model.*;
 import javafx.util.Pair;
 
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class handles all database related transactions
@@ -322,14 +324,13 @@ public class DatabaseHandler {
 
 	public void insertReturn(ReturnModel model) {
 		try {
-			PreparedStatement ps = connection.prepareStatement("INSERT INTO Return VALUES (?,?,?,?,?,?)");
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO Return VALUES (?,?,?,?,?)");
 			ps.setInt(1, model.getRid());
 			ps.setDate(2, model.getRDate());
-			ps.setTime(3, model.getTime());
-			ps.setDouble(4, model.getOdometer());
-			if (model.getFullTank()) ps.setString(5, "Y");
-			else ps.setString(5, "N");
-			ps.setDouble(6, model.getValue());
+			ps.setDouble(3, model.getOdometer());
+			if (model.getFullTank()) ps.setString(4, "Y");
+			else ps.setString(4, "N");
+			ps.setDouble(5, model.getValue());
 
 			ps.executeUpdate();
 			connection.commit();
@@ -415,12 +416,11 @@ public class DatabaseHandler {
 			}
 
 			if (timePeriod != null) {
-				if (timePeriod.getFromDate().compareTo(timePeriod.getToTime()) >= 0 ||
-						(timePeriod.getFromDate().compareTo(timePeriod.getToTime()) == 0 && timePeriod.getFromTime().compareTo(timePeriod.getToTime()) >= 0)) {
+				if (timePeriod.getFromDate().compareTo(timePeriod.getToDate()) >= 0) {
 					throw new IllegalTimePeriodException("time period specified is invalid.");
 				}
 
-				Date earliestDate = new Date (1900+1900, 0, 1);
+				Date earliestDate = new Date (1900, 0, 1);
 				if (timePeriod.getFromDate().compareTo(earliestDate) < 0 || timePeriod.getToDate().compareTo(earliestDate) < 0) {
 					throw new IllegalTimePeriodException("time period specified is unreasonable.");
 				}
@@ -688,16 +688,17 @@ public class DatabaseHandler {
         int cnt = 0;
         try {
             PreparedStatement ps = connection.prepareStatement("SELECT Count(*)" +
-                    "FROM Vehicle v, Rental r" +
-                    "WHERE v.vlicense = r.vlicense AND r.fromDate = ? AND v.city = ? AND v.location = ?" +
-                    "GROUP BY v.city, v.location");
+                    " FROM Vehicle v, Rental r" +
+                    " WHERE v.vlicense = r.vlicense AND r.fromDate = ? AND v.city = ? AND v.location = ?" +
+                    " GROUP BY v.city, v.location");
             ps.setDate(1,date);
             ps.setString(2,city);
             ps.setString(3,location);
             ResultSet resultSet = ps.executeQuery();
             connection.commit();
-
-            cnt = resultSet.getInt(1);
+            while (resultSet.next()) {
+				cnt = resultSet.getInt(1);
+			}
         } catch (SQLException e) {
             System.out.println(EXCEPTION_TAG + " " + e.getMessage());
         }
@@ -708,9 +709,9 @@ public class DatabaseHandler {
         ArrayList<BranchCat> branchRentals = new ArrayList<>();
         try {
             PreparedStatement ps = connection.prepareStatement("SELECT v.city, v.location, v.vtname, Count(*)" +
-                    "FROM Vehicle v, Rental r" +
-                    "WHERE v.vlicense = r.vlicense AND r.fromDate = ? AND v.city = ? AND v.location = ?" +
-                    "GROUP BY v.city, v.location, v.vtname");
+                    " FROM Vehicle v, Rental r" +
+                    " WHERE v.vlicense = r.vlicense AND r.fromDate = ? AND v.city = ? AND v.location = ?" +
+                    " GROUP BY v.city, v.location, v.vtname");
             ps.setDate(1,date);
             ps.setString(2,city);
             ps.setString(3,location);
@@ -736,9 +737,9 @@ public class DatabaseHandler {
         ArrayList<VehicleRented> vehicles = new ArrayList();
         try {
             PreparedStatement ps = connection.prepareStatement("SELECT v.vlicense, v.make, v.model, v.vtname, v.city, v.location" +
-                    "FROM Vehicle v, Rental r" +
-                    "WHERE v.vlicense = r.vlicense AND r.fromDate = ? AND v.city = ? AND v.location = ?" +
-                    "ORDER BY v.city, v.location, v.vtname");
+                    " FROM Vehicle v, Rental r" +
+                    " WHERE v.vlicense = r.vlicense AND r.fromDate = ? AND v.city = ? AND v.location = ?" +
+                    " ORDER BY v.city, v.location, v.vtname");
             ps.setDate(1,date);
             ps.setString(2, city);
             ps.setString(3, location);
@@ -763,9 +764,9 @@ public class DatabaseHandler {
         ArrayList<VehicleRented> vehicles = new ArrayList();
         try {
             PreparedStatement ps = connection.prepareStatement("SELECT v.vlicense, v.make, v.model, v.vtname, v.city, v.location" +
-                    "FROM Vehicle v, Rental r" +
-                    "WHERE v.vlicense = r.vlicense AND r.fromDate = ?" +
-                    "ORDER BY v.city, v.location, v.vtname");
+                    " FROM Vehicle v, Rental r" +
+                    " WHERE v.vlicense = r.vlicense AND r.fromDate = ?" +
+                    " ORDER BY v.city, v.location, v.vtname");
             ps.setDate(1,date);
             ResultSet resultSet = ps.executeQuery();
             connection.commit();
@@ -789,9 +790,9 @@ public class DatabaseHandler {
         ArrayList<TotalCatModel> branchRentals = new ArrayList<>();
         try {
             PreparedStatement ps = connection.prepareStatement("SELECT v.vtname, Count(*)" +
-                    "FROM Vehicle v, Rental r" +
-                    "WHERE v.vlicense = r.vlicense AND r.fromDate = ?" +
-                    "GROUP BY v.vtname");
+                    " FROM Vehicle v, Rental r" +
+                    " WHERE v.vlicense = r.vlicense AND r.fromDate = ?" +
+                    " GROUP BY v.vtname");
             ps.setDate(1,date);
             ResultSet resultSet = ps.executeQuery();
             connection.commit();
@@ -816,7 +817,9 @@ public class DatabaseHandler {
             ps.setDate(1,date);
             ResultSet resultSet = ps.executeQuery();
             connection.commit();
-            cnt = resultSet.getInt(1);
+            while (resultSet.next()) {
+				cnt = resultSet.getInt(1);
+			}
         } catch (SQLException e) {
             System.out.println(EXCEPTION_TAG + " " + e.getMessage());
         }
@@ -828,9 +831,9 @@ public class DatabaseHandler {
         ArrayList<TotalBranchModel> branchRentals = new ArrayList<>();
         try {
             PreparedStatement ps = connection.prepareStatement("SELECT v.city, v.location, Count(*)" +
-                    "FROM Vehicle v, Rental r" +
-                    "WHERE v.vlicense = r.vlicense AND r.fromDate = ?" +
-                    "GROUP BY v.city, v.location");
+                    " FROM Vehicle v, Rental r" +
+                    " WHERE v.vlicense = r.vlicense AND r.fromDate = ?" +
+                    " GROUP BY v.city, v.location");
             ps.setDate(1,date);
             ResultSet resultSet = ps.executeQuery();
             connection.commit();
@@ -891,8 +894,8 @@ public class DatabaseHandler {
         ArrayList<VehicleRented> vehicles = new ArrayList();
         try {
             PreparedStatement ps = connection.prepareStatement("SELECT v.vlicense, v.make, v.model, v.vtname, v.city, v.location" +
-                    "FROM Vehicle v, Rental r, Return t" +
-                    "WHERE v.vlicense = r.vlicense AND r.rid = t.rid AND t.rdate = ?" +
+                    " FROM Vehicle v, Rental r, Return t" +
+                    " WHERE v.vlicense = r.vlicense AND r.rid = t.rid AND t.rdate = ?" +
                     "ORDER BY v.city, v.location, v.vtname");
             ps.setDate(1,date);
             ResultSet resultSet = ps.executeQuery();
@@ -917,8 +920,8 @@ public class DatabaseHandler {
         ArrayList<VehicleRented> vehicles = new ArrayList();
         try {
             PreparedStatement ps = connection.prepareStatement("SELECT v.vlicense, v.make, v.model, v.vtname, v.city, v.location" +
-                    "FROM Vehicle v, Rental r, Return t" +
-                    "WHERE v.vlicense = r.vlicense AND r.rid = t.rid AND r.fromDate = ? AND v.city = ? AND v.location = ?" +
+                    " FROM Vehicle v, Rental r, Return t" +
+                    " WHERE v.vlicense = r.vlicense AND r.rid = t.rid AND r.fromDate = ? AND v.city = ? AND v.location = ?" +
                     "ORDER BY v.city, v.location, v.vtname");
             ps.setDate(1,date);
             ps.setString(2, city);
@@ -944,10 +947,10 @@ public class DatabaseHandler {
         ArrayList<RevenueBranch> branchRentals = new ArrayList<>();
         try {
             PreparedStatement ps = connection.prepareStatement("SELECT city, location, Count(*), Sum(rev) AS Total"+
-                    "FROM (SELECT v.city AS city, v.location AS location, vt.drate*(rt.rDate-r.fromDate) AS rev"+
-                    "FROM Return rt, Vehicle v, Rental r, VehicleType vt"+
-                    "WHERE rt.rid = r.rid AND v.vtname = vt.vtname AND r.vlicense = v.vlicense AND rt.rDate = ?)"+
-                    "GROUP BY city, location");
+                    " FROM (SELECT v.city AS city, v.location AS location, vt.drate*(rt.rDate-r.fromDate) AS rev"+
+                    " FROM Return rt, Vehicle v, Rental r, VehicleType vt"+
+                    " WHERE rt.rid = r.rid AND v.vtname = vt.vtname AND r.vlicense = v.vlicense AND rt.rDate = ?)"+
+                    " GROUP BY city, location");
             ps.setDate(1,date);
             ResultSet resultSet = ps.executeQuery();
             connection.commit();
@@ -971,13 +974,15 @@ public class DatabaseHandler {
         Pair<Integer,Integer> cntRevenue = new Pair<>(0,0);
         try {
             PreparedStatement ps = connection.prepareStatement("SELECT Count(*), Sum(rev) AS Total"+
-                    "FROM (SELECT vt.drate*(rt.rDate-r.fromDate) AS rev"+
-                    "FROM Return rt, Vehicle v, Rental r, VehicleType vt"+
-                    "WHERE rt.rid = r.rid AND v.vtname = vt.vtname AND r.vlicense = v.vlicense AND rt.rDate = ?)");
+                    " FROM (SELECT vt.drate*(rt.rDate-r.fromDate) AS rev"+
+                    " FROM Return rt, Vehicle v, Rental r, VehicleType vt"+
+                    " WHERE rt.rid = r.rid AND v.vtname = vt.vtname AND r.vlicense = v.vlicense AND rt.rDate = ?)");
             ps.setDate(1,date);
             ResultSet resultSet = ps.executeQuery();
             connection.commit();
-            cntRevenue = new Pair<>(resultSet.getInt(1),resultSet.getInt(2));
+            while (resultSet.next()) {
+				cntRevenue = new Pair<>(resultSet.getInt(1), resultSet.getInt(2));
+			}
             ps.close();
             }
         catch (SQLException e) {
@@ -990,10 +995,10 @@ public class DatabaseHandler {
         ArrayList<RevenueCat> branchRentals = new ArrayList<>();
         try {
             PreparedStatement ps = connection.prepareStatement("SELECT vtname, Count(*), Sum(rev) AS Total"+
-                    "FROM (SELECT v.vtname AS vtname, vt.drate*(rt.rDate-r.fromDate) AS rev"+
-                    "FROM Vehicle v, Rental r, VehicleType v, Return rt"+
-                    "WHERE rt.rid = r.rid AND v.vtname = vt.vtname AND r.vlicense = v.vlicense AND rt.rDate = ?)"+
-                    "GROUP BY vtname");
+                    " FROM (SELECT v.vtname AS vtname, vt.drate*(rt.rDate-r.fromDate) AS rev"+
+                    " FROM Vehicle v, Rental r, VehicleType v, Return rt"+
+                    " WHERE rt.rid = r.rid AND v.vtname = vt.vtname AND r.vlicense = v.vlicense AND rt.rDate = ?)"+
+                    " GROUP BY vtname");
             ps.setDate(1,date);
             ResultSet resultSet = ps.executeQuery();
             connection.commit();
@@ -1016,19 +1021,21 @@ public class DatabaseHandler {
         RevenueBranch branchRental = new RevenueBranch();
         try {
             PreparedStatement ps = connection.prepareStatement("SELECT city, location, vtname, Count(*), Sum(rev) AS Total" +
-                    "FROM (SELECT v.city AS city, v.location AS location, vt,vtname AS vtname, vt.drate*(rt.rDate-r.fromDate) AS rev" +
-                    "FROM Vehicle v, Rental r, Return rt, VehicleType vt" +
-                    "WHERE vt.vtname = v.vtname AND r.vlicense = v.vlicense AND rt.rid = r.rid AND rt.rDate = ? AND city = ? AND location = ?" +
+                    " FROM (SELECT v.city AS city, v.location AS location, vt,vtname AS vtname, vt.drate*(rt.rDate-r.fromDate) AS rev" +
+                    " FROM Vehicle v, Rental r, Return rt, VehicleType vt" +
+                    " WHERE vt.vtname = v.vtname AND r.vlicense = v.vlicense AND rt.rid = r.rid AND rt.rDate = ? AND city = ? AND location = ?" +
                     "GROUP BY city, location");
             ps.setDate(1,date);
             ps.setString(2,city);
             ps.setString(3,location);
             ResultSet resultSet = ps.executeQuery();
             connection.commit();
-            branchRental.setCity(resultSet.getString(1));
-            branchRental.setLocation(resultSet.getString(2));
-            branchRental.setCount(resultSet.getInt(3));
-            branchRental.setRevenue(resultSet.getInt(4));
+            while (resultSet.next()) {
+				branchRental.setCity(resultSet.getString(1));
+				branchRental.setLocation(resultSet.getString(2));
+				branchRental.setCount(resultSet.getInt(3));
+				branchRental.setRevenue(resultSet.getInt(4));
+			}
             ps.close();
         } catch (SQLException e) {
             System.out.println(EXCEPTION_TAG + " " + e.getMessage());
@@ -1079,21 +1086,23 @@ public class DatabaseHandler {
             returnModel.setRid(rid);
             insertReturn(returnModel);
             try {
+            	//PreparedStatement ps = connection.prepareStatement("SELECT R.fromDate FROM Rental WHERE R.rid = ?");
                 PreparedStatement ps = connection.prepareStatement("SELECT ra.confNo, ra.fromDate, rt.rdate, vt.drate, (rt.rdate-ra.fromDate) AS days, vt.drate*(rt.rdate-ra.fromDate) AS total" +
-                        "FROM Rental ra, Return rt, VehicleType vt, Vehicle v" +
-                        "WHERE rt.rid = ? AND rt.rdate = ? AND v.vlicense = ra.vlicense AND v.vtname = vt.vtname AND rt.rid = ra.rid");
-                ps.setInt(1,rid);
+                        " FROM Rental ra, Return rt, VehicleType vt, Vehicle v" +
+                        " WHERE rt.rid = ? AND rt.rdate = ? AND v.vlicense = ra.vlicense AND v.vtname = vt.vtname AND rt.rid = ra.rid");
+                ps.setInt(1, rid);
                 ps.setDate(2, date);
                 ResultSet resultSet = ps.executeQuery();
                 connection.commit();
 
-                returnResult.setConfNum(resultSet.getInt(1));
-                returnResult.setFromDate(resultSet.getDate(2));
-                returnResult.setReturnDate(resultSet.getDate(3));
-                returnResult.setDaysRent(resultSet.getInt(5));
-                returnResult.setdRate(resultSet.getInt(4));
-                returnResult.setPrice(resultSet.getInt(6));
-
+                while (resultSet.next()) {
+					returnResult.setConfNum(resultSet.getInt(1));
+					returnResult.setFromDate(resultSet.getDate(2));
+					returnResult.setReturnDate(resultSet.getDate(3));
+					returnResult.setDaysRent(resultSet.getInt(5));
+					returnResult.setdRate(resultSet.getInt(4));
+					returnResult.setPrice(resultSet.getInt(6));
+				}
                 ps.close();
             } catch (SQLException e) {
                 System.out.println(EXCEPTION_TAG + " " + e.getMessage());
@@ -1111,10 +1120,12 @@ public class DatabaseHandler {
             ps.setInt(1, rid);
             ResultSet resultSet = ps.executeQuery();
             connection.commit();
-            Date fromDate = resultSet.getDate("fromDate");
-            if (fromDate.compareTo(date)<0) {
-                return true;
-            }
+            while (resultSet.next()) {
+				Date fromDate = resultSet.getDate("fromDate");
+				if (fromDate.compareTo(date) < 0) {
+					return true;
+				}
+			}
             ps.close();
         } catch (SQLException e) {
             System.out.println(EXCEPTION_TAG + " " + e.getMessage());
