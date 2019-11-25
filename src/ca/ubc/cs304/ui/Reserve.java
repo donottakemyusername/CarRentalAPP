@@ -2,6 +2,7 @@ package ca.ubc.cs304.ui;
 
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegates;
 import ca.ubc.cs304.exceptions.InvalidDetailsException;
+import ca.ubc.cs304.exceptions.VehicleUnavailableException;
 import ca.ubc.cs304.model.VehicleSearchResults;
 import ca.ubc.cs304.model.VehicleTypeModel;
 
@@ -94,7 +95,7 @@ public class Reserve extends JFrame {
                     int confNo = delegate.makeReservation(dlicense, cname, phoneNum, caddress, city, branchAddress, carType,
                             fromDate, fromTime, toDate, toTime);
                     JOptionPane.showMessageDialog(null,"Reservation Made! Confirmation Number is " + confNo);
-                } catch (InvalidDetailsException ex) {
+                } catch (InvalidDetailsException | VehicleUnavailableException ex) {
                     JOptionPane.showMessageDialog(null,"[EXCEPTION] Reservation not made: " + ex.getMessage());
                 }
             }

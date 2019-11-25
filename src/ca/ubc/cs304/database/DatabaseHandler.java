@@ -425,11 +425,11 @@ public class DatabaseHandler {
 					throw new IllegalTimePeriodException("time period specified is unreasonable.");
 				}
 
-				String caseEndWithinTP = "((SELECT R.confNo FROM Reservation R WHERE R.toDate > ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.toDate = ? AND R.toTime >= ?)) INTERSECT ((SELECT R.confNo FROM Reservation R WHERE R.toDate < ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.toDate = ? AND R.toTime <= ?))";
+				String caseEndWithinTP = "(SELECT R.confNo FROM Reservation R WHERE (R.toDate > ? OR (R.toDate = ? AND R.toTime >= ?)) AND (R.toDate < ? OR (R.toDate = ? AND R.toTime <= ?)))";
 				// fromDate, fromDate fromTime, toDate, toDate, toTime
-				String caseStartWithinTP = "((SELECT R.confNo FROM Reservation R WHERE R.fromDate < ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.fromDate = ? AND R.fromTime <= ?)) INTERSECT ((SELECT R.confNo FROM Reservation R WHERE R.toDate > ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.toDate = ? AND R.toTime >= ?))";
+				String caseStartWithinTP = "(SELECT R.confNo FROM Reservation R WHERE (R.fromDate > ? OR (R.fromDate = ? AND R.fromTime >= ?)) AND (R.fromDate < ? OR (R.fromDate = ? AND R.fromTime <= ?)))";
 				// fromDate, fromDate, fromTime, toDate, toDate, toTime
-				String caseEncompassTP = "((SELECT R.confNo FROM Reservation R WHERE R.fromDate > ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.fromDate = ? AND R.fromTime >= ?)) INTERSECT ((SELECT R.confNo FROM Reservation R WHERE R.fromDate < ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.fromDate = ? AND R.fromTime <= ?))";
+				String caseEncompassTP = "(SELECT R.confNo FROM Reservation R WHERE (R.fromDate < ? OR (R.fromDate = ? AND R.fromTime <= ?)) AND (R.toDate > ? OR (R.toDate = ? AND R.toDate >= ?)))";
 				// fromDate, fromDate, fromTime, toDate, toDate, toTime
 
 				String queryStringReservation = "SELECT R1.vtname, V.location, V.city, COUNT(DISTINCT(R1.confNo)) FROM Reservation R1, Vehicle V WHERE R1.vtname = V.vtname AND";
@@ -482,7 +482,7 @@ public class DatabaseHandler {
 
 			// get the details of all the vehicles that could be available
 			for (VehicleSearchResults sr : searchResults) {
-				ps = connection.prepareStatement("SELECT * FROM Vehicle WHERE vtname = ? AND location = AND city = ?");
+				ps = connection.prepareStatement("SELECT * FROM Vehicle WHERE vtname = ? AND location = ? AND city = ?");
 				ps.setString(1, sr.getVehicleType());
 				ps.setString(2, sr.getLocation());
 				ps.setString(3, sr.getCity());
@@ -513,14 +513,16 @@ public class DatabaseHandler {
 
 	public Vehicles getRentalVehicle(String vtname, String location, String city, TimePeriodModel timePeriod) throws InvalidDetailsException {
 		try {
-			String caseEndWithinTP = "((SELECT R.vlicense FROM Rental R WHERE R.toDate > ?) UNION (SELECT R.vlicense FROM Rental R WHERE R.toDate = ? AND R.toTime >= ?)) INTERSECT ((SELECT R.vlicense FROM Rental R WHERE R.toDate < ?) UNION (SELECT R.vlicense FROM Rental R WHERE R.toDate = ? AND R.toTime <= ?))";
+			String caseEndWithinTP = "(SELECT R.vlicense FROM Rental R WHERE (R.toDate > ? OR (R.toDate = ? AND R.toTime >= ?)) AND (R.toDate < ? OR (R.toDate = ? AND R.toTime <= ?)))";
 			// fromDate, fromDate fromTime, toDate, toDate, toTime
-			String caseStartWithinTP = "((SELECT R.vlicense FROM Rental R WHERE R.fromDate < ?) UNION (SELECT R.vlicense FROM Rental R WHERE R.fromDate = ? AND R.fromTime <= ?)) INTERSECT ((SELECT R.vlicense FROM Rental R WHERE R.toDate > ?) UNION (SELECT R.vlicense FROM Rental R WHERE R.toDate = ? AND R.toTime >= ?))";
+			String caseStartWithinTP = "(SELECT R.vlicense FROM Rental R WHERE (R.fromDate > ? OR (R.fromDate = ? AND R.fromTime >= ?)) AND (R.fromDate < ? OR (R.fromDate = ? AND R.fromTime <= ?)))";
 			// fromDate, fromDate, fromTime, toDate, toDate, toTime
-			String caseEncompassTP = "((SELECT R.vlicense FROM Rental R WHERE R.fromDate > ?) UNION (SELECT R.vlicense FROM Rental R WHERE R.fromDate = ? AND R.fromTime >= ?)) INTERSECT ((SELECT R.vlicense FROM Rental R WHERE R.fromDate < ?) UNION (SELECT R.vlicense FROM Rental R WHERE R.fromDate = ? AND R.fromTime <= ?))";
+			String caseEncompassTP = "(SELECT R.vlicense FROM Rental R WHERE (R.fromDate < ? OR (R.fromDate = ? AND R.fromTime <= ?)) AND (R.toDate > ? OR (R.toDate = ? AND R.toDate >= ?)))";
 			// fromDate, fromDate, fromTime, toDate, toDate, toTime
 
-			PreparedStatement ps = connection.prepareStatement("SELECT * FROM Vehicle V WHERE V.vtname = ? AND V.location = ? AND V.city = ? AND V.vlicense NOT IN (" + caseEndWithinTP +" UNION " + caseStartWithinTP + " UNION "+ caseEncompassTP +")" );
+			String rentalQuery = "SELECT DISTINCT(R1.vlicense) From Rental R1 WHERE R1.vlicense IN (" + caseEndWithinTP + " UNION " + caseStartWithinTP + " UNION " + caseEncompassTP + ")";
+
+			PreparedStatement ps = connection.prepareStatement("SELECT * FROM Vehicle V WHERE V.vtname = ? AND V.location = ? AND V.city = ? AND V.vlicense NOT IN (" + rentalQuery +")" );
 			int i = 1;
 			ps.setString(i++, vtname);
 			ps.setString(i++, location);
@@ -535,6 +537,10 @@ public class DatabaseHandler {
 			}
 
 			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				System.out.println(rs.getString(1));
+			}
+
 			Boolean found = false;
 			while (rs.next()) {
 				found = true;

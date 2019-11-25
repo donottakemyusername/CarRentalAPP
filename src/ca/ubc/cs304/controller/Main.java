@@ -5,6 +5,7 @@ import ca.ubc.cs304.delegates.LoginWindowDelegate;
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegates;
 import ca.ubc.cs304.exceptions.InvalidDetailsException;
 import ca.ubc.cs304.exceptions.InvalidReservationException;
+import ca.ubc.cs304.exceptions.VehicleUnavailableException;
 import ca.ubc.cs304.model.*;
 import ca.ubc.cs304.ui.LoginWindow;
 import ca.ubc.cs304.ui.RoleChoose;
@@ -216,7 +217,7 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegates 
 	// return -1 if the reservation can't be made
 	@Override
 	public int makeReservation(String dlicense, String cname, String phoneNum, String address, String city, String location,
-							   String vtname, Date fromDate, Time fromTime, Date toDate, Time toTime) throws InvalidDetailsException {
+							   String vtname, Date fromDate, Time fromTime, Date toDate, Time toTime) throws InvalidDetailsException, VehicleUnavailableException {
 		int nextConfNum = -1;
     		// check that all of our parameters are valid
 			checkReservationParameters(dlicense, cname, phoneNum, address, city, location, vtname, fromDate, fromTime, toDate, toTime);
@@ -228,8 +229,7 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegates 
 			VehicleSearchResults[] result = customerSearchVehicle(true, true, true, vtname, location, city, fromDate, fromTime, toDate, toTime);
 			// if it is now gone, then send a sorry message
 			if (result.length == 0) {
-				System.out.println("Sorry, the vehicle type you wish to reserve is now gone.");
-				return -1;
+				throw new VehicleUnavailableException("The vehicle you wish to reserve is now unavailabl.");
 			}
 			// otherwise, make our desired reservation, first by getting the last confirmation number and incrementting (reservation confNo are in numerical order)
 			nextConfNum = dbHandler.getNextConfNum();
@@ -275,7 +275,7 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegates 
 	@Override
 	public RentalReceipt makeRental(String dlicense, String cname, String phoneNum, String address, String city,
 									String location, String vtname, Date fromDate, Time fromTime, Date toDate, Time toTime,
-									String cardName, String cardNo, Date expDate) throws InvalidDetailsException, InvalidReservationException {
+									String cardName, String cardNo, Date expDate) throws InvalidDetailsException, InvalidReservationException, VehicleUnavailableException {
     	// make a reservation first
 		checkReservationParameters(dlicense, cname, phoneNum, address, city, location, vtname, fromDate, fromTime, toDate, toTime);
 		int confNum = makeReservation(dlicense, cname, phoneNum, address, city, location, vtname, fromDate, fromTime, toDate,toTime);
