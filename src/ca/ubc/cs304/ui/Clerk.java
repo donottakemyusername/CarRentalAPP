@@ -26,7 +26,7 @@ import java.util.ArrayList;
 public class Clerk extends JFrame {
     public TerminalTransactionsDelegates delegate = null;
     public Clerk(){}
-    
+
 
     public void showClerk(final TerminalTransactionsDelegates delegate){
         this.delegate = delegate;
@@ -590,17 +590,6 @@ public class Clerk extends JFrame {
                 //======== tabbedPane1 ========
                 {
                     tabbedPane1.setForeground(UIManager.getColor("Link.hoverForeground"));
-
-                    {
-                        panel7.setLayout(new GridLayout(6, 2));
-
-                        //----- label26 -----
-                        label26.setText("Which table do you want to view into?");
-                        label26.setHorizontalAlignment(SwingConstants.CENTER);
-                        panel7.add(label26);
-
-                    }
-                    tabbedPane1.addTab("View Data Manipulations", panel7);
 
                     //======== panel2 ========
                     {
@@ -1307,6 +1296,6 @@ public class Clerk extends JFrame {
     private JLabel expDateLabel;
     private JTextField cardNameTextField;
     private JTextField cardNoTextField;
-    private JTextField expDateTextField = new JTextField();
+    private JTextField expDateTextField;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }
