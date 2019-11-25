@@ -376,22 +376,22 @@ public class DatabaseHandler {
 		}
 	}
 
-	public VehicleSearchResults[] customerSearchVehicle(String carType, String location, TimePeriodModel timePeriod) {
+	public VehicleSearchResults[] customerSearchVehicle(String carType, String location, String city, TimePeriodModel timePeriod) {
 		ArrayList<VehicleSearchResults> searchResults = new ArrayList<>();
 
 		Boolean hasCarType = false;
 		Boolean hasLocation = false;
 
 		if (carType != null && !carType.isEmpty() && !carType.equals("All")) hasCarType = true;
-		if (location != null && !location.isEmpty()) hasLocation = true;
+		if (location != null && !location.isEmpty() && city != null && !city.isEmpty()) hasLocation = true;
 
 		try {	
-			String queryStringVehicle = "SELECT vtname, location, COUNT(*) FROM Vehicle";
+			String queryStringVehicle = "SELECT vtname, location, city, COUNT(*) FROM Vehicle";
 			if (hasCarType || hasLocation) queryStringVehicle += " WHERE";
 			if (hasCarType) queryStringVehicle += " vtname = ?";
 			if (hasCarType && hasLocation) queryStringVehicle += " AND";
-			if (hasLocation) queryStringVehicle += " location = ?";
-			queryStringVehicle += " GROUP BY vtname, location";
+			if (hasLocation) queryStringVehicle += " location = ? AND city = ?";
+			queryStringVehicle += " GROUP BY vtname, location, city";
 
 			System.out.println(queryStringVehicle);
 
@@ -402,13 +402,14 @@ public class DatabaseHandler {
 			}
 			if (hasLocation) {
 				ps.setString(i++, location);
+				ps.setString(i++, city);
 			}
 
 			ResultSet rs1 = ps.executeQuery();
 
 			while (rs1.next()) {
 				VehicleSearchResults result = new VehicleSearchResults(rs1.getString("vtname"),
-						rs1.getString("location"), null, rs1.getInt("COUNT(*)"));
+						rs1.getString("location"), rs1.getString("city"), null, rs1.getInt("COUNT(*)"));
 				searchResults.add(result);
 			}
 
@@ -430,12 +431,12 @@ public class DatabaseHandler {
 				String caseEncompassTP = "((SELECT R.confNo FROM Reservation R WHERE R.fromDate > ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.fromDate = ? AND R.fromTime >= ?)) INTERSECT ((SELECT R.confNo FROM Reservation R WHERE R.fromDate < ?) UNION (SELECT R.confNo FROM Reservation R WHERE R.fromDate = ? AND R.fromTime <= ?))";
 				// fromDate, fromDate, fromTime, toDate, toDate, toTime
 
-				String queryStringReservation = "SELECT R1.vtname, V.location, COUNT(DISTINCT(R1.confNo)) FROM Reservation R1, Vehicle V WHERE R1.vtname = V.vtname AND";
+				String queryStringReservation = "SELECT R1.vtname, V.location, V.city, COUNT(DISTINCT(R1.confNo)) FROM Reservation R1, Vehicle V WHERE R1.vtname = V.vtname AND";
 				if (hasCarType) queryStringReservation += " R1.vtname = ? AND";
-				if (hasLocation) queryStringReservation += " V.location = ? AND";
+				if (hasLocation) queryStringReservation += " V.location = ? AND V.city = ? AND";
 
 				String fullQueryString = queryStringReservation + " R1.confNo IN (" +
-						caseEndWithinTP + " UNION " + caseStartWithinTP + " UNION " + caseEncompassTP + ") GROUP BY R1.vtname, V.location";
+						caseEndWithinTP + " UNION " + caseStartWithinTP + " UNION " + caseEncompassTP + ") GROUP BY R1.vtname, V.location, V.city";
 
 				System.out.println(fullQueryString);
 
@@ -447,6 +448,7 @@ public class DatabaseHandler {
 				}
 				if (hasLocation) {
 					ps.setString(i++, location);
+					ps.setString(i++, city);
 				}
 
 				for (int j = 0; j < 3; j++) {
@@ -462,7 +464,7 @@ public class DatabaseHandler {
 
 				// compare the reservation counts with the vehicle counts as sorted by vehicletype and location
 				while (rs2.next()) {
-					VehicleSearchResults result = new VehicleSearchResults(rs2.getString(1), rs2.getString(2), null, rs2.getInt(3));
+					VehicleSearchResults result = new VehicleSearchResults(rs2.getString(1), rs2.getString(2), rs2.getString(3), null, rs2.getInt(4));
 					if (searchResults.contains(result)) {
 						int j = searchResults.indexOf(result);
 						int numLeft = searchResults.get(j).getNumAvailable() - result.getNumAvailable();
@@ -479,9 +481,10 @@ public class DatabaseHandler {
 
 			// get the details of all the vehicles that could be available
 			for (VehicleSearchResults sr : searchResults) {
-				ps = connection.prepareStatement("SELECT * FROM Vehicle WHERE vtname = ? AND location = ?");
+				ps = connection.prepareStatement("SELECT * FROM Vehicle WHERE vtname = ? AND location = AND city = ?");
 				ps.setString(1, sr.getVehicleType());
 				ps.setString(2, sr.getLocation());
+				ps.setString(3, sr.getCity());
 				ResultSet rs = ps.executeQuery();
 				while (rs.next()) {
 					Vehicles.Status s = Vehicles.Status.AVAILABLE;
@@ -507,7 +510,7 @@ public class DatabaseHandler {
 		return searchResults.toArray(new VehicleSearchResults[searchResults.size()]);
 	}
 
-	public Vehicles getRentalVehicle(String vtname, String location, TimePeriodModel timePeriod) {
+	public Vehicles getRentalVehicle(String vtname, String location, String city, TimePeriodModel timePeriod) {
 		try {
 			String caseEndWithinTP = "((SELECT R.vlicense FROM Rental R WHERE R.toDate > ?) UNION (SELECT R.vlicense FROM Rental R WHERE R.toDate = ? AND R.toTime >= ?)) INTERSECT ((SELECT R.vlicense FROM Rental R WHERE R.toDate < ?) UNION (SELECT R.vlicense FROM Rental R WHERE R.toDate = ? AND R.toTime <= ?))";
 			// fromDate, fromDate fromTime, toDate, toDate, toTime
@@ -516,10 +519,11 @@ public class DatabaseHandler {
 			String caseEncompassTP = "((SELECT R.vlicense FROM Rental R WHERE R.fromDate > ?) UNION (SELECT R.vlicense FROM Rental R WHERE R.fromDate = ? AND R.fromTime >= ?)) INTERSECT ((SELECT R.vlicense FROM Rental R WHERE R.fromDate < ?) UNION (SELECT R.vlicense FROM Rental R WHERE R.fromDate = ? AND R.fromTime <= ?))";
 			// fromDate, fromDate, fromTime, toDate, toDate, toTime
 
-			PreparedStatement ps = connection.prepareStatement("SELECT * FROM Vehicle V WHERE V.vtname = ? AND V.location = location AND V.vlicense NOT IN (" + caseEndWithinTP +" UNION " + caseStartWithinTP + " UNION "+ caseEncompassTP +")" );
+			PreparedStatement ps = connection.prepareStatement("SELECT * FROM Vehicle V WHERE V.vtname = ? AND V.location = ? AND V.city = ? AND V.vlicense NOT IN (" + caseEndWithinTP +" UNION " + caseStartWithinTP + " UNION "+ caseEncompassTP +")" );
 			int i = 1;
 			ps.setString(i++, vtname);
 			ps.setString(i++, location);
+			ps.setString(i++, city);
 			for (int j = 0; j < 3; j++) {
 				ps.setDate(i++, timePeriod.getFromDate());
 				ps.setDate(i++, timePeriod.getFromDate());

@@ -169,17 +169,17 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegates 
     }
 
 	public VehicleSearchResults[] customerSearchVehicle(Boolean hasCarType, Boolean hasLocation, Boolean hasTimePeriod,
-									  String carType, String location, Date fromDate, Time fromTime, Date toDate, Time toTime) {
+									  String carType, String location, String city, Date fromDate, Time fromTime, Date toDate, Time toTime) {
     	if (!hasTimePeriod) {
-    		return dbHandler.customerSearchVehicle(carType, location, null);
+    		return dbHandler.customerSearchVehicle(carType, location, city,null);
 		} else {
     		TimePeriodModel t = new TimePeriodModel(fromDate, fromTime, toDate, toTime);
-    		return dbHandler.customerSearchVehicle(carType, location, t);
+    		return dbHandler.customerSearchVehicle(carType, location, city, t);
 		}
 	}
 
 	public void checkParameters(String dlicense, String cname, String phoneNum, String address,
-								String location, String vtname, Date fromDate, Time fromTime,
+								String city, String location, String vtname, Date fromDate, Time fromTime,
 								Date toDate, Time toTime) throws InvalidDetailsException{
     	if (dlicense == null || cname == null || phoneNum == null || address == null  || location == null || vtname == null || fromDate == null || fromTime == null || toDate == null || toTime == null) {
     		throw new InvalidDetailsException("One or more parameters are null");
@@ -192,17 +192,17 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegates 
 
 	// return -1 if the reservation can't be made
 	@Override
-	public int makeReservation(String dlicense, String cname, String phoneNum, String address, String location, String vtname, Date fromDate, Time fromTime, Date toDate, Time toTime) {
+	public int makeReservation(String dlicense, String cname, String phoneNum, String address, String city, String location, String vtname, Date fromDate, Time fromTime, Date toDate, Time toTime) {
 		int nextConfNum = -1;
     	try {
     		// check that all of our parameters are valid
-			checkParameters(dlicense, cname, phoneNum, address, location, vtname, fromDate, fromTime, toDate, toTime);
+			checkParameters(dlicense, cname, phoneNum, address, city, location, vtname, fromDate, fromTime, toDate, toTime);
 
 			// check if the customer exists in the database, if not add them
 			dbHandler.findOrAddCustomer(dlicense, cname, phoneNum, address);
 
 			// check if our desired reservation can be made
-			VehicleSearchResults[] result = customerSearchVehicle(true, true, true, vtname, location, fromDate, fromTime, toDate, toTime);
+			VehicleSearchResults[] result = customerSearchVehicle(true, true, true, vtname, location, city, fromDate, fromTime, toDate, toTime);
 			// if it is now gone, then send a sorry message
 			if (result.length == 0) {
 				System.out.println("Sorry, the vehicle type you wish to reserve is now gone.");
@@ -219,7 +219,7 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegates 
 	}
 
 	@Override
-	public RentalReceipt makeRental(int confNum, String location, String cardName, String cardNo, Date expDate) {
+	public RentalReceipt makeRental(int confNum, String city, String location, String cardName, String cardNo, Date expDate) {
     	// get the reservation if it exists
 		RentalReceipt receipt = null;
 		try {
@@ -228,7 +228,7 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegates 
 			int nextRid = dbHandler.getNextRid();
 			// get the first vehicle that satisfies this
 			TimePeriodModel tp = new TimePeriodModel(r.getFromDate(), r.getFromTime(), r.getToDate(), r.getToTime());
-			Vehicles v = dbHandler.getRentalVehicle(r.getVtname(), location, tp);
+			Vehicles v = dbHandler.getRentalVehicle(r.getVtname(), location, city, tp);
 			RentalModel rent = new RentalModel(nextRid, v.getVlicense(), r.getDlicense(), tp.getFromDate(), tp.getFromTime(), tp.getToDate(), tp.getToTime(),
 					v.getOdometer(), cardName, cardNo, expDate, r.getConfNum());
 			insertRental(rent);
@@ -242,10 +242,10 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegates 
 	}
 
 	@Override
-	public RentalReceipt makeRental(String dlicense, String cname, String phoneNum, String address, String location, String vtname, Date fromDate, Time fromTime, Date toDate, Time toTime, String cardName, String cardNo, Date expDate) {
+	public RentalReceipt makeRental(String dlicense, String cname, String phoneNum, String address, String city, String location, String vtname, Date fromDate, Time fromTime, Date toDate, Time toTime, String cardName, String cardNo, Date expDate) {
     	// make a reservation first
-		int confNum = makeReservation(dlicense, cname, phoneNum, address, location, vtname, fromDate, fromTime, toDate,toTime);
-		return makeRental(confNum, location, cardName, cardNo, expDate);
+		int confNum = makeReservation(dlicense, cname, phoneNum, address, city, location, vtname, fromDate, fromTime, toDate,toTime);
+		return makeRental(confNum, city, location, cardName, cardNo, expDate);
 	}
 
 	/**

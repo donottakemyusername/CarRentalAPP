@@ -447,6 +447,13 @@ public class Clerk extends JFrame {
         buttonBar = new JPanel();
         ReturnButton = new JButton();
         FinishButton = new JButton();
+<<<<<<< HEAD
+=======
+        label25 = new JLabel();
+        panel7 = new JPanel();
+        label26 = new JLabel();
+        InsDMWhereBox = new JComboBox();
+>>>>>>> master
 
         //======== this ========
         Container contentPane = getContentPane();
@@ -470,6 +477,18 @@ public class Clerk extends JFrame {
                 //======== tabbedPane1 ========
                 {
                     tabbedPane1.setForeground(UIManager.getColor("Link.hoverForeground"));
+
+                    {
+                        panel7.setLayout(new GridLayout(6, 2));
+
+                        //----- label26 -----
+                        label26.setText("Which table do you want to view into?");
+                        label26.setHorizontalAlignment(SwingConstants.CENTER);
+                        panel7.add(label26);
+                        panel7.add(InsDMWhereBox);
+                        
+                    }
+                    tabbedPane1.addTab("Insert Data Manipulations", panel7);
 
                     //======== panel2 ========
                     {
@@ -1160,5 +1179,12 @@ public class Clerk extends JFrame {
     private JPanel buttonBar;
     private JButton ReturnButton;
     private JButton FinishButton;
+<<<<<<< HEAD
+=======
+    private JLabel label25;
+    private JPanel panel7;
+    private JLabel label26;
+    private JComboBox InsDMWhereBox;
+>>>>>>> master
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }
