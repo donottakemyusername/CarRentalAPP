@@ -54,7 +54,7 @@ public class Reserve extends JFrame {
                 String city = PerCity.getText();
                 String address = PerAddress.getText();
                 boolean hasLocation = false;
-                if (address != null && !address.isEmpty()) hasLocation = true;
+                if (address != null && !address.isEmpty() && city != null && !city.isEmpty()) hasLocation = true;
                 System.out.println("Time period is not filled out: " + PerFDBox.getText());
                 Date fromDate = parseDateFromString(PerFDBox.getText());
                 Time fromTime = parseTimeFromString(PerFTBox.getText());
@@ -63,7 +63,7 @@ public class Reserve extends JFrame {
                 Boolean hasTimePeriod = false;
                 if (fromDate != null && fromTime != null && toDate != null && toTime != null) hasTimePeriod = true;
                 VehicleSearchResults[] searchResults = delegate.customerSearchVehicle(hasCarType, hasLocation, hasTimePeriod,
-                        carType, address, fromDate, fromTime, toDate, toTime);
+                        carType, address, city, fromDate, fromTime, toDate, toTime);
                 String[] listData = new String[searchResults.length +1];
                 for (int i=0; i<searchResults.length; i++ ){
                     listData[i] = String.format("%-20.15s", "" + searchResults[i].getVehicleType())+
