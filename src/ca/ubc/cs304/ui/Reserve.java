@@ -1,7 +1,6 @@
 package ca.ubc.cs304.ui;
 
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegates;
-import ca.ubc.cs304.model.Branches;
 import ca.ubc.cs304.model.VehicleSearchResults;
 import ca.ubc.cs304.model.VehicleTypeModel;
 import ca.ubc.cs304.model.Vehicles;
@@ -17,6 +16,7 @@ import java.sql.Time;
  * Created by JFormDesigner on Tue Nov 19 22:58:41 PST 2019
  */
 
+// hi frank was here
 
 
 /**
