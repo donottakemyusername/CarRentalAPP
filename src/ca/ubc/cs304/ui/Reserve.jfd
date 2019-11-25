@@ -14,88 +14,6 @@ new FormModel {
 					add( new FormContainer( "javax.swing.JTabbedPane", new FormLayoutManager( class javax.swing.JTabbedPane ) ) {
 						name: "tabbedPane1"
 						"minimumSize": new java.awt.Dimension( 300, 194 )
-						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
-							name: "ViewAllCars"
-							add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
-								name: "scrollPane1"
-								add( new FormComponent( "javax.swing.JList" ) {
-									name: "AllCarsList"
-								} )
-							}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-								"x": 10
-								"y": 35
-								"width": 725
-								"height": 370
-							} )
-							add( new FormComponent( "javax.swing.JLabel" ) {
-								name: "label17"
-								"text": "vehicleType"
-							}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-								"x": 20
-								"y": 0
-								"width": 115
-								"height": 35
-							} )
-							add( new FormComponent( "javax.swing.JLabel" ) {
-								name: "label18"
-								"text": "Location"
-							}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-								"x": 120
-								"y": 0
-								"width": 60
-								"height": 35
-							} )
-							add( new FormComponent( "javax.swing.JLabel" ) {
-								name: "label19"
-								"text": "From"
-							}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-								"x": 265
-								"y": 10
-							} )
-							add( new FormComponent( "javax.swing.JLabel" ) {
-								name: "label20"
-								"text": "To"
-							}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-								"x": 400
-								"y": 10
-							} )
-						}, new FormLayoutConstraints( null ) {
-							"title": "View All Cars"
-						} )
-						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
-							name: "ViewAvailableCars"
-							add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
-								name: "scrollPane2"
-								add( new FormComponent( "javax.swing.JList" ) {
-									name: "AvaCarsList"
-								} )
-							}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-								"x": 5
-								"y": 40
-								"width": 630
-								"height": 305
-							} )
-							add( new FormComponent( "javax.swing.JLabel" ) {
-								name: "label16"
-								"text": "The total number of available cars is:"
-							}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-								"x": 15
-								"y": 10
-								"width": 290
-								"height": 30
-							} )
-							add( new FormComponent( "javax.swing.JLabel" ) {
-								name: "AvaCarNum"
-								"text": "1"
-							}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-								"x": 310
-								"y": 15
-								"width": 45
-								"height": 25
-							} )
-						}, new FormLayoutConstraints( null ) {
-							"title": "View All Available Cars"
-						} )
 						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
 							"columns": 4
 						} ) {
@@ -164,10 +82,10 @@ new FormModel {
 										name: "PerTTBox"
 									} )
 								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-									"x": 20
+									"x": 5
 									"y": 50
-									"height": 280
-									"width": 240
+									"height": 300
+									"width": 265
 								} )
 								add( new FormComponent( "javax.swing.JButton" ) {
 									name: "PerSearch"
@@ -238,7 +156,7 @@ new FormModel {
 							name: "ResTT"
 							add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
 								"columns": 2
-								"rows": 9
+								"rows": 11
 							} ) {
 								name: "panel2"
 								add( new FormComponent( "javax.swing.JLabel" ) {
@@ -282,8 +200,24 @@ new FormModel {
 									name: "ResCaddr"
 								} )
 								add( new FormComponent( "javax.swing.JLabel" ) {
+									name: "label4"
+									"text": "City"
+									"horizontalAlignment": 0
+								} )
+								add( new FormComponent( "javax.swing.JTextField" ) {
+									name: "ResCity"
+								} )
+								add( new FormComponent( "javax.swing.JLabel" ) {
+									name: "label3"
+									"text": "Branch Address"
+									"horizontalAlignment": 0
+								} )
+								add( new FormComponent( "javax.swing.JTextField" ) {
+									name: "ResBA"
+								} )
+								add( new FormComponent( "javax.swing.JLabel" ) {
 									name: "label27"
-									"text": "From Date"
+									"text": "From Date (MM/DD/YYYY)"
 									"horizontalAlignment": 0
 								} )
 								add( new FormComponent( "javax.swing.JTextField" ) {
@@ -291,7 +225,7 @@ new FormModel {
 								} )
 								add( new FormComponent( "javax.swing.JLabel" ) {
 									name: "label29"
-									"text": "From Time"
+									"text": "From Time (hh:mm)"
 									"horizontalAlignment": 0
 								} )
 								add( new FormComponent( "javax.swing.JTextField" ) {
@@ -299,7 +233,7 @@ new FormModel {
 								} )
 								add( new FormComponent( "javax.swing.JLabel" ) {
 									name: "label30"
-									"text": "To Date"
+									"text": "To Date (MM/DD/YYYY)"
 									"horizontalAlignment": 0
 								} )
 								add( new FormComponent( "javax.swing.JTextField" ) {
@@ -307,7 +241,7 @@ new FormModel {
 								} )
 								add( new FormComponent( "javax.swing.JLabel" ) {
 									name: "label31"
-									"text": "To Time"
+									"text": "To Time (hh:mm)"
 									"horizontalAlignment": 0
 								} )
 								add( new FormComponent( "javax.swing.JTextField" ) {
