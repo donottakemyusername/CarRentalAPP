@@ -504,7 +504,6 @@ public class DatabaseHandler {
 					sr.addVehicle(v);
 				}
 			}
-			ps.close();
 		} catch (SQLException | IllegalTimePeriodException e) {
 			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
 		}
@@ -566,7 +565,6 @@ public class DatabaseHandler {
 			if (!found) {
 				throw new InvalidDetailsException("The vehicle type you wish to rent is no longer available.");
 			}
-			ps.close();
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -700,7 +698,6 @@ public class DatabaseHandler {
             connection.commit();
 
             cnt = resultSet.getInt(1);
-            ps.close();
         } catch (SQLException e) {
             System.out.println(EXCEPTION_TAG + " " + e.getMessage());
         }
@@ -729,7 +726,6 @@ public class DatabaseHandler {
 
                 branchRentals.add(branchRental);
             }
-            ps.close();
         } catch (SQLException e) {
             System.out.println(EXCEPTION_TAG + " " + e.getMessage());
         }
@@ -806,7 +802,6 @@ public class DatabaseHandler {
                 branchRental.setCount(resultSet.getInt(2));
                 branchRentals.add(branchRental);
             }
-            ps.close();
         } catch (SQLException e) {
             System.out.println(EXCEPTION_TAG + " " + e.getMessage());
         }
@@ -822,7 +817,6 @@ public class DatabaseHandler {
             ResultSet resultSet = ps.executeQuery();
             connection.commit();
             cnt = resultSet.getInt(1);
-            ps.close();
         } catch (SQLException e) {
             System.out.println(EXCEPTION_TAG + " " + e.getMessage());
         }
@@ -848,7 +842,6 @@ public class DatabaseHandler {
                 branchRental.setCount(resultSet.getInt(3));
                 branchRentals.add(branchRental);
             }
-            ps.close();
         } catch (SQLException e) {
             System.out.println(EXCEPTION_TAG + " " + e.getMessage());
         }
@@ -1136,7 +1129,7 @@ public class DatabaseHandler {
 			while (rs.next()) {
 				nextConfNum = rs.getInt(1)+1;
 			}
-			ps.close();
+
 		} catch (SQLException e) {
 			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
 		}
@@ -1151,7 +1144,7 @@ public class DatabaseHandler {
 			while (rs.next()) {
 				nextRid = rs.getInt(1)+1;
 			}
-			ps.close();
+
 		} catch (SQLException e) {
 			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
 		}
@@ -1180,7 +1173,7 @@ public class DatabaseHandler {
 			if (!found) {
 				throw new InvalidReservationException("reservation confNo does not exist");
 			}
-			ps.close();
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -1288,7 +1281,7 @@ public class DatabaseHandler {
 						rs.getDouble("krate"));
     			searchResults.add(vt);
 			}
-    		ps.close();
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -1317,7 +1310,7 @@ public class DatabaseHandler {
 						rs.getString("city"));
 				searchResults.add(v);
 			}
-			ps.close();
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
