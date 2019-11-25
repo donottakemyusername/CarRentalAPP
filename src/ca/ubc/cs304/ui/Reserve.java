@@ -90,8 +90,8 @@ public class Reserve extends JFrame {
                 Time fromTime = parseTimeFromString(ResFT.getText());
                 Date toDate = parseDateFromString(ResTD.getText());
                 Time toTime = parseTimeFromString(textField12.getText());
-                int confNo = delegate.makeReservation(dlicense, cname, phoneNum, caddress, branchAddress, carType,
-                        fromDate, fromTime, toDate, toTime);    //TODO: change the dbhandler.makeReservation and add city into the parameter
+                //int confNo = delegate.makeReservation(dlicense, cname, phoneNum, caddress, branchAddress, carType,
+                 //       fromDate, fromTime, toDate, toTime);    //TODO: change the dbhandler.makeReservation and add city into the parameter
                 JOptionPane.showMessageDialog(null,"Reservation Made! Confirmation Number is " + confNo);
             }
         }

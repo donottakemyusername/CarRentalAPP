@@ -447,13 +447,6 @@ public class Clerk extends JFrame {
         buttonBar = new JPanel();
         ReturnButton = new JButton();
         FinishButton = new JButton();
-<<<<<<< HEAD
-=======
-        label25 = new JLabel();
-        panel7 = new JPanel();
-        label26 = new JLabel();
-        InsDMWhereBox = new JComboBox();
->>>>>>> master
 
         //======== this ========
         Container contentPane = getContentPane();
@@ -1179,12 +1172,5 @@ public class Clerk extends JFrame {
     private JPanel buttonBar;
     private JButton ReturnButton;
     private JButton FinishButton;
-<<<<<<< HEAD
-=======
-    private JLabel label25;
-    private JPanel panel7;
-    private JLabel label26;
-    private JComboBox InsDMWhereBox;
->>>>>>> master
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }
