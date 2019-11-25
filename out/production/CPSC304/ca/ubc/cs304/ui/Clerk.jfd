@@ -15,28 +15,129 @@ new FormModel {
 						"foreground": &SwingColor0 new com.jformdesigner.model.SwingColor( "Link.hoverForeground" )
 						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
 							name: "panel2"
-							add( new FormComponent( "javax.swing.JLabel" ) {
-								name: "label1"
-								"text": "Confirmation Num:"
+							add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
+								name: "ResTT"
+								add( new FormComponent( "javax.swing.JButton" ) {
+									name: "reservebutton"
+									"text": "CLICK HERE TO RESERVE!"
+								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+									"x": 495
+									"y": 305
+									"width": 270
+									"height": 75
+								} )
+								add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
+									"columns": 2
+									"rows": 12
+								} ) {
+									name: "panel7"
+									add( new FormComponent( "javax.swing.JLabel" ) {
+										name: "label1"
+										"text": "Confirmation Number"
+										"horizontalAlignment": 0
+									} )
+									add( new FormComponent( "javax.swing.JTextField" ) {
+										name: "ResConf"
+									} )
+									add( new FormComponent( "javax.swing.JLabel" ) {
+										name: "label26"
+										"text": "Vehicle Type Name"
+										"horizontalAlignment": 0
+									} )
+									add( new FormComponent( "javax.swing.JComboBox" ) {
+										name: "ResTypeBox"
+									} )
+									add( new FormComponent( "javax.swing.JLabel" ) {
+										name: "label28"
+										"text": "Your Driver's License"
+										"horizontalAlignment": 0
+									} )
+									add( new FormComponent( "javax.swing.JTextField" ) {
+										name: "RevDlic"
+									} )
+									add( new FormComponent( "javax.swing.JLabel" ) {
+										name: "label32"
+										"text": "Your Name"
+										"horizontalAlignment": 0
+									} )
+									add( new FormComponent( "javax.swing.JTextField" ) {
+										name: "ResCname"
+									} )
+									add( new FormComponent( "javax.swing.JLabel" ) {
+										name: "label33"
+										"text": "Your Phone Number"
+										"horizontalAlignment": 0
+									} )
+									add( new FormComponent( "javax.swing.JTextField" ) {
+										name: "ResCphone"
+									} )
+									add( new FormComponent( "javax.swing.JLabel" ) {
+										name: "label34"
+										"text": "Your Current Address"
+										"horizontalAlignment": 0
+									} )
+									add( new FormComponent( "javax.swing.JTextField" ) {
+										name: "ResCaddr"
+									} )
+									add( new FormComponent( "javax.swing.JLabel" ) {
+										name: "label2"
+										"text": "City"
+										"horizontalAlignment": 0
+									} )
+									add( new FormComponent( "javax.swing.JTextField" ) {
+										name: "ResCity"
+									} )
+									add( new FormComponent( "javax.swing.JLabel" ) {
+										name: "label3"
+										"text": "Branch Address"
+										"horizontalAlignment": 0
+									} )
+									add( new FormComponent( "javax.swing.JTextField" ) {
+										name: "ResBA"
+									} )
+									add( new FormComponent( "javax.swing.JLabel" ) {
+										name: "label27"
+										"text": "From Date (MM/DD/YYYY)"
+										"horizontalAlignment": 0
+									} )
+									add( new FormComponent( "javax.swing.JTextField" ) {
+										name: "ResFD"
+									} )
+									add( new FormComponent( "javax.swing.JLabel" ) {
+										name: "label29"
+										"text": "From Time (hh:mm)"
+										"horizontalAlignment": 0
+									} )
+									add( new FormComponent( "javax.swing.JTextField" ) {
+										name: "ResFT"
+									} )
+									add( new FormComponent( "javax.swing.JLabel" ) {
+										name: "label30"
+										"text": "To Date (MM/DD/YYYY)"
+										"horizontalAlignment": 0
+									} )
+									add( new FormComponent( "javax.swing.JTextField" ) {
+										name: "ResTD"
+									} )
+									add( new FormComponent( "javax.swing.JLabel" ) {
+										name: "label31"
+										"text": "To Time (hh:mm)"
+										"horizontalAlignment": 0
+									} )
+									add( new FormComponent( "javax.swing.JTextField" ) {
+										name: "textField12"
+									} )
+								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+									"width": 350
+									"height": 375
+									"x": 60
+									"y": 25
+								} )
 							}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-								"x": 60
-								"y": 30
-							} )
-							add( new FormComponent( "javax.swing.JLabel" ) {
-								name: "label2"
-								"text": "Type of Car:"
-							}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-								"x": 60
-								"y": 65
-								"width": 130
-								"height": 20
-							} )
-							add( new FormComponent( "javax.swing.JTextField" ) {
-								name: "textField11"
-							}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-								"x": 200
-								"y": 25
-								"width": 105
+								"width": 779
+								"height": 414
+								"x": 10
+								"y": 20
 							} )
 						}, new FormLayoutConstraints( null ) {
 							"title": "Rental"
@@ -262,14 +363,6 @@ new FormModel {
 									"x": 185
 									"y": 25
 								} )
-								add( new FormComponent( "javax.swing.JComboBox" ) {
-									name: "RentCity"
-								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-									"x": 220
-									"y": 10
-									"width": 130
-									"height": 35
-								} )
 								add( new FormComponent( "javax.swing.JLabel" ) {
 									name: "label7"
 									"text": "Branch's Address:"
@@ -332,6 +425,14 @@ new FormModel {
 									"height": 30
 									"x": 10
 									"y": 50
+								} )
+								add( new FormComponent( "javax.swing.JTextField" ) {
+									name: "RentCity"
+								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+									"x": 230
+									"y": 10
+									"width": 120
+									"height": 32
 								} )
 							}, new FormLayoutConstraints( null ) {
 								"title": "For each branch"
@@ -408,7 +509,6 @@ new FormModel {
 									} )
 									add( new FormComponent( "javax.swing.JLabel" ) {
 										name: "totalReturnNum"
-										"text": "Total Number of Return on this date:"
 										"foreground": #SwingColor1
 									}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 										"x": 20
@@ -418,7 +518,6 @@ new FormModel {
 									} )
 									add( new FormComponent( "javax.swing.JLabel" ) {
 										name: "totalReturnRev"
-										"text": "Total Revenue on this date:"
 										"foreground": #SwingColor1
 									}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 										"x": 20
@@ -461,14 +560,6 @@ new FormModel {
 									"x": 185
 									"y": 25
 								} )
-								add( new FormComponent( "javax.swing.JComboBox" ) {
-									name: "ReturnCityEach"
-								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-									"x": 220
-									"y": 10
-									"width": 125
-									"height": 35
-								} )
 								add( new FormComponent( "javax.swing.JLabel" ) {
 									name: "label15"
 									"text": "Branch's Address:"
@@ -488,14 +579,6 @@ new FormModel {
 									"y": 10
 									"width": 95
 									"height": 40
-								} )
-								add( new FormComponent( "javax.swing.JComboBox" ) {
-									name: "ReturnAddrEach"
-								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
-									"x": 475
-									"y": 10
-									"width": 125
-									"height": 35
 								} )
 								add( new FormContainer( "javax.swing.JTabbedPane", new FormLayoutManager( class javax.swing.JTabbedPane ) ) {
 									name: "tabbedPane7"
@@ -523,7 +606,6 @@ new FormModel {
 								} )
 								add( new FormComponent( "javax.swing.JLabel" ) {
 									name: "braReturnNum"
-									"text": "Total Number of Return for This Branch on This Date:"
 									"foreground": #SwingColor1
 								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 									"x": 15
@@ -533,13 +615,28 @@ new FormModel {
 								} )
 								add( new FormComponent( "javax.swing.JLabel" ) {
 									name: "braReturnRev"
-									"text": "Total Revenue for This Branch:"
 									"foreground": #SwingColor1
 								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 									"x": 485
 									"y": 45
 									"width": 215
 									"height": 25
+								} )
+								add( new FormComponent( "javax.swing.JTextField" ) {
+									name: "ReturnCity"
+								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+									"x": 225
+									"y": 10
+									"width": 105
+									"height": 35
+								} )
+								add( new FormComponent( "javax.swing.JTextField" ) {
+									name: "ReturnAddr"
+								}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+									"x": 475
+									"y": 10
+									"width": 125
+									"height": 35
 								} )
 							}, new FormLayoutConstraints( null ) {
 								"title": "For each branch"
