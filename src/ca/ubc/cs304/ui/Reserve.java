@@ -3,7 +3,6 @@ package ca.ubc.cs304.ui;
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegates;
 import ca.ubc.cs304.model.VehicleSearchResults;
 import ca.ubc.cs304.model.VehicleTypeModel;
-import ca.ubc.cs304.model.Vehicles;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -37,11 +36,9 @@ public class Reserve extends JFrame {
         //frame.setSize(800, 600);
         frame.setVisible(true);
 
-        SetAllCars(); // TODO: remove this window, not important
         personalSetup();
         reserveSetup();
         // This is the current date shown in Available cars...just show all vehicles there are
-        SetAvailableCars();
 
         //ActionListener
 
@@ -151,30 +148,7 @@ public class Reserve extends JFrame {
         }
     }
 
-    private void SetAllCars() {
-        // show all of the vehicles that are possibly available
-        Vehicles[] allVehicles = this.delegate.getAllVehicles();
-        String[] listData = new String[allVehicles.length +1];
-        for (int i=0; i<allVehicles.length; i++) {
-            listData[i] = allVehicles[i].getVlicense();
-        }
-        AllCarsList.setListData(listData);
-    }
 
-    private void SetAvailableCars() {
-        // show all of the vehicles that are possibly available
-        Vehicles[] allVehicles = this.delegate.getAllVehicles();
-        String[] listData = new String[allVehicles.length +1];
-        for (int i=0; i<allVehicles.length; i++) {
-            listData[i] = String.format("%-20.15s", "" + allVehicles[i].getVtname())+
-                    String.format("%-4.4s", " " + allVehicles[i].getMake()) +
-                    String.format("%-20.15s", "" + allVehicles[i].getModel()) +
-                    String.format("%-20.15s", "" + allVehicles[i].getVlicense()) +
-                    String.format("%-20.15s", "" + allVehicles[i].getLocation()) +
-                    String.format("%-20.15s", "" + allVehicles[i].getCity());
-        }
-        AvaCarsList.setListData(listData);
-    }
 
 
     {
@@ -187,18 +161,6 @@ public class Reserve extends JFrame {
         dialogPane = new JPanel();
         contentPanel = new JPanel();
         tabbedPane1 = new JTabbedPane();
-        ViewAllCars = new JPanel();
-        scrollPane1 = new JScrollPane();
-        AllCarsList = new JList();
-        label17 = new JLabel();
-        label18 = new JLabel();
-        label19 = new JLabel();
-        label20 = new JLabel();
-        ViewAvailableCars = new JPanel();
-        scrollPane2 = new JScrollPane();
-        AvaCarsList = new JList();
-        label16 = new JLabel();
-        AvaCarNum = new JLabel();
         Personalized = new JPanel();
         panel12 = new JPanel();
         panel1 = new JPanel();
@@ -236,6 +198,8 @@ public class Reserve extends JFrame {
         ResCphone = new JTextField();
         label34 = new JLabel();
         ResCaddr = new JTextField();
+        label3 = new JLabel();
+        ResBA = new JTextField();
         label27 = new JLabel();
         ResFD = new JTextField();
         label29 = new JLabel();
@@ -244,8 +208,6 @@ public class Reserve extends JFrame {
         ResTD = new JTextField();
         label31 = new JLabel();
         textField12 = new JTextField();
-        label35 = new JLabel();
-        ResBA = new JTextField();
         reservebutton = new JButton();
         buttonBar = new JPanel();
         ReturnButton = new JButton();
@@ -260,13 +222,13 @@ public class Reserve extends JFrame {
         //======== dialogPane ========
         {
             dialogPane.setBorder(new EmptyBorder(12, 12, 12, 12));
-            dialogPane.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax
-            . swing. border. EmptyBorder( 0, 0, 0, 0) , "JF\u006frmDes\u0069gner \u0045valua\u0074ion", javax. swing
-            . border. TitledBorder. CENTER, javax. swing. border. TitledBorder. BOTTOM, new java .awt .
-            Font ("D\u0069alog" ,java .awt .Font .BOLD ,12 ), java. awt. Color. red
-            ) ,dialogPane. getBorder( )) ); dialogPane. addPropertyChangeListener (new java. beans. PropertyChangeListener( ){ @Override
-            public void propertyChange (java .beans .PropertyChangeEvent e) {if ("\u0062order" .equals (e .getPropertyName (
-            ) )) throw new RuntimeException( ); }} );
+            dialogPane.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax. swing
+            . border. EmptyBorder( 0, 0, 0, 0) , "JF\u006frmDes\u0069gner \u0045valua\u0074ion", javax. swing. border. TitledBorder
+            . CENTER, javax. swing. border. TitledBorder. BOTTOM, new java .awt .Font ("D\u0069alog" ,java .
+            awt .Font .BOLD ,12 ), java. awt. Color. red) ,dialogPane. getBorder( )) )
+            ; dialogPane. addPropertyChangeListener (new java. beans. PropertyChangeListener( ){ @Override public void propertyChange (java .beans .PropertyChangeEvent e
+            ) {if ("\u0062order" .equals (e .getPropertyName () )) throw new RuntimeException( ); }} )
+            ;
             dialogPane.setLayout(new BorderLayout());
 
             //======== contentPanel ========
@@ -276,92 +238,6 @@ public class Reserve extends JFrame {
                 //======== tabbedPane1 ========
                 {
                     tabbedPane1.setMinimumSize(new Dimension(300, 194));
-
-                    //======== ViewAllCars ========
-                    {
-                        ViewAllCars.setLayout(null);
-
-                        //======== scrollPane1 ========
-                        {
-                            scrollPane1.setViewportView(AllCarsList);
-                        }
-                        ViewAllCars.add(scrollPane1);
-                        scrollPane1.setBounds(10, 35, 725, 370);
-
-                        //---- label17 ----
-                        label17.setText("vehicleType");
-                        ViewAllCars.add(label17);
-                        label17.setBounds(20, 0, 115, 35);
-
-                        //---- label18 ----
-                        label18.setText("Location");
-                        ViewAllCars.add(label18);
-                        label18.setBounds(120, 0, 60, 35);
-
-                        //---- label19 ----
-                        label19.setText("From");
-                        ViewAllCars.add(label19);
-                        label19.setBounds(new Rectangle(new Point(265, 10), label19.getPreferredSize()));
-
-                        //---- label20 ----
-                        label20.setText("To");
-                        ViewAllCars.add(label20);
-                        label20.setBounds(new Rectangle(new Point(400, 10), label20.getPreferredSize()));
-
-                        {
-                            // compute preferred size
-                            Dimension preferredSize = new Dimension();
-                            for(int i = 0; i < ViewAllCars.getComponentCount(); i++) {
-                                Rectangle bounds = ViewAllCars.getComponent(i).getBounds();
-                                preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
-                                preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
-                            }
-                            Insets insets = ViewAllCars.getInsets();
-                            preferredSize.width += insets.right;
-                            preferredSize.height += insets.bottom;
-                            ViewAllCars.setMinimumSize(preferredSize);
-                            ViewAllCars.setPreferredSize(preferredSize);
-                        }
-                    }
-                    tabbedPane1.addTab("View All Cars", ViewAllCars);
-
-                    //======== ViewAvailableCars ========
-                    {
-                        ViewAvailableCars.setLayout(null);
-
-                        //======== scrollPane2 ========
-                        {
-                            scrollPane2.setViewportView(AvaCarsList);
-                        }
-                        ViewAvailableCars.add(scrollPane2);
-                        scrollPane2.setBounds(5, 40, 630, 305);
-
-                        //---- label16 ----
-                        label16.setText("The total number of available cars is:");
-                        ViewAvailableCars.add(label16);
-                        label16.setBounds(15, 10, 290, 30);
-
-                        //---- AvaCarNum ----
-                        AvaCarNum.setText("1");
-                        ViewAvailableCars.add(AvaCarNum);
-                        AvaCarNum.setBounds(310, 15, 45, 25);
-
-                        {
-                            // compute preferred size
-                            Dimension preferredSize = new Dimension();
-                            for(int i = 0; i < ViewAvailableCars.getComponentCount(); i++) {
-                                Rectangle bounds = ViewAvailableCars.getComponent(i).getBounds();
-                                preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
-                                preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
-                            }
-                            Insets insets = ViewAvailableCars.getInsets();
-                            preferredSize.width += insets.right;
-                            preferredSize.height += insets.bottom;
-                            ViewAvailableCars.setMinimumSize(preferredSize);
-                            ViewAvailableCars.setPreferredSize(preferredSize);
-                        }
-                    }
-                    tabbedPane1.addTab("View All Available Cars", ViewAvailableCars);
 
                     //======== Personalized ========
                     {
@@ -394,31 +270,31 @@ public class Reserve extends JFrame {
                                 panel1.add(PerAddress);
 
                                 //---- label9 ----
-                                label9.setText("From Date (MM/DD/YYYY):");
+                                label9.setText("From Date:");
                                 label9.setHorizontalAlignment(SwingConstants.CENTER);
                                 panel1.add(label9);
                                 panel1.add(PerFDBox);
 
                                 //---- label10 ----
-                                label10.setText("From Time (hh:mm):");
+                                label10.setText("From Time:");
                                 label10.setHorizontalAlignment(SwingConstants.CENTER);
                                 panel1.add(label10);
                                 panel1.add(PerFTBox);
 
                                 //---- label11 ----
-                                label11.setText("To Date (MM/DD/YYYY):");
+                                label11.setText("To Date:");
                                 label11.setHorizontalAlignment(SwingConstants.CENTER);
                                 panel1.add(label11);
                                 panel1.add(PerTDBox);
 
                                 //---- label12 ----
-                                label12.setText("To Time (hh:mm):");
+                                label12.setText("To Time:");
                                 label12.setHorizontalAlignment(SwingConstants.CENTER);
                                 panel1.add(label12);
                                 panel1.add(PerTTBox);
                             }
                             panel12.add(panel1);
-                            panel1.setBounds(20, 50, 240, 280);
+                            panel1.setBounds(5, 50, 265, 300);
 
                             //---- PerSearch ----
                             PerSearch.setText("Search");
@@ -515,6 +391,12 @@ public class Reserve extends JFrame {
                             panel2.add(label34);
                             panel2.add(ResCaddr);
 
+                            //---- label3 ----
+                            label3.setText("Branch Address");
+                            label3.setHorizontalAlignment(SwingConstants.CENTER);
+                            panel2.add(label3);
+                            panel2.add(ResBA);
+
                             //---- label27 ----
                             label27.setText("From Date (MM/DD/YYYY)");
                             label27.setHorizontalAlignment(SwingConstants.CENTER);
@@ -538,12 +420,6 @@ public class Reserve extends JFrame {
                             label31.setHorizontalAlignment(SwingConstants.CENTER);
                             panel2.add(label31);
                             panel2.add(textField12);
-
-                            //---- label35 ----
-                            label35.setText("Branch Address:");
-                            label35.setHorizontalAlignment(SwingConstants.CENTER);
-                            panel2.add(label35);
-                            panel2.add(ResBA);
                         }
                         ResTT.add(panel2);
                         panel2.setBounds(110, 20, 350, 375);
@@ -623,18 +499,6 @@ public class Reserve extends JFrame {
     private JPanel dialogPane;
     private JPanel contentPanel;
     private JTabbedPane tabbedPane1;
-    private JPanel ViewAllCars;
-    private JScrollPane scrollPane1;
-    private JList AllCarsList;
-    private JLabel label17;
-    private JLabel label18;
-    private JLabel label19;
-    private JLabel label20;
-    private JPanel ViewAvailableCars;
-    private JScrollPane scrollPane2;
-    private JList AvaCarsList;
-    private JLabel label16;
-    private JLabel AvaCarNum;
     private JPanel Personalized;
     private JPanel panel12;
     private JPanel panel1;
@@ -672,6 +536,8 @@ public class Reserve extends JFrame {
     private JTextField ResCphone;
     private JLabel label34;
     private JTextField ResCaddr;
+    private JLabel label3;
+    private JTextField ResBA;
     private JLabel label27;
     private JTextField ResFD;
     private JLabel label29;
@@ -680,8 +546,6 @@ public class Reserve extends JFrame {
     private JTextField ResTD;
     private JLabel label31;
     private JTextField textField12;
-    private JLabel label35;
-    private JTextField ResBA;
     private JButton reservebutton;
     private JPanel buttonBar;
     private JButton ReturnButton;

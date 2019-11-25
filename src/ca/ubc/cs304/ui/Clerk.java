@@ -233,9 +233,70 @@ public class Clerk extends JFrame {
         ReturnAllButton.addActionListener(new ActionListener() {
              @Override
              public void actionPerformed(ActionEvent e) {
-                 JOptionPane.showMessageDialog(null,"Thanks for your visit to our store");
-                 frame.dispose();
+
+                 int num;
+                 VehicleRented[] vr = null;
+                 TotalCatModel[] tcm = null;
+                 TotalBranchModel[] tbm = null;
+
+                 String[] listData = null;
+                 String[] listCat = null;
+                 String[] listTbm = null;
+                 String sdate =  RentDateForAll.getText();
+                 if (sdate.length()==8){
+                     int date = Integer.parseInt(sdate);
+                     num= delegate.totalRental(new Date(date));
+                     totalRentNum.setText("Total Number of Rental on this date: " + num);
+
+                     vr = delegate.getAllRental(date);
+                     listData = new String[vr.length+1];
+                     listData[0] = String.format("%-20.15s", "Vehicle Type")+
+                             String.format("%-4.4s", " " + "Make") +
+                             String.format("%-20.15s", "" + "Model")
+                             + String.format("%-20.15s", "" + "Vehicle license");
+
+                     for (int i = 1; i < vr.length; i++) {
+                         VehicleRented r = vr[i];
+                         listData[i] = String.format("%-20.15s", "" + r.getVtname())+
+                                 String.format("%-4.4s", " " + r.getMake()) +
+                                 String.format("%-20.15s", "" + r.getModel())
+                                 + String.format("%-20.15s", "" + r.getVlicense())
+                         ;
+                     }
+                     RentalDetailAllList.setListData(listData);
+
+                     tcm = delegate.totalCatgeory(new Date(date));
+                     listCat = new String[tcm.length+1];
+                     listCat[0] = String.format("%-20.15s", "Vehicle Type")+
+                             String.format("%-20.15s", " " + "COUNT");
+                     for (int i = 1; i < tcm.length; i++) {
+                         TotalCatModel r = tcm[i];
+                         listData[i] = String.format("%-20.15s", "" + r.getVtname())+
+                                 String.format("%-20.15s", " " + r.getCount())
+                         ;
+                     }
+                     RentalTypeAllList.setListData(listCat);
+
+                     tbm = delegate.totalBranch(new Date(date));
+                     listTbm = new String[tbm.length+1];
+                     listTbm[0] = String.format("%-20.15s", "City")+
+                             String.format("%-20.15s", "Location")+
+                             String.format("%-20.15s", " " + "COUNT");
+                     for (int i = 1; i < tbm.length; i++) {
+                         TotalBranchModel r = tbm[i];
+                         listData[i] = String.format("%-20.15s", "" + r.getCity())+
+                                 String.format("%-20.15s", "" + r.getLocation())+
+                                 String.format("%-20.15s", " " + r.getCount())
+                         ;
+                     }
+                     RentalBraAllList.setListData(listCat);
+                 }
+                 else {
+                     JOptionPane.showMessageDialog(null, "Date is not Valid");
+                 }
              }
+
+
          }
         );
 
@@ -279,9 +340,31 @@ public class Clerk extends JFrame {
         contentPanel = new JPanel();
         tabbedPane1 = new JTabbedPane();
         panel2 = new JPanel();
+        ResTT = new JPanel();
+        reservebutton = new JButton();
+        panel7 = new JPanel();
         label1 = new JLabel();
-        label2 = new JLabel();
-        textField11 = new JTextField();
+        ResConf = new JTextField();
+        label26 = new JLabel();
+        ResTypeBox = new JComboBox();
+        label28 = new JLabel();
+        RevDlic = new JTextField();
+        label32 = new JLabel();
+        ResCname = new JTextField();
+        label33 = new JLabel();
+        ResCphone = new JTextField();
+        label34 = new JLabel();
+        ResCaddr = new JTextField();
+        label3 = new JLabel();
+        ResBA = new JTextField();
+        label27 = new JLabel();
+        ResFD = new JTextField();
+        label29 = new JLabel();
+        ResFT = new JTextField();
+        label30 = new JLabel();
+        ResTD = new JTextField();
+        label31 = new JLabel();
+        textField12 = new JTextField();
         panel1 = new JPanel();
         label10 = new JLabel();
         ReturnDate = new JTextField();
@@ -362,7 +445,6 @@ public class Clerk extends JFrame {
         buttonBar = new JPanel();
         ReturnButton = new JButton();
         FinishButton = new JButton();
-        label25 = new JLabel();
 
         //======== this ========
         Container contentPane = getContentPane();
@@ -371,12 +453,13 @@ public class Clerk extends JFrame {
         //======== dialogPane ========
         {
             dialogPane.setBorder(new EmptyBorder(12, 12, 12, 12));
-            dialogPane.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder
-            (0,0,0,0), "JFor\u006dDesi\u0067ner \u0045valu\u0061tion",javax.swing.border.TitledBorder.CENTER,javax.swing.border
-            .TitledBorder.BOTTOM,new java.awt.Font("Dia\u006cog",java.awt.Font.BOLD,12),java.awt
-            .Color.red),dialogPane. getBorder()));dialogPane. addPropertyChangeListener(new java.beans.PropertyChangeListener(){@Override public void
-            propertyChange(java.beans.PropertyChangeEvent e){if("bord\u0065r".equals(e.getPropertyName()))throw new RuntimeException()
-            ;}});
+            dialogPane.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax.
+            swing. border. EmptyBorder( 0, 0, 0, 0) , "JF\u006frmDes\u0069gner \u0045valua\u0074ion", javax. swing. border
+            . TitledBorder. CENTER, javax. swing. border. TitledBorder. BOTTOM, new java .awt .Font ("D\u0069alog"
+            ,java .awt .Font .BOLD ,12 ), java. awt. Color. red) ,dialogPane. getBorder
+            ( )) ); dialogPane. addPropertyChangeListener (new java. beans. PropertyChangeListener( ){ @Override public void propertyChange (java
+            .beans .PropertyChangeEvent e) {if ("\u0062order" .equals (e .getPropertyName () )) throw new RuntimeException
+            ( ); }} );
             dialogPane.setLayout(new BorderLayout());
 
             //======== contentPanel ========
@@ -391,23 +474,105 @@ public class Clerk extends JFrame {
                     {
                         panel2.setLayout(null);
 
-                        //---- label25 ----
-                        label25.setText("Please enter a confirmation number OR details for reservation.\n\n");
-                        panel2.add(label25);
-                        label25.setBounds(new Rectangle(new Point(60, 30), label25.getPreferredSize()));
+                        //======== ResTT ========
+                        {
+                            ResTT.setLayout(null);
 
+                            //---- reservebutton ----
+                            reservebutton.setText("CLICK HERE TO RESERVE!");
+                            ResTT.add(reservebutton);
+                            reservebutton.setBounds(495, 305, 270, 75);
 
-                        //---- label1 ----
-                        label1.setText("Confirmation Num:");
-                        panel2.add(label1);
-                        label1.setBounds(new Rectangle(new Point(60, 30), label1.getPreferredSize()));
+                            //======== panel7 ========
+                            {
+                                panel7.setLayout(new GridLayout(11, 2));
 
-                        //---- label2 ----
-                        label2.setText("Type of Car:");
-                        panel2.add(label2);
-                        label2.setBounds(60, 65, 130, 20);
-                        panel2.add(textField11);
-                        textField11.setBounds(200, 25, 105, textField11.getPreferredSize().height);
+                                //---- label1 ----
+                                label1.setText("Confirmation Number");
+                                label1.setHorizontalAlignment(SwingConstants.CENTER);
+                                panel7.add(label1);
+                                panel7.add(ResConf);
+
+                                //---- label26 ----
+                                label26.setText("Vehicle Type Name");
+                                label26.setHorizontalAlignment(SwingConstants.CENTER);
+                                panel7.add(label26);
+                                panel7.add(ResTypeBox);
+
+                                //---- label28 ----
+                                label28.setText("Your Driver's License");
+                                label28.setHorizontalAlignment(SwingConstants.CENTER);
+                                panel7.add(label28);
+                                panel7.add(RevDlic);
+
+                                //---- label32 ----
+                                label32.setText("Your Name");
+                                label32.setHorizontalAlignment(SwingConstants.CENTER);
+                                panel7.add(label32);
+                                panel7.add(ResCname);
+
+                                //---- label33 ----
+                                label33.setText("Your Phone Number");
+                                label33.setHorizontalAlignment(SwingConstants.CENTER);
+                                panel7.add(label33);
+                                panel7.add(ResCphone);
+
+                                //---- label34 ----
+                                label34.setText("Your Current Address");
+                                label34.setHorizontalAlignment(SwingConstants.CENTER);
+                                panel7.add(label34);
+                                panel7.add(ResCaddr);
+
+                                //---- label3 ----
+                                label3.setText("Branch Address");
+                                label3.setHorizontalAlignment(SwingConstants.CENTER);
+                                panel7.add(label3);
+                                panel7.add(ResBA);
+
+                                //---- label27 ----
+                                label27.setText("From Date (MM/DD/YYYY)");
+                                label27.setHorizontalAlignment(SwingConstants.CENTER);
+                                panel7.add(label27);
+                                panel7.add(ResFD);
+
+                                //---- label29 ----
+                                label29.setText("From Time (hh:mm)");
+                                label29.setHorizontalAlignment(SwingConstants.CENTER);
+                                panel7.add(label29);
+                                panel7.add(ResFT);
+
+                                //---- label30 ----
+                                label30.setText("To Date (MM/DD/YYYY)");
+                                label30.setHorizontalAlignment(SwingConstants.CENTER);
+                                panel7.add(label30);
+                                panel7.add(ResTD);
+
+                                //---- label31 ----
+                                label31.setText("To Time (hh:mm)");
+                                label31.setHorizontalAlignment(SwingConstants.CENTER);
+                                panel7.add(label31);
+                                panel7.add(textField12);
+                            }
+                            ResTT.add(panel7);
+                            panel7.setBounds(60, 25, 350, 375);
+
+                            {
+                                // compute preferred size
+                                Dimension preferredSize = new Dimension();
+                                for(int i = 0; i < ResTT.getComponentCount(); i++) {
+                                    Rectangle bounds = ResTT.getComponent(i).getBounds();
+                                    preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+                                    preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+                                }
+                                Insets insets = ResTT.getInsets();
+                                preferredSize.width += insets.right;
+                                preferredSize.height += insets.bottom;
+                                ResTT.setMinimumSize(preferredSize);
+                                ResTT.setPreferredSize(preferredSize);
+                            }
+                        }
+                        panel2.add(ResTT);
+                        ResTT.setBounds(10, 20, 779, 414);
 
                         {
                             // compute preferred size
@@ -881,9 +1046,31 @@ public class Clerk extends JFrame {
     private JPanel contentPanel;
     private JTabbedPane tabbedPane1;
     private JPanel panel2;
+    private JPanel ResTT;
+    private JButton reservebutton;
+    private JPanel panel7;
     private JLabel label1;
-    private JLabel label2;
-    private JTextField textField11;
+    private JTextField ResConf;
+    private JLabel label26;
+    private JComboBox ResTypeBox;
+    private JLabel label28;
+    private JTextField RevDlic;
+    private JLabel label32;
+    private JTextField ResCname;
+    private JLabel label33;
+    private JTextField ResCphone;
+    private JLabel label34;
+    private JTextField ResCaddr;
+    private JLabel label3;
+    private JTextField ResBA;
+    private JLabel label27;
+    private JTextField ResFD;
+    private JLabel label29;
+    private JTextField ResFT;
+    private JLabel label30;
+    private JTextField ResTD;
+    private JLabel label31;
+    private JTextField textField12;
     private JPanel panel1;
     private JLabel label10;
     private JTextField ReturnDate;
@@ -964,6 +1151,5 @@ public class Clerk extends JFrame {
     private JPanel buttonBar;
     private JButton ReturnButton;
     private JButton FinishButton;
-    private JLabel label25;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }
