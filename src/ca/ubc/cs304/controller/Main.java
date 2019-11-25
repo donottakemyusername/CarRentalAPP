@@ -8,6 +8,7 @@ import ca.ubc.cs304.exceptions.InvalidReservationException;
 import ca.ubc.cs304.model.*;
 import ca.ubc.cs304.ui.LoginWindow;
 import ca.ubc.cs304.ui.RoleChoose;
+import javafx.util.Pair;
 
 import java.sql.Date;
 import java.sql.Time;
@@ -167,7 +168,29 @@ public class Main implements LoginWindowDelegate, TerminalTransactionsDelegates 
     public VehicleRented[] getAllRental(int date){
         return dbHandler.getAllRental(new Date(date));
     }
+    public RevenueCat[] revenueCat(Date date){
+        return dbHandler.revenueCat(date);
+    }
 
+    public RevenueBranch[] revenueBranch(Date date){
+        return dbHandler.revenueBranch(date);
+    }
+    public Pair<Integer, Integer> totalRevenue(Date date){
+        return dbHandler.totalRevenue(date);
+    }
+
+    public VehicleRented[] getReturnBranch(Date date, String city, String location){
+        return dbHandler.getReturnBranch(date,city,location);
+    }
+    public VehicleRented[] getReturn(Date date){
+        return dbHandler.getReturn(date);
+    }
+    public RevenueBranch getRevenueBranch(Date date, String city, String location){
+        return dbHandler.getRevenueBranch(date, city, location);
+    }
+    public RevenueBranchCat[] getRevenueBranchCat(Date date, String city, String location){
+        return dbHandler.getRevenueBranchCat(date, city, location);
+    }
 	public VehicleSearchResults[] customerSearchVehicle(Boolean hasCarType, Boolean hasLocation, Boolean hasTimePeriod,
 									  String carType, String location, String city, Date fromDate, Time fromTime, Date toDate, Time toTime) {
     	if (!hasTimePeriod) {

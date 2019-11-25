@@ -4,6 +4,7 @@ import ca.ubc.cs304.delegates.TerminalTransactionsDelegates;
 import ca.ubc.cs304.exceptions.InvalidDetailsException;
 import ca.ubc.cs304.exceptions.InvalidReservationException;
 import ca.ubc.cs304.model.*;
+import javafx.util.Pair;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -25,6 +26,14 @@ import java.util.ArrayList;
 public class Clerk extends JFrame {
     public TerminalTransactionsDelegates delegate = null;
     public Clerk(){}
+
+    private Date parseDateFromString(String dateStr) {
+        String[] parts = dateStr.split("/");
+        // TODO: need to add more checks
+        if (dateStr.isEmpty() || parts.length != 3) return null;
+        return new Date(Integer.parseInt(parts[2])+1900, Integer.parseInt(parts[0])-1, Integer.parseInt(parts[1]));
+    }
+
     public void showClerk(final TerminalTransactionsDelegates delegate){
         this.delegate = delegate;
         final JFrame frame = new JFrame("Clerk Management System");
@@ -38,8 +47,7 @@ public class Clerk extends JFrame {
 
         RentSetUp();
         ReturnSetUp();
-        RentalReportSetUp();
-        ReturnReportSetUp();
+
 
 
 
@@ -49,6 +57,8 @@ public class Clerk extends JFrame {
 
         RentIDBox.addItem(a.get(0));
         RentIDBox.addItem(a.get(1));
+
+
 
 
         ////Return show available ID
@@ -122,11 +132,11 @@ public class Clerk extends JFrame {
                 String[] listTbm = null;
                 String sdate =  RentDateForAll.getText();
                 if (sdate.length()==8){
-                    int date = Integer.parseInt(sdate);
-                    num= delegate.totalRental(new Date(date));
+
+                    num= delegate.totalRental(parseDateFromString(sdate));
                     totalRentNum.setText("Total Number of Rental on this date: " + num);
 
-                    vr = delegate.getAllRental(date);
+                    vr = delegate.getAllRental(Integer.parseInt(sdate));
                     listData = new String[vr.length+1];
                     listData[0] = String.format("%-20.15s", "Vehicle Type")+
                             String.format("%-4.4s", " " + "Make") +
@@ -143,7 +153,7 @@ public class Clerk extends JFrame {
                     }
                     RentalDetailAllList.setListData(listData);
 
-                    tcm = delegate.totalCatgeory(new Date(date));
+                    tcm = delegate.totalCatgeory(parseDateFromString(sdate));
                     listCat = new String[tcm.length+1];
                     listCat[0] = String.format("%-20.15s", "Vehicle Type")+
                             String.format("%-20.15s", " " + "COUNT");
@@ -155,7 +165,7 @@ public class Clerk extends JFrame {
                     }
                     RentalTypeAllList.setListData(listCat);
 
-                    tbm = delegate.totalBranch(new Date(date));
+                    tbm = delegate.totalBranch(parseDateFromString(sdate));
                     listTbm = new String[tbm.length+1];
                     listTbm[0] = String.format("%-20.15s", "City")+
                             String.format("%-20.15s", "Location")+
@@ -186,32 +196,28 @@ public class Clerk extends JFrame {
                   String[] listbc = null;
                   String[] listvr = null;
 
-                  String city = (String) RentCity.getSelectedItem();
+                  String city = (String) RentCity.getText();
                   String location = (String) RentAddr.getText();
                   if (location != "" && city !="" && sdate.length()==8){
 
-                      int date = Integer.parseInt(sdate);
-                      int datenum= delegate.totalRental(new Date(date));
-                      int num = delegate.totalBranches(new Date(date),city,location);
-                      braRentNum.setText("Total Number of Rental For this branch on this date: "+num);
+                      //int date = Integer.parseInt(sdate);
+                      int datenum= delegate.totalRental(parseDateFromString(sdate));
+                      int num = delegate.totalBranches(parseDateFromString(sdate),city,location);
+                      braRentNum.setText("Total Number of Rental for this branch on this date: "+num);
 
-                      bc = delegate.getBranchCategory(new Date(date), city, location);
+                      bc = delegate.getBranchCategory(parseDateFromString(sdate), city, location);
                       listbc = new String[bc.length+1];
                       listbc[0] = String.format("%-20.15s", "Vehicle Type")+
-                              String.format("%-20.15s", "City")+
-                              String.format("%-20.15s", "Location")+
                               String.format("%-20.15s", " " + "COUNT");
                       for (int i = 1; i < bc.length; i++) {
                           BranchCat r = bc[i];
                           listbc[i] = String.format("%-20.15s", "" + r.getVtname())+
-                                  String.format("%-20.15s", "" + r.getCity())+
-                                  String.format("%-20.15s", "" + r.getLocation())+
                                   String.format("%-20.15s", "" + r.getCount())
                           ;
                       }
                       RentalTypeEachList.setListData(listbc);
 
-                      vr = delegate.getAllBranchRental(new Date(date), city, location);
+                      vr = delegate.getAllBranchRental(parseDateFromString(sdate), city, location);
                       listvr = new String[vr.length+1];
                       listvr[0] = String.format("%-20.15s", "Vehicle Type")+
                               String.format("%-4.4s"," " + "Make")+
@@ -238,62 +244,70 @@ public class Clerk extends JFrame {
              @Override
              public void actionPerformed(ActionEvent e) {
 
-                 int num;
-                 VehicleRented[] vr = null;
-                 TotalCatModel[] tcm = null;
-                 TotalBranchModel[] tbm = null;
-
-                 String[] listData = null;
-                 String[] listCat = null;
-                 String[] listTbm = null;
                  String sdate =  RentDateForAll.getText();
                  if (sdate.length()==8){
-                     int date = Integer.parseInt(sdate);
-                     num= delegate.totalRental(new Date(date));
-                     totalRentNum.setText("Total Number of Rental on this date: " + num);
+                     Date date = parseDateFromString(sdate);
+                     Pair<Integer, Integer> pair = delegate.totalRevenue(date);
+                     totalReturnNum.setText("Total Number of Return on this date:" + pair.getKey());
+                     totalReturnRev.setText("Total Revenue on this date:" + pair.getValue());
 
-                     vr = delegate.getAllRental(date);
-                     listData = new String[vr.length+1];
-                     listData[0] = String.format("%-20.15s", "Vehicle Type")+
-                             String.format("%-4.4s", " " + "Make") +
-                             String.format("%-20.15s", "" + "Model")
-                             + String.format("%-20.15s", "" + "Vehicle license");
+                     VehicleRented[] vr = delegate.getReturn(date);
+                     String[] listvr = new String[vr.length+1];
+
+                     listvr[0] =String.format("%-20.15s", "Vehicle Type")+
+                             String.format("%-4.4s"," " + "Make")+
+                             String.format("%-20.15s", "Model")+
+                             String.format("%-20.15s", " " + "Vlicense");
+                     ;
 
                      for (int i = 1; i < vr.length; i++) {
                          VehicleRented r = vr[i];
-                         listData[i] = String.format("%-20.15s", "" + r.getVtname())+
-                                 String.format("%-4.4s", " " + r.getMake()) +
-                                 String.format("%-20.15s", "" + r.getModel())
-                                 + String.format("%-20.15s", "" + r.getVlicense())
+                         listvr[i] = String.format("%-20.15s", "" + r.getVtname())+
+                                 String.format("%-4.4s", " " + r.getMake())+
+                                 String.format("%-20.15s", "" + r.getModel())+
+                                 String.format("%-20.15s", "" + r.getVlicense());
+                     }
+
+                     ReturnDetailAllList.setListData(listvr);
+
+
+                     RevenueCat[] rc;
+                     rc = delegate.revenueCat(date);
+                     String[] listrc = new String[rc.length+1];
+
+                     listrc[0] = String.format("%-20.15s", "Vehicle Type")+
+                             String.format("%-20.15s", " " + "COUNT")+
+                             String.format("%-20.15s", " " + "Revenue")
+                     ;
+
+                     for (int i = 1; i < rc.length; i++) {
+                         RevenueCat r = rc[i];
+                         listrc[i] = String.format("%-20.15s", "" + r.getVtname())+
+                                 String.format("%-20.15s", "" + r.getCount())+
+                                 String.format("%-20.15s", " " + r.getRevenue())
                          ;
                      }
-                     RentalDetailAllList.setListData(listData);
+                     ReturnTypeAllList.setListData(listrc);
 
-                     tcm = delegate.totalCatgeory(new Date(date));
-                     listCat = new String[tcm.length+1];
-                     listCat[0] = String.format("%-20.15s", "Vehicle Type")+
-                             String.format("%-20.15s", " " + "COUNT");
-                     for (int i = 1; i < tcm.length; i++) {
-                         TotalCatModel r = tcm[i];
-                         listData[i] = String.format("%-20.15s", "" + r.getVtname())+
-                                 String.format("%-20.15s", " " + r.getCount())
-                         ;
-                     }
-                     RentalTypeAllList.setListData(listCat);
+                     RevenueBranch[] rb;
+                     rb = delegate.revenueBranch(date);
+                     String[] listrb = new String[rb.length+1];
 
-                     tbm = delegate.totalBranch(new Date(date));
-                     listTbm = new String[tbm.length+1];
-                     listTbm[0] = String.format("%-20.15s", "City")+
-                             String.format("%-20.15s", "Location")+
-                             String.format("%-20.15s", " " + "COUNT");
-                     for (int i = 1; i < tbm.length; i++) {
-                         TotalBranchModel r = tbm[i];
-                         listData[i] = String.format("%-20.15s", "" + r.getCity())+
+                     listrb[0] = String.format("%-20.15s", "City")+
+                             String.format("%-20.15s", " " + "Location")+
+                             String.format("%-20.15s", " " + "COUNT")+
+                             String.format("%-20.15s", " " + "Revenue")
+                     ;
+
+                     for (int i = 1; i < rc.length; i++) {
+                         RevenueBranch r = rb[i];
+                         listrb[i] = String.format("%-20.15s", "" + r.getCity())+
                                  String.format("%-20.15s", "" + r.getLocation())+
-                                 String.format("%-20.15s", " " + r.getCount())
+                                 String.format("%-20.15s", "" + r.getCount())+
+                                 String.format("%-20.15s", " " + r.getRevenue())
                          ;
                      }
-                     RentalBraAllList.setListData(listCat);
+                     RentalBraAllList2.setListData(listrb);
                  }
                  else {
                      JOptionPane.showMessageDialog(null, "Date is not Valid");
@@ -307,8 +321,56 @@ public class Clerk extends JFrame {
         ReturnEachButton.addActionListener(new ActionListener() {
                @Override
                public void actionPerformed(ActionEvent e) {
-                   JOptionPane.showMessageDialog(null,"Thanks for your visit to our store");
-                   frame.dispose();
+                   String sdate = ReturnDateEach.getText();
+                   Date date = parseDateFromString(sdate);
+                   String city = (String) ReturnCity.getText();
+                   String addr = (String)ReturnAddr.getText();
+
+                   if (sdate.length()==9 && city !="" && addr != ""){
+                       VehicleRented[] vr = delegate.getReturnBranch(date,city,addr);
+                       String[] listvr = new String[vr.length+1];
+
+                       listvr[0] = String.format("%-20.15s", "Vehicle Type")+
+                               String.format("%-4.4s"," " + "Make")+
+                               String.format("%-20.15s", "Model")+
+                               String.format("%-20.15s", " " + "Vlicense");
+                       ;
+
+                       for (int i = 1; i < vr.length; i++) {
+                           VehicleRented r = vr[i];
+                           listvr[i] = String.format("%-20.15s", "" + r.getVtname())+
+                                   String.format("%-4.4s", " " + r.getMake())+
+                                   String.format("%-20.15s", "" + r.getModel())+
+                                   String.format("%-20.15s", "" + r.getVlicense());
+                       }
+
+                       ReturnDetailAllList2.setListData(listvr);
+
+                       RevenueBranch rb = delegate.getRevenueBranch(date, city, addr);
+                       braReturnNum.setText("Total Number of Return for This Branch on This Date: "+ rb.getCount());
+                       braReturnRev.setText("Total Revenue for This Branch: " + rb.getRevenue());
+
+                       RevenueBranchCat[] rbc = delegate.getRevenueBranchCat(date, city, addr);
+                       String[] listrbc = new String[rbc.length+1];
+                       listrbc[0] = String.format("%-20.15s", "Vehicle Type")+
+                               String.format("%-20.15s", " " + "COUNT")+
+                               String.format("%-20.15s", " " + "Revenue")
+                       ;
+
+                       for (int i = 1; i < rbc.length; i++) {
+                           RevenueBranchCat r = rbc[i];
+                           listrbc[i] = String.format("%-20.15s", "" + r.getVtname())+
+                                   String.format("%-20.15s", "" + r.getCount())+
+                                   String.format("%-20.15s", " " + r.getRevenue())
+                           ;
+                       }
+                       ReturnTypeAllList2.setListData(listrbc);
+
+                   }
+                   else{
+                       JOptionPane.showMessageDialog(null,"Thanks for your visit to our store");
+                   }
+
                }
            }
         );
@@ -388,13 +450,6 @@ public class Clerk extends JFrame {
         }
     }
 
-    public void RentalReportSetUp(){
-
-    }
-
-    public void ReturnReportSetUp(){
-
-    }
 
 
 
@@ -469,7 +524,6 @@ public class Clerk extends JFrame {
         label5 = new JLabel();
         RentDateForEach = new JTextField();
         label6 = new JLabel();
-        RentCity = new JComboBox();
         label7 = new JLabel();
         RentAddr = new JTextField();
         RentEachButton = new JButton();
@@ -479,6 +533,7 @@ public class Clerk extends JFrame {
         scrollPane7 = new JScrollPane();
         RentalTypeEachList = new JList();
         braRentNum = new JLabel();
+        RentCity = new JTextField();
         TotalReturnNum = new JTabbedPane();
         panel6 = new JPanel();
         panel13 = new JPanel();
@@ -498,10 +553,8 @@ public class Clerk extends JFrame {
         label13 = new JLabel();
         ReturnDateEach = new JTextField();
         label14 = new JLabel();
-        ReturnCityEach = new JComboBox();
         label15 = new JLabel();
         ReturnEachButton = new JButton();
-        ReturnAddrEach = new JComboBox();
         tabbedPane7 = new JTabbedPane();
         scrollPane4 = new JScrollPane();
         ReturnDetailAllList2 = new JList();
@@ -509,6 +562,8 @@ public class Clerk extends JFrame {
         ReturnTypeAllList2 = new JList();
         braReturnNum = new JLabel();
         braReturnRev = new JLabel();
+        ReturnCity = new JTextField();
+        ReturnAddr = new JTextField();
         buttonBar = new JPanel();
         ReturnButton = new JButton();
         FinishButton = new JButton();
@@ -526,12 +581,12 @@ public class Clerk extends JFrame {
         //======== dialogPane ========
         {
             dialogPane.setBorder(new EmptyBorder(12, 12, 12, 12));
-            dialogPane.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder
-            (0,0,0,0), "JF\u006frmDes\u0069gner \u0045valua\u0074ion",javax.swing.border.TitledBorder.CENTER,javax.swing.border
-            .TitledBorder.BOTTOM,new java.awt.Font("D\u0069alog",java.awt.Font.BOLD,12),java.awt
-            .Color.red),dialogPane. getBorder()));dialogPane. addPropertyChangeListener(new java.beans.PropertyChangeListener(){@Override public void
-            propertyChange(java.beans.PropertyChangeEvent e){if("\u0062order".equals(e.getPropertyName()))throw new RuntimeException()
-            ;}});
+            dialogPane.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax. swing. border. EmptyBorder
+            ( 0, 0, 0, 0) , "JFor\u006dDesi\u0067ner \u0045valu\u0061tion", javax. swing. border. TitledBorder. CENTER, javax. swing. border
+            . TitledBorder. BOTTOM, new java .awt .Font ("Dia\u006cog" ,java .awt .Font .BOLD ,12 ), java. awt
+            . Color. red) ,dialogPane. getBorder( )) ); dialogPane. addPropertyChangeListener (new java. beans. PropertyChangeListener( ){ @Override public void
+            propertyChange (java .beans .PropertyChangeEvent e) {if ("bord\u0065r" .equals (e .getPropertyName () )) throw new RuntimeException( )
+            ; }} );
             dialogPane.setLayout(new BorderLayout());
 
             //======== contentPanel ========
@@ -870,8 +925,6 @@ public class Clerk extends JFrame {
                             label6.setForeground(UIManager.getColor("Link.hoverForeground"));
                             panel3.add(label6);
                             label6.setBounds(new Rectangle(new Point(185, 25), label6.getPreferredSize()));
-                            panel3.add(RentCity);
-                            RentCity.setBounds(220, 10, 130, 35);
 
                             //---- label7 ----
                             label7.setText("Branch's Address:");
@@ -911,6 +964,8 @@ public class Clerk extends JFrame {
                             braRentNum.setForeground(UIManager.getColor("Button.default.endBackground"));
                             panel3.add(braRentNum);
                             braRentNum.setBounds(10, 50, 420, 30);
+                            panel3.add(RentCity);
+                            RentCity.setBounds(230, 10, 120, 32);
 
                             {
                                 // compute preferred size
@@ -982,13 +1037,11 @@ public class Clerk extends JFrame {
                                 tabbedPane6.setBounds(0, 65, 765, 380);
 
                                 //---- totalReturnNum ----
-                                totalReturnNum.setText("Total Number of Return on this date:");
                                 totalReturnNum.setForeground(UIManager.getColor("Button.default.endBackground"));
                                 panel13.add(totalReturnNum);
                                 totalReturnNum.setBounds(20, 0, 330, 30);
 
                                 //---- totalReturnRev ----
-                                totalReturnRev.setText("Total Revenue on this date:");
                                 totalReturnRev.setForeground(UIManager.getColor("Button.default.endBackground"));
                                 panel13.add(totalReturnRev);
                                 totalReturnRev.setBounds(20, 35, 200, 25);
@@ -1045,8 +1098,6 @@ public class Clerk extends JFrame {
                             label14.setForeground(UIManager.getColor("Link.hoverForeground"));
                             panel14.add(label14);
                             label14.setBounds(new Rectangle(new Point(185, 25), label14.getPreferredSize()));
-                            panel14.add(ReturnCityEach);
-                            ReturnCityEach.setBounds(220, 10, 125, 35);
 
                             //---- label15 ----
                             label15.setText("Branch's Address:");
@@ -1059,8 +1110,6 @@ public class Clerk extends JFrame {
                             ReturnEachButton.setForeground(UIManager.getColor("Link.hoverForeground"));
                             panel14.add(ReturnEachButton);
                             ReturnEachButton.setBounds(615, 10, 95, 40);
-                            panel14.add(ReturnAddrEach);
-                            ReturnAddrEach.setBounds(475, 10, 125, 35);
 
                             //======== tabbedPane7 ========
                             {
@@ -1081,16 +1130,18 @@ public class Clerk extends JFrame {
                             tabbedPane7.setBounds(5, 65, 780, 370);
 
                             //---- braReturnNum ----
-                            braReturnNum.setText("Total Number of Return for This Branch on This Date:");
                             braReturnNum.setForeground(UIManager.getColor("Button.default.endBackground"));
                             panel14.add(braReturnNum);
                             braReturnNum.setBounds(15, 45, 455, 25);
 
                             //---- braReturnRev ----
-                            braReturnRev.setText("Total Revenue for This Branch:");
                             braReturnRev.setForeground(UIManager.getColor("Button.default.endBackground"));
                             panel14.add(braReturnRev);
                             braReturnRev.setBounds(485, 45, 215, 25);
+                            panel14.add(ReturnCity);
+                            ReturnCity.setBounds(225, 10, 105, 35);
+                            panel14.add(ReturnAddr);
+                            ReturnAddr.setBounds(475, 10, 125, 35);
 
                             {
                                 // compute preferred size
@@ -1214,7 +1265,6 @@ public class Clerk extends JFrame {
     private JLabel label5;
     private JTextField RentDateForEach;
     private JLabel label6;
-    private JComboBox RentCity;
     private JLabel label7;
     private JTextField RentAddr;
     private JButton RentEachButton;
@@ -1224,6 +1274,7 @@ public class Clerk extends JFrame {
     private JScrollPane scrollPane7;
     private JList RentalTypeEachList;
     private JLabel braRentNum;
+    private JTextField RentCity;
     private JTabbedPane TotalReturnNum;
     private JPanel panel6;
     private JPanel panel13;
@@ -1243,10 +1294,8 @@ public class Clerk extends JFrame {
     private JLabel label13;
     private JTextField ReturnDateEach;
     private JLabel label14;
-    private JComboBox ReturnCityEach;
     private JLabel label15;
     private JButton ReturnEachButton;
-    private JComboBox ReturnAddrEach;
     private JTabbedPane tabbedPane7;
     private JScrollPane scrollPane4;
     private JList ReturnDetailAllList2;
@@ -1254,6 +1303,8 @@ public class Clerk extends JFrame {
     private JList ReturnTypeAllList2;
     private JLabel braReturnNum;
     private JLabel braReturnRev;
+    private JTextField ReturnCity;
+    private JTextField ReturnAddr;
     private JPanel buttonBar;
     private JButton ReturnButton;
     private JButton FinishButton;
