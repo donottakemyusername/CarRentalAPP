@@ -3,6 +3,7 @@ package ca.ubc.cs304.ui;
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegates;
 import ca.ubc.cs304.exceptions.InvalidDetailsException;
 import ca.ubc.cs304.exceptions.InvalidReservationException;
+import ca.ubc.cs304.exceptions.VehicleUnavailableException;
 import ca.ubc.cs304.model.*;
 import javafx.util.Pair;
 
@@ -393,7 +394,7 @@ public class Clerk extends JFrame {
                                                         receipt = delegate.makeRental(Integer.parseInt(confNo), city, branchAddress, cardName, cardNo, expDate);
                                                     else
                                                         receipt = delegate.makeRental(dlicense, cname, phoneNum, caddress, city, branchAddress, carType, fromDate, fromTime, toDate, toTime, cardName, cardNo, expDate);
-                                                } catch (InvalidReservationException | InvalidDetailsException ex) {
+                                                } catch (InvalidReservationException | InvalidDetailsException | VehicleUnavailableException ex ) {
                                                     JOptionPane.showMessageDialog(null,"[EXCEPTION] Rental not made: " + ex.getMessage());
                                                 }
                                                 if (receipt != null) {
