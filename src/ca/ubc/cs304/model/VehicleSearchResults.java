@@ -6,14 +6,16 @@ import java.util.Objects;
 public class VehicleSearchResults {
     private String vehicleType;
     private String location;
+    private String city;
     private TimePeriodModel timePeriod;
     private int numAvailable;
     private ArrayList<Vehicles> vehicles;
 
-    public VehicleSearchResults(String vehicleType, String location, TimePeriodModel timePeriod, int numAvailable) {
+    public VehicleSearchResults(String vehicleType, String location, String city, TimePeriodModel timePeriod, int numAvailable) {
         // if something is null it means that it was not set (not searched for) except for vehicleType (vehicleType will never be null)
         this.vehicleType = vehicleType;
         this.location = location;
+        this.city = city;
         this.timePeriod = timePeriod;
         this.numAvailable = numAvailable;
         this.vehicles = new ArrayList<>();
@@ -26,6 +28,10 @@ public class VehicleSearchResults {
     public String getLocation() {
         return this.location;
     }
+
+    public String getCity() {return this.city;}
+
+    public void setCity(String city) {this.city = city;}
 
     public TimePeriodModel getTimePeriod() {
         return this.timePeriod;
