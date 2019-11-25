@@ -892,7 +892,7 @@ public class DatabaseHandler {
         try {
             PreparedStatement ps = connection.prepareStatement("SELECT v.vlicense, v.make, v.model, v.vtname, v.city, v.location" +
                     "FROM Vehicle v, Rental r, Return t" +
-                    "WHERE v.vlicense = r.vlicense AND r.rid = t.rid AND r.fromDate = ?" +
+                    "WHERE v.vlicense = r.vlicense AND r.rid = t.rid AND t.rdate = ?" +
                     "ORDER BY v.city, v.location, v.vtname");
             ps.setDate(1,date);
             ResultSet resultSet = ps.executeQuery();
@@ -944,9 +944,9 @@ public class DatabaseHandler {
         ArrayList<RevenueBranch> branchRentals = new ArrayList<>();
         try {
             PreparedStatement ps = connection.prepareStatement("SELECT city, location, Count(*), Sum(rev) AS Total"+
-                    "FROM (SELECT v.city AS city, v.location AS location, vt.drate*(rt.rDate-ra.fromDate) AS rev"+
-                    "FROM Vehicle v, Rental r, VehicleType vt"+
-                    "WHERE v.vtname = vt.vtname AND r.vlicense = v.vlicense AND rt.rDate = ?)"+
+                    "FROM (SELECT v.city AS city, v.location AS location, vt.drate*(rt.rDate-r.fromDate) AS rev"+
+                    "FROM Return rt, Vehicle v, Rental r, VehicleType vt"+
+                    "WHERE rt.rid = r.rid AND v.vtname = vt.vtname AND r.vlicense = v.vlicense AND rt.rDate = ?)"+
                     "GROUP BY city, location");
             ps.setDate(1,date);
             ResultSet resultSet = ps.executeQuery();
@@ -960,6 +960,7 @@ public class DatabaseHandler {
                 branchRental.setRevenue(resultSet.getInt(4));
                 branchRentals.add(branchRental);
             }
+            ps.close();
         } catch (SQLException e) {
             System.out.println(EXCEPTION_TAG + " " + e.getMessage());
         }
@@ -970,14 +971,16 @@ public class DatabaseHandler {
         Pair<Integer,Integer> cntRevenue = new Pair<>(0,0);
         try {
             PreparedStatement ps = connection.prepareStatement("SELECT Count(*), Sum(rev) AS Total"+
-                    "FROM (SELECT vt.drate*(rt.rDate-ra.fromDate) AS rev"+
-                    "FROM Vehicle v, Rental r, VehicleType vt"+
-                    "WHERE v.vtname = vt.vtname AND r.vlicense = v.vlicense AND rt.rDate = ?)");
+                    "FROM (SELECT vt.drate*(rt.rDate-r.fromDate) AS rev"+
+                    "FROM Return rt, Vehicle v, Rental r, VehicleType vt"+
+                    "WHERE rt.rid = r.rid AND v.vtname = vt.vtname AND r.vlicense = v.vlicense AND rt.rDate = ?)");
             ps.setDate(1,date);
             ResultSet resultSet = ps.executeQuery();
             connection.commit();
             cntRevenue = new Pair<>(resultSet.getInt(1),resultSet.getInt(2));
-            } catch (SQLException e) {
+            ps.close();
+            }
+        catch (SQLException e) {
             System.out.println(EXCEPTION_TAG + " " + e.getMessage());
         }
         return cntRevenue;
@@ -987,9 +990,9 @@ public class DatabaseHandler {
         ArrayList<RevenueCat> branchRentals = new ArrayList<>();
         try {
             PreparedStatement ps = connection.prepareStatement("SELECT vtname, Count(*), Sum(rev) AS Total"+
-                    "FROM (SELECT v.vtname AS vtname, vt.drate*(rt.rDate-ra.fromDate) AS rev"+
-                    "FROM Vehicle v, Rental r, VehicleType vt"+
-                    "WHERE v.vtname = vt.vtname AND r.vlicense = v.vlicense AND rt.rDate = ?)"+
+                    "FROM (SELECT v.vtname AS vtname, vt.drate*(rt.rDate-r.fromDate) AS rev"+
+                    "FROM Vehicle v, Rental r, VehicleType v, Return rt"+
+                    "WHERE rt.rid = r.rid AND v.vtname = vt.vtname AND r.vlicense = v.vlicense AND rt.rDate = ?)"+
                     "GROUP BY vtname");
             ps.setDate(1,date);
             ResultSet resultSet = ps.executeQuery();
@@ -1002,6 +1005,7 @@ public class DatabaseHandler {
                 branchRental.setRevenue(resultSet.getInt(3));
                 branchRentals.add(branchRental);
             }
+            ps.close();
         } catch (SQLException e) {
             System.out.println(EXCEPTION_TAG + " " + e.getMessage());
         }
@@ -1011,10 +1015,10 @@ public class DatabaseHandler {
     public RevenueBranch getRevenueBranch(Date date, String city, String location) {
         RevenueBranch branchRental = new RevenueBranch();
         try {
-            PreparedStatement ps = connection.prepareStatement("SELECT city, location, Count(*), Sum(rev) AS Total"+
-                    "FROM (SELECT v.city AS city, v.location AS location, vt.drate*(rt.rDate-ra.fromDate) AS rev"+
-                    "FROM Vehicle v, Rental r, VehicleType vt"+
-                    "WHERE v.vtname = vt.vtname AND r.vlicense = v.vlicense AND rt.rDate = ? AND city = ? AND location = ?)"+
+            PreparedStatement ps = connection.prepareStatement("SELECT city, location, vtname, Count(*), Sum(rev) AS Total" +
+                    "FROM (SELECT v.city AS city, v.location AS location, vt,vtname AS vtname, vt.drate*(rt.rDate-r.fromDate) AS rev" +
+                    "FROM Vehicle v, Rental r, Return rt, VehicleType vt" +
+                    "WHERE vt.vtname = v.vtname AND r.vlicense = v.vlicense AND rt.rid = r.rid AND rt.rDate = ? AND city = ? AND location = ?" +
                     "GROUP BY city, location");
             ps.setDate(1,date);
             ps.setString(2,city);
@@ -1025,6 +1029,7 @@ public class DatabaseHandler {
             branchRental.setLocation(resultSet.getString(2));
             branchRental.setCount(resultSet.getInt(3));
             branchRental.setRevenue(resultSet.getInt(4));
+            ps.close();
         } catch (SQLException e) {
             System.out.println(EXCEPTION_TAG + " " + e.getMessage());
         }
@@ -1034,10 +1039,10 @@ public class DatabaseHandler {
     public RevenueBranchCat[] getRevenueBranchCat(Date date, String city, String location) {
         ArrayList<RevenueBranchCat> branchRentals = new ArrayList<>();
         try {
-            PreparedStatement ps = connection.prepareStatement("SELECT city, location, vtname, Count(*), Sum(rev) AS Total"+
-                    "FROM (SELECT v.city AS city, v.location AS location, v.vtname AS vtname, vt.drate*(rt.rDate-ra.fromDate) AS rev"+
-                    "FROM Vehicle v, Rental r, VehicleType vt"+
-                    "WHERE v.vtname = vt.vtname AND r.vlicense = v.vlicense AND rt.rDate = ? AND city = ? AND location = ?)"+
+            PreparedStatement ps = connection.prepareStatement("SELECT city, location, vtname, Count(*), Sum(rev) AS Total" +
+                    "FROM (SELECT v.city AS city, v.location AS location, v.vtname AS vtname, vt.drate*(rt.rDate-r.fromDate) AS rev" +
+                    "FROM Vehicle v, Rental r, VehicleType vt, Return rt" +
+                    "WHERE v.vtname = vt.vtname AND r.vlicense = v.vlicense AND rt.rid = r.rid AND rt.rDate = ? AND city = ? AND location = ?" +
                     "GROUP BY city, location, vtname");
             ps.setDate(1,date);
             ps.setString(2,city);
@@ -1054,13 +1059,13 @@ public class DatabaseHandler {
                 branchRental.setRevenue(resultSet.getInt(5));
                 branchRentals.add(branchRental);
             }
+            ps.close();
         } catch (SQLException e) {
             System.out.println(EXCEPTION_TAG + " " + e.getMessage());
         }
         return branchRentals.toArray(new RevenueBranchCat[branchRentals.size()]);
     }
 
-    // TODO: we cannot know the details about odometer & fullTank when the car is returned, maybe we should not display them?
     /*
     when a car is returned, I will first record the rentalID and returnDate into the return table, and then print out the receipt for
     the customer, using dRate (retrieved from VehicleType) * (returnDate - rental.fromDate)
@@ -1074,11 +1079,14 @@ public class DatabaseHandler {
             returnModel.setRid(rid);
             insertReturn(returnModel);
             try {
-                Statement stmt = connection.createStatement();
-                ResultSet resultSet = stmt.executeQuery(
-                        "SELECT ra.confNum, ra.fromDate, rt.rdate, vt.drate, rt.rdate-ra.fromDate, vt.drate*(rt.rdate-ra.fromDate) AS total" +
-                                "FROM Rental ra, Return rt, VehicleType vt, Vehicle v" +
-                                "WHERE v.vlicense = ra.vlicense AND v.vtname = vt.vtname AND rt.rid = ra.rid");
+                PreparedStatement ps = connection.prepareStatement("SELECT ra.confNo, ra.fromDate, rt.rdate, vt.drate, (rt.rdate-ra.fromDate) AS days, vt.drate*(rt.rdate-ra.fromDate) AS total" +
+                        "FROM Rental ra, Return rt, VehicleType vt, Vehicle v" +
+                        "WHERE rt.rid = ? AND rt.rdate = ? AND v.vlicense = ra.vlicense AND v.vtname = vt.vtname AND rt.rid = ra.rid");
+                ps.setInt(1,rid);
+                ps.setDate(2, date);
+                ResultSet resultSet = ps.executeQuery();
+                connection.commit();
+
                 returnResult.setConfNum(resultSet.getInt(1));
                 returnResult.setFromDate(resultSet.getDate(2));
                 returnResult.setReturnDate(resultSet.getDate(3));
@@ -1086,8 +1094,7 @@ public class DatabaseHandler {
                 returnResult.setdRate(resultSet.getInt(4));
                 returnResult.setPrice(resultSet.getInt(6));
 
-                resultSet.close();
-                stmt.close();
+                ps.close();
             } catch (SQLException e) {
                 System.out.println(EXCEPTION_TAG + " " + e.getMessage());
             }
